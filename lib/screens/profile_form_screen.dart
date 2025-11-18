@@ -161,6 +161,31 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                 ),
                 validator: (v) => v!.isEmpty ? 'Enter date of birth' : null,
               ),
+              const SizedBox(height: 8),
+              // --- Aadhar Section ---
+              _sectionHeader(
+                'Aadhar Verification',
+                Colors.orange,
+                Icons.credit_card_rounded,
+              ),
+              TextFormField(
+                controller: aadharController,
+                validator: (v) => v!.isEmpty ? 'Enter Aadhar number' : null,
+                decoration: _inputDecoration('Aadhar Number *'),
+              ),
+              const SizedBox(height: 12),
+              _imageUploadBox(
+                'Aadhar Front Image',
+                aadharFront,
+                () => _pickImage(true),
+              ),
+              const SizedBox(height: 12),
+              _imageUploadBox(
+                'Aadhar Back Image',
+                aadharBack,
+                () => _pickImage(false),
+              ),
+              const SizedBox(height: 8),
 
               // --- Address Section ---
               _sectionHeader(
@@ -224,6 +249,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                 ],
               ),
               const SizedBox(height: 12),
+
               // Row(
               //   children: [
               //     Expanded(
@@ -238,31 +264,6 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
               //     ),
               //   ],
               // ),
-
-              // --- Aadhar Section ---
-              _sectionHeader(
-                'Aadhar Verification',
-                Colors.orange,
-                Icons.credit_card_rounded,
-              ),
-              TextFormField(
-                controller: aadharController,
-                validator: (v) => v!.isEmpty ? 'Enter Aadhar number' : null,
-                decoration: _inputDecoration('Aadhar Number *'),
-              ),
-              const SizedBox(height: 12),
-              _imageUploadBox(
-                'Aadhar Front Image',
-                aadharFront,
-                () => _pickImage(true),
-              ),
-              const SizedBox(height: 12),
-              _imageUploadBox(
-                'Aadhar Back Image',
-                aadharBack,
-                () => _pickImage(false),
-              ),
-
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _saveForm,
