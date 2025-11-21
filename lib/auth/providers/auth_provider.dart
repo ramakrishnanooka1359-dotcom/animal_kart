@@ -15,8 +15,11 @@ class AuthController extends ChangeNotifier {
   //setters
   bool _isLoading = false;
 
+  UserProfile? _userProfile;
+
   //getters
   bool get isLoading => _isLoading;
+  UserProfile? get userProfile => _userProfile;
 
   // verfiy user
   Future<bool> verifyUser(String phone) async {
@@ -39,6 +42,12 @@ class AuthController extends ChangeNotifier {
         var data = jsonDecode(response.body);
 
         final bool isSuccess = data["status"] == "success";
+
+        if (isSuccess && data["user"] != null) {
+          _userProfile = UserProfile.fromJson(
+            data["user"] as Map<String, dynamic>,
+          );
+        }
 
         return isSuccess;
       } else {
@@ -96,6 +105,5 @@ class AuthController extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
-    return false;
   }
 }

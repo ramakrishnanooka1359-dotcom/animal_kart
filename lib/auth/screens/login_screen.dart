@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:animal_kart_demo2/auth/providers/auth_provider.dart';
 import 'package:animal_kart_demo2/auth/screens/otp_screen.dart';
 import 'package:animal_kart_demo2/routes/routes.dart';
@@ -17,6 +19,7 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final phoneController = TextEditingController();
   bool isButtonEnabled = false;
+  bool _isSendingOtp = false;
 
   // ---------------- VALIDATION ----------------
   bool isValidPhone(String value) {
@@ -48,24 +51,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // /// Phone Input
-              // TextField(
-              //   controller: phoneController,
-              //   keyboardType: TextInputType.phone,
-              //   decoration: InputDecoration(
-              //     labelText: "Phone Number",
-              //     prefixText: "+91 ",
-              //     filled: true,
-              //     fillColor: Colors.white,
-              //     border: OutlineInputBorder(
-              //       borderRadius: BorderRadius.circular(16),
-              //     ),
-              //     // errorText: auth.error.isEmpty ? null : auth.error,
-              //   ),
-              //   maxLength: 10,
-              // ),
-
-              // const SizedBox(height: 20),
               const SizedBox(height: 40),
 
               // ---------------- HEADER ----------------
@@ -184,46 +169,56 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 width: double.infinity,
                 height: 60,
                 child: ElevatedButton(
-                  onPressed: isButtonEnabled
-                      ? auth.isLoading
-                            ? null
-                            : () async {
-                                // if (!mounted) return;
-                                Navigator.pushNamed(
-                                  context,
-                                  AppRoutes.otp,
-                                  arguments: {'verificationId': ''},
-                                );
-                                // final bool isUserVerfiyed = await ref
-                                //     .read(authProvider.notifier)
-                                //     .verifyUser(phoneController.text.trim());
-
-                                //if (isUserVerfiyed) {
-                                // await FirebaseAuth.instance.verifyPhoneNumber(
-                                //   verificationCompleted:
-                                //       (PhoneAuthCredential credential) {},
-                                //   verificationFailed: (FirebaseAuthException ex) {},
-                                //   codeSent:
-                                //       (String verficationId, int? resendToken) {
-                                //         Navigator.pushNamed(
-                                //           context,
-                                //           AppRoutes.otp,
-                                //           arguments: {
-                                //             'verificationId': verficationId,
-                                //           },
-                                //         );
-                                //       },
-                                //   codeAutoRetrievalTimeout:
-                                //       (String verficationId) {},
-                                //   phoneNumber:
-                                //       "+91${phoneController.text.toString()}",
-                                // );
-                                // } else {
-                                //   FloatingToast.showSimpleToast(
-                                //     "Please contact admin support",
-                                //   );
-                                // }
-                              }
+                  onPressed:
+                      isButtonEnabled && !auth.isLoading && !_isSendingOtp
+                      ? () async {
+                          setState(() {
+                            _isSendingOtp = true;
+                          });
+                          try {
+                            final bool isUserVerfiyed = await ref
+                                .read(authProvider.notifier)
+                                .verifyUser(phoneController.text.trim());
+                            if (isUserVerfiyed) {
+                              await FirebaseAuth.instance.verifyPhoneNumber(
+                                verificationCompleted: (PhoneAuthCredential cred) {
+                                  // Auto-sign in can be handled here if desired
+                                },
+                                verificationFailed: (FirebaseAuthException ex) {
+                                  FloatingToast.showSimpleToast(
+                                    ex.message ?? 'OTP send failed',
+                                  );
+                                },
+                                codeSent:
+                                    (String verficationId, int? resendToken) {
+                                      Navigator.pushNamed(
+                                        context,
+                                        AppRoutes.otp,
+                                        arguments: {
+                                          'verificationId': verficationId,
+                                          'phoneNumber': phoneController.text
+                                              .trim(),
+                                        },
+                                      );
+                                    },
+                                codeAutoRetrievalTimeout:
+                                    (String verficationId) {},
+                                phoneNumber:
+                                    "+91${phoneController.text.toString()}",
+                              );
+                            } else {
+                              FloatingToast.showSimpleToast(
+                                "User not found ,Not a new referral",
+                              );
+                            }
+                          } finally {
+                            if (mounted) {
+                              setState(() {
+                                _isSendingOtp = false;
+                              });
+                            }
+                          }
+                        }
                       : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isButtonEnabled
@@ -233,16 +228,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       borderRadius: BorderRadius.circular(40),
                     ),
                   ),
-                  child: Text(
-                    "Send OTP",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: isButtonEnabled
-                          ? Colors.black
-                          : Colors.grey.shade700,
-                    ),
-                  ),
+                  child: (auth.isLoading || _isSendingOtp)
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.black,
+                            ),
+                          ),
+                        )
+                      : Text(
+                          "Send OTP",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: isButtonEnabled
+                                ? Colors.black
+                                : Colors.grey.shade700,
+                          ),
+                        ),
                 ),
               ),
             ],

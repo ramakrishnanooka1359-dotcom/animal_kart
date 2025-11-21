@@ -1,4 +1,4 @@
-package com.example.animal_kart_demo2
+package com.markwave.animalcart
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -10,23 +10,48 @@ import 'package:device_info_plus/device_info_plus.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
   String verficationId;
-  OtpScreen({super.key, required this.verficationId});
+  final String phoneNumber;
+
+  OtpScreen({
+    super.key,
+    required this.verficationId,
+    required this.phoneNumber,
+  });
 
   @override
   ConsumerState<OtpScreen> createState() => _OtpScreenState();
 }
 
-class _OtpScreenState extends ConsumerState<OtpScreen> {
+class _OtpScreenState
+    extends ConsumerState<OtpScreen> /* with CodeAutoFill  */ {
   final otpController = TextEditingController();
 
   String deviceId = "";
   String deviceModel = "";
   bool isOtpValid = false;
+  bool _isVerifying = false;
 
   @override
   void initState() {
     super.initState();
     getDeviceInfo();
+    //listenForCode();
+  }
+
+  // @override
+  // void codeUpdated() {
+  //   if (code == null) return;
+  //   setState(() {
+  //     otpController.text = code!;
+  //     isOtpValid = otpController.text.length == 6;
+  //   });
+  // }
+
+  @override
+  void dispose() {
+    // cancel();
+    otpController.dispose();
+    super.dispose();
   }
 
   @override
@@ -70,7 +95,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                 ),
               ),
               Text(
-                "(+91) 12345678",
+                "(+91) ${widget.phoneNumber}",
                 /* $phoneNumber */
                 style: const TextStyle(
                   fontSize: 20,
@@ -113,7 +138,28 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
               Center(
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    try {
+                      await FirebaseAuth.instance.verifyPhoneNumber(
+                        verificationCompleted: (PhoneAuthCredential cred) {},
+                        verificationFailed: (FirebaseAuthException ex) {},
+                        codeSent: (String verficationId, int? resendToken) {
+                          // update the verificationId so the new OTP works
+                          setState(() {
+                            widget.verficationId = verficationId;
+                          });
+                        },
+                        codeAutoRetrievalTimeout: (String verficationId) {
+                          setState(() {
+                            widget.verficationId = verficationId;
+                          });
+                        },
+                        phoneNumber: "+91${widget.phoneNumber}",
+                      );
+                    } catch (e) {
+                      // Optionally show a toast/snackbar here
+                    }
+                  },
                   child: const Text(
                     "Resend OTP",
                     style: TextStyle(
@@ -132,51 +178,44 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                 width: double.infinity,
                 height: 60,
                 child: ElevatedButton(
-                  onPressed: isOtpValid
+                  onPressed: isOtpValid && !_isVerifying
                       ? () async {
-                          // ref
-                          //     .read(authProvider.notifier)
-                          //     .verifyOtp(
-                          //       otpController.text.trim(),
-                          //       deviceId,
-                          //       deviceModel,
-                          //     );
+                          setState(() {
+                            _isVerifying = true;
+                          });
+                          try {
+                            // 1) Create the credential synchronously (no await here)
+                            final credential = PhoneAuthProvider.credential(
+                              verificationId: widget.verficationId,
+                              smsCode: otpController.text.trim(),
+                            );
 
-                          // if (ref.read(authProvider).isVerified) {
-                          //   Navigator.pushNamedAndRemoveUntil(
-                          //     context,
-                          //     '/main-home',
-                          //     (route) => false,
-                          //   );
-                          // }
-                          // try {
-                          //   // PhoneAuthCredential credential =
-                          //   //     await PhoneAuthProvider.credential(
-                          //   //       verificationId: widget.verficationId,
-                          //   //       smsCode: otpController.text.toString(),
-                          //   //     );
-                          //   // FirebaseAuth.instance
-                          //   //     .signInWithCredential(credential)
-                          //   //     .then((val) {
-                          //   //       Navigator.push(
-                          //   //         context,
-                          //   //         MaterialPageRoute(
-                          //   //           builder: (context) => HomeScreen(),
-                          //   //         ),
-                          //   //       );
-                          //   //     });
-                          //   //  // final isUpdateUserVerfy = ref
-                          //   ////     .read(authProvider.notifier)
-                          //   // //     .updateUserdata();
-                          // } catch (e) {
-                          //   print(e.toString());
-                          // }
-                          Navigator.pushReplacementNamed(
-                            context,
-                            AppRoutes.home,
-                          );
+                            // 2) Await the sign‑in call (this is async)
+                            await FirebaseAuth.instance.signInWithCredential(
+                              credential,
+                            );
+
+                            // 3) Navigate after successful sign‑in
+                            if (!mounted) return;
+                            Navigator.pushReplacementNamed(
+                              context,
+                              AppRoutes.profileForm,
+                              arguments: {
+                                'phoneNumber': widget.phoneNumber.trim(),
+                              },
+                            );
+                          } catch (e) {
+                            print(e.toString());
+                            // Optionally show a toast/snackbar for invalid OTP
+                          } finally {
+                            if (mounted) {
+                              setState(() {
+                                _isVerifying = false;
+                              });
+                            }
+                          }
                         }
-                      : null, // Disabled when invalid
+                      : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isOtpValid
                         ? const Color(0xFF57BE82)
@@ -185,14 +224,25 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                       borderRadius: BorderRadius.circular(35),
                     ),
                   ),
-                  child: const Text(
-                    "Continue",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
+                  child: _isVerifying
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.black,
+                            ),
+                          ),
+                        )
+                      : const Text(
+                          "Continue",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
                 ),
               ),
             ],

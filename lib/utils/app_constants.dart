@@ -6,11 +6,11 @@ class AppConstants {
   static Duration kToastDuration = Duration(milliseconds: 1800);
   static String kAppName = 'ANIMAL\nKART';
   static String countryCode = "+91";
-  static String khyphen="--";
+  static String khyphen = "--";
 
   //Api constants
   static const String apiUrl =
-      'https://markwave-admin-dasboard-couipk45fa-ew.a.run.app/';
+      'https://markwave-admin-dasboard-couipk45fa-ew.a.run.app';
 
   static const String applicationJson = 'application/json';
 

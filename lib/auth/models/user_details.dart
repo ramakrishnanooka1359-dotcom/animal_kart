@@ -42,7 +42,7 @@ class UserProfile {
       verified: json["verified"],
       email: json["email"],
       address: json["address"],
-      phone: json["phone"],
+      phone: json["phone"] ?? json["mobile"],
       city: json["city"],
       state: json["state"],
       pincode: json["pincode"],
