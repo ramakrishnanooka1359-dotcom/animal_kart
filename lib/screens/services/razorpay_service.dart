@@ -3,8 +3,18 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class RazorPayService {
   late Razorpay _razorpay;
+  final VoidCallback? onPaymentSuccess;
+  final VoidCallback? onPaymentFailed;
 
-  RazorPayService() {
+  VoidCallback? onPaymentOpen;
+  VoidCallback? onPaymentClose;
+
+  RazorPayService({
+    this.onPaymentOpen,
+    this.onPaymentClose,
+    this.onPaymentFailed,
+    this.onPaymentSuccess,
+  }) {
     _razorpay = Razorpay();
 
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handleSuccess);
@@ -13,16 +23,21 @@ class RazorPayService {
   }
 
   void openPayment({required int amount}) {
+    // Call when process starts
+    if (onPaymentOpen != null) onPaymentOpen!();
+
     var options = {
-      'key': 'rzp_test_ChtIh4impxVRVG', 
+      'key': 'rzp_test_ChtIh4impxVRVG',
       'amount': amount * 100,
       'name': 'Markwave Cart',
       'description': 'Buffalo Purchase',
-      'prefill': {
-        'contact': '9876543210',
-        'email': 'test@gmail.com',
-      }
+      'prefill': {'contact': '9876543210', 'email': 'test@gmail.com'},
     };
+
+    // Razorpay opens at this moment
+    Future.delayed(const Duration(milliseconds: 400), () {
+      if (onPaymentClose != null) onPaymentClose!();
+    });
 
     _razorpay.open(options);
   }
@@ -31,14 +46,12 @@ class RazorPayService {
     _razorpay.clear();
   }
 
-
-
   void _handleSuccess(PaymentSuccessResponse response) {
-    debugPrint("SUCCESS: $response");
+    if (onPaymentSuccess != null) onPaymentSuccess!();
   }
 
   void _handleError(PaymentFailureResponse response) {
-    debugPrint("ERROR: $response");
+    if (onPaymentFailed != null) onPaymentFailed!();
   }
 
   void _handleWallet(ExternalWalletResponse response) {

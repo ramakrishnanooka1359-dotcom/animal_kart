@@ -1,19 +1,34 @@
+import 'package:animal_kart_demo2/controllers/cart_provider.dart';
+import 'package:animal_kart_demo2/screens/tabs_screens/cart_screen.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class WishlistScreen extends StatefulWidget {
+class WishlistScreen extends ConsumerStatefulWidget {
   const WishlistScreen({super.key});
 
   @override
-  State<WishlistScreen> createState() => _WishlistScreenState();
+  ConsumerState<WishlistScreen> createState() => _WishlistScreenState();
 }
 
-class _WishlistScreenState extends State<WishlistScreen> {
+class _WishlistScreenState extends ConsumerState<WishlistScreen> {
   List<Map<String, dynamic>> wishlist = [
     {
-      "img": "https://storage.googleapis.com/markwave-kart/img1.jpeg",
-      "name": "Murrah Buffalo",
-      "price": 105000,
+      "id": "MURRAH-001",
+      "age": 3,
+      "breed": "Murrah Buffalo",
+      "buffalo_images": [
+        "https://storage.googleapis.com/markwave-kart/productimages/murrah_1.jpeg",
+        "https://storage.googleapis.com/markwave-kart/productimages/murrah_2.jpeg",
+        "https://storage.googleapis.com/markwave-kart/productimages/murrah_3.jpeg",
+        "https://storage.googleapis.com/markwave-kart/productimages/murrah_4.jpeg",
+      ],
+      "description":
+          "The Murrah is a premium dairy buffalo known for its jet-black coat...",
+      "price": 175000,
+      "insurance": 13000,
+      "milkYield": 12,
+      "inStock": true,
     },
   ];
 
@@ -27,6 +42,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
         child: Column(
           children: [
             const SizedBox(height: 10),
+
             Expanded(
               child: ListView.builder(
                 itemCount: wishlist.length,
@@ -36,8 +52,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 18),
                     child: _wishlistCard(
-                      img: item["img"],
-                      name: item["name"],
+                      img: item["buffalo_images"][0],
+                      name: item["breed"],
                       price: item["price"],
                       onRemove: () {
                         setState(() => wishlist.removeAt(index));
@@ -49,6 +65,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
             ),
 
             const SizedBox(height: 20),
+
             SizedBox(
               width: double.infinity,
               height: 55,
@@ -59,7 +76,25 @@ class _WishlistScreenState extends State<WishlistScreen> {
                     borderRadius: BorderRadius.circular(40),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  if (wishlist.isEmpty) return;
+
+                  final item = wishlist.first;
+                  final cartNotifier = ref.read(cartProvider.notifier);
+
+                  cartNotifier.setItem(
+                    item["id"],
+                    1, // qty = 1
+                    item["insurance"], // insurance
+                  );
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const CartScreen(showAppBar: true),
+                    ),
+                  );
+                },
                 child: const Text(
                   "Add to cart",
                   style: TextStyle(
@@ -155,7 +190,10 @@ class _WishlistScreenState extends State<WishlistScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               "₹$price",
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.normal,
+              ),
             ),
           ),
 
