@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:animal_kart_demo2/auth/models/user_details.dart';
 import 'package:animal_kart_demo2/network/api_services.dart';
 import 'package:animal_kart_demo2/utils/app_constants.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:http/http.dart' as http;
@@ -20,6 +21,29 @@ class AuthController extends ChangeNotifier {
   //getters
   bool get isLoading => _isLoading;
   UserProfile? get userProfile => _userProfile;
+
+  // Logout user
+  Future<void> logout() async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      // Sign out from Firebase
+      await FirebaseAuth.instance.signOut();
+
+      // Clear user profile
+      _userProfile = null;
+
+      // Clear any stored tokens or user data
+      // Add any additional cleanup code here
+    } catch (e) {
+      debugPrint('Error during logout: $e');
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 
   // verfiy user
   Future<bool> verifyUser(String phone) async {
@@ -96,6 +120,13 @@ class AuthController extends ChangeNotifier {
 
         final bool isSuccess = data["status"] == "success";
 
+        // Update local user profile if successful
+        if (isSuccess && data["user"] != null) {
+          _userProfile = UserProfile.fromJson(
+            data["user"] as Map<String, dynamic>,
+          );
+        }
+
         return isSuccess;
       } else {
         return false;
@@ -106,5 +137,11 @@ class AuthController extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  // Update profile locally
+  void updateProfile(UserProfile newProfile) {
+    _userProfile = newProfile;
+    notifyListeners();
   }
 }

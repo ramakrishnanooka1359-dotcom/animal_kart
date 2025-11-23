@@ -2,11 +2,14 @@ import 'dart:io';
 import 'package:animal_kart_demo2/auth/providers/auth_provider.dart';
 import 'package:animal_kart_demo2/routes/routes.dart';
 import 'package:animal_kart_demo2/screens/home_screen.dart';
+import 'package:animal_kart_demo2/theme/app_theme.dart';
+import 'package:animal_kart_demo2/widgets/floating_toast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pinput/pinput.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
   String verficationId;
@@ -64,8 +67,8 @@ class _OtpScreenState
       height: 56,
       textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.grey.shade300,
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(color: Colors.grey.shade300),
       ),
     );
@@ -80,26 +83,37 @@ class _OtpScreenState
             children: [
               // ----- BACK BUTTON -----
               IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new),
+                icon: Icon(
+                  Icons.arrow_back_ios_new,
+                  color: Theme.of(context).primaryTextColor,
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
 
               const SizedBox(height: 10),
 
-              // ---- TITLE ----
-              Text(
-                "Please enter the code we just sent to",
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              Text(
-                "(+91) ${widget.phoneNumber}",
-                /* $phoneNumber */
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+              RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
+                  children: [
+                    const TextSpan(
+                      text: "Please enter the code we just sent to ",
+                    ),
+                    TextSpan(
+                      text: "(+91) ${widget.phoneNumber}",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const TextSpan(text: " to proceed"),
+                  ],
                 ),
               ),
 
@@ -194,19 +208,56 @@ class _OtpScreenState
                             await FirebaseAuth.instance.signInWithCredential(
                               credential,
                             );
-
-                            // 3) Navigate after successful sign‑in
-                            if (!mounted) return;
-                            Navigator.pushReplacementNamed(
-                              context,
-                              AppRoutes.profileForm,
-                              arguments: {
-                                'phoneNumber': widget.phoneNumber.trim(),
-                              },
+                            await FirebaseAuth.instance.setSettings(
+                              appVerificationDisabledForTesting: false,
                             );
+
+                            // 3) Check if user exists and form is filled
+                            if (!mounted) return;
+                            final authNotifier = ref.read(
+                              authProvider.notifier,
+                            );
+                            final isUserVerified = await authNotifier
+                                .verifyUser(widget.phoneNumber);
+
+                            if (isUserVerified) {
+                              final userProfile = ref
+                                  .read(authProvider)
+                                  .userProfile;
+                              final prefs =
+                                  await SharedPreferences.getInstance();
+
+                              if (userProfile?.isFormFilled == true) {
+                                // User has already filled the form, go to home
+                                await prefs.setBool('isProfileCompleted', true);
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  AppRoutes.home,
+                                );
+                              } else {
+                                // User exists but hasn't filled the form
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  AppRoutes.profileForm,
+                                  arguments: {
+                                    'phoneNumber': widget.phoneNumber.trim(),
+                                  },
+                                );
+                              }
+                            } else {
+                              // New user, go to registration form
+                              Navigator.pushReplacementNamed(
+                                context,
+                                AppRoutes.profileForm,
+                                arguments: {
+                                  'phoneNumber': widget.phoneNumber.trim(),
+                                },
+                              );
+                            }
                           } catch (e) {
                             print(e.toString());
                             // Optionally show a toast/snackbar for invalid OTP
+                            FloatingToast.showSimpleToast("invalid OTP");
                           } finally {
                             if (mounted) {
                               setState(() {
@@ -220,6 +271,10 @@ class _OtpScreenState
                     backgroundColor: isOtpValid
                         ? const Color(0xFF57BE82)
                         : Colors.grey.shade300,
+                    disabledBackgroundColor: const Color(
+                      0xFFBAECD1,
+                    ), // your disabled color
+                    disabledForegroundColor: Colors.grey.shade700,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(35),
                     ),
@@ -231,16 +286,18 @@ class _OtpScreenState
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.black,
+                              const Color(0xFF57BE82),
                             ),
                           ),
                         )
-                      : const Text(
+                      : Text(
                           "Continue",
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: isOtpValid
+                                ? Colors.black
+                                : Colors.grey.shade500,
                           ),
                         ),
                 ),

@@ -26,14 +26,14 @@ class ApiServices {
 
     return const DeviceDetails(id: '', model: '');
   }
-static Future<Buffalo> fetchBuffaloById(String id) async {
-    final url =
-        '${AppConstants.apiUrl}/products/$id';
+
+  static Future<Buffalo> fetchBuffaloById(String id) async {
+    final url = '${AppConstants.apiUrl}/products/$id';
 
     final res = await http.get(Uri.parse(url));
 
     if (res.statusCode == 200) {
-       final jsonBody = json.decode(res.body);
+      final jsonBody = json.decode(res.body);
       final product = jsonBody["product"];
       return Buffalo.fromJson(product);
     } else {
@@ -41,19 +41,18 @@ static Future<Buffalo> fetchBuffaloById(String id) async {
     }
   }
 
-static Future<List<Buffalo>> fetchBuffaloList() async {
-  final url = '${AppConstants.apiUrl}/products';
+  static Future<List<Buffalo>> fetchBuffaloList() async {
+    final url = '${AppConstants.apiUrl}/products';
 
-  final res = await http.get(Uri.parse(url));
+    final res = await http.get(Uri.parse(url));
 
-  if (res.statusCode == 200) {
-    final jsonBody = json.decode(res.body);
-    final List products = jsonBody["products"];
+    if (res.statusCode == 200) {
+      final jsonBody = json.decode(res.body);
+      final List products = jsonBody["products"];
 
-    return products.map((e)=> Buffalo.fromJson(e)).toList();
-  } else {
-    throw Exception("Failed to load buffalo list");
+      return products.map((e) => Buffalo.fromJson(e)).toList();
+    } else {
+      throw Exception("Failed to load buffalo list");
+    }
   }
-}
-
 }

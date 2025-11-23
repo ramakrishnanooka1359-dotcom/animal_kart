@@ -23,8 +23,20 @@ dependencies:
   shared_preferences: ^2.5.3
   firebase_app_check: ^0.3.2+10
   razorpay_flutter: ^1.4.0
+  
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+  rename_app: ^1.6.5
+  flutter_svg: ^2.2.3
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/onboard_logo.png"
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
@@ -36,6 +48,8 @@ flutter:
      - assets/images/
      - assets/fonts/
      - assets/gifs/
+     - assets/lang/
+     
 
 
   fonts:

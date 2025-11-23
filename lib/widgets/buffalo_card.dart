@@ -1,3 +1,4 @@
+import 'package:animal_kart_demo2/l10n/app_localizations.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
 import 'package:animal_kart_demo2/utils/app_colors.dart';
 import 'package:animal_kart_demo2/widgets/bufflo_details_screen.dart';
@@ -85,7 +86,9 @@ class BuffaloCard extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: Text(
-                        buffalo.inStock ? "Available" : "Out of Stock",
+                        buffalo.inStock
+                            ? context.tr("Available")
+                            : context.tr("Out of Stock"),
                         style: TextStyle(
                           color: buffalo.inStock ? kPrimaryGreen : Colors.red,
                           fontWeight: FontWeight.w600,
@@ -131,7 +134,7 @@ class BuffaloCard extends ConsumerWidget {
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
-                                    "${buffalo.milkYield}L/day",
+                                    "${buffalo.milkYield}${context.tr("L")}/${context.tr("day")}",
                                     style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
@@ -154,8 +157,8 @@ class BuffaloCard extends ConsumerWidget {
                             size: 18,
                             color: Colors.black,
                           ),
-                          label: const Text(
-                            "Insurance Details",
+                          label: Text(
+                            context.tr("Insurance Details"),
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 13,
@@ -197,8 +200,8 @@ class BuffaloCard extends ConsumerWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              "Price",
+                            Text(
+                              context.tr("Price"),
                               style: TextStyle(
                                 fontSize: 13,
                                 color: Colors.grey,
@@ -238,8 +241,8 @@ class BuffaloCard extends ConsumerWidget {
                               vertical: 14,
                             ),
                           ),
-                          child: const Text(
-                            "Add to Cart",
+                          child: Text(
+                            context.tr("Add to Cart"),
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -294,8 +297,8 @@ class BuffaloCard extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "Insurance Offer",
+              Text(
+                context.tr("Insurance Offer"),
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
               ),
               GestureDetector(
@@ -332,12 +335,16 @@ class BuffaloCard extends ConsumerWidget {
                     ),
                   ),
                   child: Row(
-                    children: const [
-                      Expanded(child: Text("S.No", style: _headerStyle)),
-                      Expanded(child: Text("Price", style: _headerStyle)),
+                    children: [
+                      Expanded(
+                        child: Text(context.tr("S.No"), style: _headerStyle),
+                      ),
+                      Expanded(
+                        child: Text(context.tr("Price"), style: _headerStyle),
+                      ),
                       Expanded(
                         child: Text(
-                          "Insurance",
+                          context.tr("Insurance"),
                           textAlign: TextAlign.right,
                           style: _headerStyle,
                         ),
@@ -391,7 +398,7 @@ class BuffaloCard extends ConsumerWidget {
                     ),
                   ),
                   child: Row(
-                    children: const [
+                    children: [
                       Expanded(
                         child: Text("2", style: TextStyle(fontSize: 14)),
                       ),
@@ -400,7 +407,7 @@ class BuffaloCard extends ConsumerWidget {
                       ),
                       Expanded(
                         child: Text(
-                          "Free",
+                          context.tr("Free"),
                           textAlign: TextAlign.right,
                           style: TextStyle(
                             fontSize: 14,
@@ -427,8 +434,9 @@ class BuffaloCard extends ConsumerWidget {
                   : akLightBlueCardDarkColor,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: const Text(
-              "Note:\nIf you purchase 2 Murrah buffaloes, insurance for the second buffalo is completely free.",
+            child: Text(
+              context.tr("insurance_note"),
+
               style: TextStyle(fontSize: 15, height: 1.4),
             ),
           ),

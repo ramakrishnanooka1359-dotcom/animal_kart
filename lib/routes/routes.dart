@@ -41,6 +41,7 @@ class AppRoutes {
         );
       case home:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
+
       default:
         return _errorRoute('No route defined for ${settings.name}');
     }

@@ -87,7 +87,7 @@ class UserProfile {
       deviceId: json['device_id'] as String?,
       isFormFilled: json['isFormFilled'] is bool
           ? json['isFormFilled'] as bool
-          : null,
+          : (json['isFormFilled'] == 'true' || json['isFormFilled'] == true),
       dob: json['dob'] as String?,
     );
   }

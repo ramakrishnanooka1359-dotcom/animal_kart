@@ -50,7 +50,7 @@ class AppText {
   // --------------------------
   static const bold16 = TextStyle(
     fontFamily: _font,
-    fontSize: 16,
+    fontSize: 22,
     fontWeight: FontWeight.w700,
   );
 
@@ -59,5 +59,4 @@ class AppText {
     fontSize: 20,
     fontWeight: FontWeight.w700,
   );
-
 }

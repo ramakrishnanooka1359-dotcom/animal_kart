@@ -2,7 +2,9 @@ import 'package:animal_kart_demo2/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../utils/app_constants.dart';
+import '../../auth/providers/auth_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -21,16 +23,48 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   Future<void> _navigateNext() async {
     await Future.delayed(const Duration(seconds: 3));
-    final prefs = await SharedPreferences.getInstance();
-    final isProfileCompleted = prefs.getBool('isProfileCompleted') ?? false;
-
+    
     if (!mounted) return;
-
-    if (isProfileCompleted) {
-      Navigator.pushReplacementNamed(context, AppRoutes.home);
-    } else {
-      Navigator.pushReplacementNamed(context, AppRoutes.onBoardingScreen);
+    
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final prefs = await SharedPreferences.getInstance();
+    
+    if (currentUser != null) {
+      // User is logged in, check if they have completed the profile
+      try {
+        final authNotifier = ref.read(authProvider.notifier);
+        final phoneNumber = currentUser.phoneNumber?.replaceAll('+91', '') ?? '';
+        
+        if (phoneNumber.isNotEmpty) {
+          final isUserVerified = await authNotifier.verifyUser(phoneNumber);
+          
+          if (isUserVerified) {
+            final userProfile = ref.read(authProvider).userProfile;
+            
+            if (userProfile?.isFormFilled == true) {
+              // User has completed the form, go to home
+              await prefs.setBool('isProfileCompleted', true);
+              Navigator.pushReplacementNamed(context, AppRoutes.home);
+              return;
+            } else {
+              // User exists but hasn't completed the form
+              Navigator.pushReplacementNamed(
+                context, 
+                AppRoutes.profileForm,
+                arguments: {'phoneNumber': phoneNumber},
+              );
+              return;
+            }
+          }
+        }
+      } catch (e) {
+        // If there's an error verifying the user, treat as new user
+        print('Error verifying user: $e');
+      }
     }
+    
+    // User is not logged in or verification failed, go to onboarding
+    Navigator.pushReplacementNamed(context, AppRoutes.onBoardingScreen);
   }
 
   @override

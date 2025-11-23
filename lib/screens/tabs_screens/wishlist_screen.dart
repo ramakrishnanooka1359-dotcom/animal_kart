@@ -1,4 +1,5 @@
 import 'package:animal_kart_demo2/controllers/cart_provider.dart';
+import 'package:animal_kart_demo2/l10n/app_localizations.dart';
 import 'package:animal_kart_demo2/screens/tabs_screens/cart_screen.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -39,74 +40,77 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
 
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
+        child: wishlist.isNotEmpty
+            ? Center(child: Text(context.tr("Your wishlist is empty")))
+            : Column(
+                children: [
+                  const SizedBox(height: 10),
 
-            Expanded(
-              child: ListView.builder(
-                itemCount: wishlist.length,
-                itemBuilder: (context, index) {
-                  final item = wishlist[index];
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: wishlist.length,
+                      itemBuilder: (context, index) {
+                        final item = wishlist[index];
 
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 18),
-                    child: _wishlistCard(
-                      img: item["buffalo_images"][0],
-                      name: item["breed"],
-                      price: item["price"],
-                      onRemove: () {
-                        setState(() => wishlist.removeAt(index));
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 18),
+                          child: _wishlistCard(
+                            img: item["buffalo_images"][0],
+                            name: item["breed"],
+                            price: item["price"],
+                            onRemove: () {
+                              setState(() => wishlist.removeAt(index));
+                            },
+                          ),
+                        );
                       },
                     ),
-                  );
-                },
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF5DBE8A),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(40),
                   ),
-                ),
-                onPressed: () {
-                  if (wishlist.isEmpty) return;
 
-                  final item = wishlist.first;
-                  final cartNotifier = ref.read(cartProvider.notifier);
+                  const SizedBox(height: 20),
+                  if (wishlist.isNotEmpty)
+                    SizedBox(
+                      width: double.infinity,
+                      height: 55,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF5DBE8A),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                        ),
+                        onPressed: () {
+                          if (wishlist.isEmpty) return;
 
-                  cartNotifier.setItem(
-                    item["id"],
-                    1, // qty = 1
-                    item["insurance"], // insurance
-                  );
+                          final item = wishlist.first;
+                          final cartNotifier = ref.read(cartProvider.notifier);
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const CartScreen(showAppBar: true),
+                          cartNotifier.setItem(
+                            item["id"],
+                            1, // qty = 1
+                            item["insurance"], // insurance
+                          );
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const CartScreen(showAppBar: true),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          context.tr("Add to cart"),
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
                     ),
-                  );
-                },
-                child: const Text(
-                  "Add to cart",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }

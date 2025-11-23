@@ -92,7 +92,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               Container(
                 height: 60,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
+                  color: Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: Colors.grey.shade300),
                 ),
@@ -122,7 +122,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Container(
                       height: 40,
                       width: 1,
-                      color: Colors.grey.shade300,
+                      color: Colors.grey.shade500,
                       margin: const EdgeInsets.symmetric(horizontal: 12),
                     ),
 
@@ -131,10 +131,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       child: TextField(
                         controller: phoneController,
                         keyboardType: TextInputType.phone,
+
                         maxLength: 10,
                         onChanged: (_) => validatePhone(),
                         decoration: InputDecoration(
                           border: InputBorder.none,
+
                           counterText: "",
                           hintText: "Enter number",
                         ),
@@ -150,7 +152,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               Row(
                 children: [
                   Icon(
-                    Icons.info_outline,
+                    Icons.info_rounded,
                     size: 18,
                     color: Colors.grey.shade600,
                   ),
@@ -181,30 +183,58 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 .verifyUser(phoneController.text.trim());
                             if (isUserVerfiyed) {
                               await FirebaseAuth.instance.verifyPhoneNumber(
-                                verificationCompleted: (PhoneAuthCredential cred) {
-                                  // Auto-sign in can be handled here if desired
-                                },
+                                phoneNumber:
+                                    "+91${phoneController.text.trim()}",
+                                verificationCompleted:
+                                    (PhoneAuthCredential credential) async {
+                                      // Auto-sign in for instant verification (rare)
+                                      try {
+                                        await FirebaseAuth.instance
+                                            .signInWithCredential(credential);
+                                        if (mounted) {
+                                          Navigator.pushReplacementNamed(
+                                            context,
+                                            AppRoutes.home,
+                                          );
+                                        }
+                                      } catch (e) {
+                                        FloatingToast.showSimpleToast(
+                                          'Auto verification failed',
+                                        );
+                                      }
+                                    },
                                 verificationFailed: (FirebaseAuthException ex) {
+                                  print(
+                                    'Verification failed: ${ex.code} - ${ex.message}',
+                                  );
                                   FloatingToast.showSimpleToast(
-                                    ex.message ?? 'OTP send failed',
+                                    'OTP send failed. Please try again.',
                                   );
                                 },
                                 codeSent:
-                                    (String verficationId, int? resendToken) {
+                                    (String verificationId, int? resendToken) {
+                                      print(
+                                        'OTP sent successfully to +91${phoneController.text.trim()}',
+                                      );
+                                      FloatingToast.showSimpleToast(
+                                        'OTP sent successfully!',
+                                      );
                                       Navigator.pushNamed(
                                         context,
                                         AppRoutes.otp,
                                         arguments: {
-                                          'verificationId': verficationId,
+                                          'verificationId': verificationId,
                                           'phoneNumber': phoneController.text
                                               .trim(),
                                         },
                                       );
                                     },
-                                codeAutoRetrievalTimeout:
-                                    (String verficationId) {},
-                                phoneNumber:
-                                    "+91${phoneController.text.toString()}",
+                                codeAutoRetrievalTimeout: (String verificationId) {
+                                  print(
+                                    'Auto retrieval timeout for verification: $verificationId',
+                                  );
+                                },
+                                timeout: const Duration(seconds: 60),
                               );
                             } else {
                               FloatingToast.showSimpleToast(
@@ -223,7 +253,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isButtonEnabled
                         ? const Color(0xFF57BE82)
-                        : Colors.grey.shade300,
+                        : const Color.fromARGB(255, 186, 236, 209),
+                    disabledBackgroundColor: const Color(
+                      0xFFBAECD1,
+                    ), // your disabled color
+                    disabledForegroundColor: Colors.grey.shade700,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(40),
                     ),
@@ -235,7 +269,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.black,
+                              const Color(0xFF57BE82),
                             ),
                           ),
                         )
@@ -246,7 +280,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             fontWeight: FontWeight.w700,
                             color: isButtonEnabled
                                 ? Colors.black
-                                : Colors.grey.shade700,
+                                : Colors.grey.shade500,
                           ),
                         ),
                 ),

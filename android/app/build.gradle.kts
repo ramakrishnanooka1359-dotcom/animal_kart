@@ -48,12 +48,17 @@ dependencies {
   // Import the Firebase BoM
   implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
 
+  // Firebase Auth - Required for OTP functionality
+  implementation("com.google.firebase:firebase-auth")
+  
+  // Firebase App Check - Required for production
+  implementation("com.google.firebase:firebase-appcheck-playintegrity")
 
   // TODO: Add the dependencies for Firebase products you want to use
   // When using the BoM, don't specify versions in Firebase dependencies
   implementation("com.google.firebase:firebase-analytics")
-
-
+implementation("androidx.credentials:credentials:1.2.2")
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
   // Add the dependencies for any other desired Firebase products
   // https://firebase.google.com/docs/android/setup#available-libraries
 }
