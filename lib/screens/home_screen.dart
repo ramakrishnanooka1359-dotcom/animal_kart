@@ -48,9 +48,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       // ---- CONDITIONAL APPBAR ----
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Theme.of(context).isLightTheme
-            ? kPrimaryDarkColor
-            : akDialogBackgroundColor,
+        backgroundColor:
+            Theme.of(context).isLightTheme
+                ? kPrimaryDarkColor
+                : akDialogBackgroundColor,
         elevation: 0,
         toolbarHeight: 90,
         shape: const RoundedRectangleBorder(
@@ -90,9 +91,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
           decoration: BoxDecoration(
-            color: Theme.of(context).isLightTheme
-                ? kCardBg
-                : akDialogBackgroundColor,
+            color:
+                Theme.of(context).isLightTheme
+                    ? kCardBg
+                    : akDialogBackgroundColor,
             borderRadius: BorderRadius.circular(40),
             boxShadow: [
               BoxShadow(

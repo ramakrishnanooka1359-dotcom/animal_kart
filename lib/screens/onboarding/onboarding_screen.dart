@@ -20,7 +20,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void initState() {
     super.initState();
 
-    
     _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
       if (currentIndex < AppConstants.onboardingData.length - 1) {
         currentIndex++;
@@ -121,13 +120,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           Text(
                             item.title,
                             textAlign: TextAlign.center,
-                            style: AppText.bold16
+                            style: AppText.bold16,
                           ),
                           const SizedBox(height: 12),
                           Text(
                             item.subtitle,
                             textAlign: TextAlign.center,
-                            style: AppText.regular14
+                            style: AppText.regular14,
                           ),
                         ],
                       ),
@@ -142,17 +141,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             /// DOT INDICATORS
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children:
-                  List.generate(AppConstants.onboardingData.length, (index) {
+              children: List.generate(AppConstants.onboardingData.length, (
+                index,
+              ) {
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   margin: const EdgeInsets.symmetric(horizontal: 5),
                   height: 10,
                   width: currentIndex == index ? 24 : 10,
                   decoration: BoxDecoration(
-                    color: currentIndex == index
-                        ? Colors.black
-                        : Colors.grey.shade400,
+                    color:
+                        currentIndex == index
+                            ? Colors.black
+                            : Colors.grey.shade400,
                     borderRadius: BorderRadius.circular(20),
                   ),
                 );
@@ -175,7 +176,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, AppRoutes.login);
+                    Navigator.pushReplacementNamed(context, AppRoutes.home);
                   },
                   child: const Text(
                     "Get Started",
