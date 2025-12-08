@@ -1,6 +1,6 @@
 import 'package:animal_kart_demo2/buffalo/providers/buffalo_provider.dart';
 import 'package:animal_kart_demo2/cart/providers/cart_provider.dart';
-import 'package:animal_kart_demo2/utils/razorpay_service.dart';
+import 'package:animal_kart_demo2/services/razorpay_service.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
 import 'package:animal_kart_demo2/utils/app_colors.dart';
 import 'package:animal_kart_demo2/utils/app_constants.dart';

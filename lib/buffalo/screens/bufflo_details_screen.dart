@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:animal_kart_demo2/buffalo/providers/buffalo_details_provider.dart';
 import 'package:animal_kart_demo2/buffalo/widgets/custom_buffalo_details.dart';
-import 'package:animal_kart_demo2/utils/razorpay_service.dart';
+import 'package:animal_kart_demo2/services/razorpay_service.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
 import 'package:animal_kart_demo2/utils/app_colors.dart';
 import 'package:animal_kart_demo2/widgets/payment_widgets/manual_payment_screen.dart';

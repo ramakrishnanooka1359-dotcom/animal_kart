@@ -1,12 +1,11 @@
 import 'package:animal_kart_demo2/l10n/app_localizations.dart';
-import 'package:animal_kart_demo2/cart/screens/cart_screen.dart';
+import 'package:animal_kart_demo2/routes/routes.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
 import 'package:animal_kart_demo2/utils/app_colors.dart';
-import 'package:animal_kart_demo2/buffalo/screens/bufflo_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../cart/providers/cart_provider.dart';
+
 import '../models/buffalo.dart';
 
 class BuffaloCard extends ConsumerWidget {
@@ -17,8 +16,8 @@ class BuffaloCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final disabled = !buffalo.inStock;
-final cart = ref.watch(cartProvider);
-final isInCart = cart.containsKey(buffalo.id);
+  // final cart = ref.watch(cartProvider);
+  // final isInCart = cart.containsKey(buffalo.id);
 
     final String firstImage = buffalo.buffaloImages.first;
     final bool isNetwork = firstImage.startsWith("http");
@@ -27,12 +26,13 @@ final isInCart = cart.containsKey(buffalo.id);
       onTap: disabled
           ? null
           : () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => BuffaloDetailsScreen(buffaloId: buffalo.id),
-                ),
-              );
+              Navigator.pushNamed(
+              context,
+              AppRoutes.buffaloDetails,
+              arguments: {
+                'buffaloId': buffalo.id,
+              },
+            );
             },
       child: Opacity(
         opacity: disabled ? 0.4 : 1,
@@ -220,22 +220,15 @@ final isInCart = cart.containsKey(buffalo.id);
 
                        
                     ElevatedButton(
-                      onPressed: disabled
-                          ? null
-                          : () {
-                              if (!isInCart) {
-                              
-                                ref.read(cartProvider.notifier).setItem(
-                                      buffalo.id,
-                                      1, 
-                                      0, 
-                                    );
-                              } else {
-                                
-                              
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => CartScreen(showAppBar: true,)));
-                              }
-                            },
+                      onPressed: (){
+                          Navigator.pushNamed(
+                        context,
+                        AppRoutes.buffaloDetails,
+                        arguments: {
+                          'buffaloId': buffalo.id,
+                        },
+                      );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: kPrimaryGreen,
                         shape: RoundedRectangleBorder(

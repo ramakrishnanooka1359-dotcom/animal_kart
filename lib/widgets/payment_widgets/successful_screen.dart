@@ -1,5 +1,4 @@
-import 'dart:async';
-import 'package:animal_kart_demo2/theme/app_theme.dart';
+
 import 'package:animal_kart_demo2/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -15,74 +14,93 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen> {
   void initState() {
     super.initState();
 
-    Timer(const Duration(seconds: 3), () {
-      if (mounted) Navigator.pop(context);
-    });
+    // Optional auto redirect after 3 sec
+    // Timer(const Duration(seconds: 3), () {
+    //   if (mounted) Navigator.pop(context);
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor:
-            Theme.of(context).isLightTheme
-                ? kPrimaryDarkColor
-                : akDialogBackgroundColor,
-        elevation: 0,
-        toolbarHeight: 90,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
-        ),
-        title: Row(
-          children: [
-            Image.asset('assets/images/onboard_logo.png', height: 50),
-            const SizedBox(width: 8),
-          ],
-        ),
-        actions: [
-          // ThemeToggleButton(),
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white24,
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.notifications_none, color: Colors.white),
-                onPressed: () {},
+
+
+      backgroundColor: Colors.white,
+
+     
+      body: Column(
+        children: [
+          const Spacer(),
+
+          Container(
+            height: 120,
+            width: 120,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: kPrimaryGreen,
+            ),
+            child: const Icon(
+              Icons.check,
+              color: Colors.white,
+              size: 70,
+            ),
+          ),
+
+          const SizedBox(height: 25),
+
+          const Text(
+            "Your payment was successful",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 40),
+            child: Text(
+              "Thank you for your payment. We will be in contact with more details shortly",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.grey,
               ),
             ),
           ),
+
+          const Spacer(),
+          const Spacer(),
         ],
       ),
-      backgroundColor: Colors.white,
 
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 150,
-              child: Image.asset("assets/gifs/success.gif", fit: BoxFit.cover),
-            ),
-
-            const SizedBox(height: 20),
-
-            const Text(
-              "Congratulations\nYour buffalo has been\nbooked successfully!",
-              textAlign: TextAlign.center,
-
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: kPrimaryGreen,
+      
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(20),
+        child: SizedBox(
+          height: 55,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: kPrimaryGreen,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
               ),
             ),
-          ],
+            onPressed: () {
+              Navigator.pop(context); 
+            },
+            child: const Text(
+              "Back to Home",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+          ),
         ),
       ),
     );

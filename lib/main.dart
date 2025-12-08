@@ -1,3 +1,4 @@
+
 import 'package:animal_kart_demo2/theme/theme_provider.dart'
     show themeNotifierProvider;
 import 'package:animal_kart_demo2/auth/firebase_options.dart';
@@ -81,6 +82,7 @@ class MyApp extends ConsumerWidget {
       ],
       initialRoute: AppRoutes.splash,
       onGenerateRoute: AppRoutes.generateRoute,
+     
     );
   }
 }
