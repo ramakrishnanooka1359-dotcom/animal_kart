@@ -6,7 +6,6 @@ import 'package:animal_kart_demo2/auth/models/whatsapp_otp_response.dart';
 import 'package:animal_kart_demo2/buffalo/models/buffalo.dart';
 import 'package:animal_kart_demo2/utils/app_constants.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class ApiServices {
@@ -63,7 +62,7 @@ class ApiServices {
   try {
     final response = await http.post(
       Uri.parse(
-        "${AppConstants.apiUrl}/otp/send-whatsapp",
+        "https://markwave-live-apis-couipk45fa-el.a.run.app/otp/send-whatsapp",
       ),
       headers: {
         HttpHeaders.contentTypeHeader: AppConstants.applicationJson,
@@ -84,7 +83,7 @@ static Future<bool> updateUserProfile({
 }) async {
   try {
     final url =
-        "${AppConstants.apiUrl}/users/$mobile";
+        "https://markwave-live-apis-couipk45fa-el.a.run.app/users/$mobile";
 
     final response = await http.put(
       Uri.parse(url),
@@ -94,7 +93,7 @@ static Future<bool> updateUserProfile({
       body: jsonEncode(body),
     );
 
-    debugPrint("UPDATE USER RESPONSE: ${response.body}");
+    
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -103,10 +102,11 @@ static Future<bool> updateUserProfile({
       return false;
     }
   } catch (e) {
-    debugPrint("UPDATE USER ERROR: $e");
+    
     return false;
   }
 }
+
 
   
 
