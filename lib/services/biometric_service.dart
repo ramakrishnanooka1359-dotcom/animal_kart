@@ -1,45 +1,98 @@
+// // lib/services/biometric_service.dart
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:local_auth/local_auth.dart';
+// import 'package:animal_kart_demo2/services/pin_auth_services.dart';
+
+// class BiometricService {
+//   static bool isUnlocked = false;
+//   static final _auth = LocalAuthentication();
+
+//   // ... existing methods ...
+
+//   static Future<bool> authenticate({bool allowPinFallback = true}) async {
+//     try {
+//       // First try biometrics
+//       final hasBiometric = await _auth.canCheckBiometrics;
+//       if (hasBiometric) {
+//         final authenticated = await _auth.authenticate(
+//           localizedReason: 'Authenticate to access your account',
+//           options: const AuthenticationOptions(
+//             stickyAuth: true,
+//             biometricOnly: true,
+//           ),
+//         );
+
+//         if (authenticated) {
+//           isUnlocked = true;
+//           return true;
+//         }
+//       }
+
+//       // If biometric fails or not available, try PIN if allowed
+//       if (allowPinFallback && await PinAuthService.hasPin()) {
+//         // We'll handle PIN entry in the UI
+//         return false;
+//       }
+
+//       return false;
+//     } on PlatformException catch (e) {
+//       debugPrint('Biometric auth error: $e');
+//       return false;
+//     }
+//   }
+//   // void updateLockStatus(){
+
+//   // }
+
+//   static void unlock() => isUnlocked = true;
+//   static void lock() => isUnlocked = false;
+// }
 // lib/services/biometric_service.dart
-import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:flutter/services.dart';
 
 class BiometricService {
-  // lib/services/biometric_session.dart
-
+  static final LocalAuthentication _auth = LocalAuthentication();
   static bool isUnlocked = false;
 
-  static void unlock() => isUnlocked = true;
-  static void lock() => isUnlocked = false;
-
-  static final _auth = LocalAuthentication();
-
-  static Future<bool> hasBiometrics() async {
+  static Future<bool> get isDeviceSupported async {
     try {
-      final canCheck = await _auth.canCheckBiometrics;
-      final isDeviceSupported = await _auth.isDeviceSupported();
-      return canCheck && isDeviceSupported;
-    } catch (e) {
+      return await _auth.isDeviceSupported() && await _auth.canCheckBiometrics;
+    } on PlatformException catch (_) {
       return false;
     }
   }
 
   static Future<bool> authenticate() async {
     try {
-      final can = await _auth.canCheckBiometrics;
-      if (!can) return false;
+      final isSupported = await isDeviceSupported;
+      if (!isSupported) {
+        isUnlocked = true;
+        return true;
+      }
 
-      final enrolled = await _auth.getAvailableBiometrics();
-      if (enrolled.isEmpty) return false;
-
-      return await _auth.authenticate(
-        localizedReason: 'Verify your identity to continue',
+      final authenticated = await _auth.authenticate(
+        localizedReason: 'Authenticate to access your account',
         options: const AuthenticationOptions(
           stickyAuth: true,
           biometricOnly: true,
+          useErrorDialogs: true,
         ),
       );
+
+      if (authenticated) {
+        isUnlocked = true;
+        return true;
+      }
+      return false;
     } on PlatformException catch (e) {
-      print('Biometric auth error: $e');
+      debugPrint('Error: ${e.message}');
       return false;
     }
   }
+
+  static void unlock() => isUnlocked = true;
+  static void lock() => isUnlocked = false;
 }

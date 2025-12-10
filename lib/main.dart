@@ -1,4 +1,4 @@
-import 'package:animal_kart_demo2/auth/biometric_lock_screen.dart';
+import 'package:animal_kart_demo2/auth/screens/biometric_lock_screen.dart';
 import 'package:animal_kart_demo2/auth/firebase_options.dart';
 import 'package:animal_kart_demo2/auth/screens/register_form.dart';
 import 'package:animal_kart_demo2/theme/theme_provider.dart';
@@ -15,7 +15,6 @@ import 'theme/app_theme.dart' as AppTheme;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
- 
 
   final prefs = await SharedPreferences.getInstance();
   final isDarkMode = prefs.getBool('isDarkMode') ?? false;
@@ -67,24 +66,23 @@ class MyApp extends ConsumerWidget {
       ],
       initialRoute: AppRouter.splash,
       onGenerateRoute: AppRouter.generateRoute,
+
       builder: (context, child) {
         // Get the current route
         final currentRoute = ModalRoute.of(context)?.settings.name;
         debugPrint('Current route: $currentRoute');
 
         // Check if we're on the home route and user is logged in
-        final isHomeRoute =
-            currentRoute == AppRouter.home ||
-            currentRoute == '/' ||
-            currentRoute == null;
-        if (isHomeRoute && isLoggedIn) {
-          return BiometricLockScreen(child: child ?? const SizedBox());
-        }
-        return child ?? const SizedBox();
+        // final isHomeRoute =
+        //     currentRoute == AppRouter.home ||
+        //     currentRoute == '/' ||
+        //     currentRoute == null;
+        // if (isHomeRoute && isLoggedIn) {
+        //   return ;
+        // }
+        return BiometricLockScreen(child: child ?? const SizedBox());
       },
-      // home: RegisterScreen(
-      //   phoneNumberFromLogin: 
-      //   "6305447441"),
+      // home: RegisterScreen(phoneNumberFromLogin: "6305447441"),
     );
   }
 }

@@ -1,6 +1,49 @@
 // import 'package:firebase_messaging/firebase_messaging.dart';
 // import 'package:flutter/material.dart';
+// Uncomment and update the notification service
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 
+class NotificationService {
+  static final NotificationService _instance = NotificationService._internal();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
+  NotificationService._internal();
+
+  factory NotificationService() => _instance;
+
+  /// Checks if notifications are enabled
+  Future<bool> get isNotificationsEnabled async {
+    final settings = await _firebaseMessaging.getNotificationSettings();
+    return settings.authorizationStatus == AuthorizationStatus.authorized;
+  }
+
+  /// Requests notification permissions if not already granted
+  Future<bool> requestNotificationPermissions() async {
+    try {
+      final settings = await _firebaseMessaging.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true,
+      );
+
+      debugPrint(
+        'Notification permission status: ${settings.authorizationStatus}',
+      );
+      return settings.authorizationStatus == AuthorizationStatus.authorized;
+    } catch (error) {
+      debugPrint('Error requesting notification permissions: $error');
+      return false;
+    }
+  }
+
+  // Rest of the existing notification service code...
+  // [Previous implementation continues...]
+}
 // /// A service class that handles all notification-related functionality
 // /// including token management and notification callbacks.
 // class NotificationService {

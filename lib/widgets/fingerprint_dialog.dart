@@ -5,11 +5,7 @@ class FingerprintDialog extends StatefulWidget {
   final VoidCallback onSuccess;
   final VoidCallback? onCancel;
 
-  const FingerprintDialog({
-    super.key,
-    required this.onSuccess,
-    this.onCancel,
-  });
+  const FingerprintDialog({super.key, required this.onSuccess, this.onCancel});
 
   @override
   State<FingerprintDialog> createState() => _FingerprintDialogState();
@@ -42,7 +38,7 @@ class _FingerprintDialogState extends State<FingerprintDialog> {
 
   Future<void> _startAuthentication() async {
     if (_isAuthenticating || _authCompleted) return;
-    
+
     if (_isMounted) {
       setState(() {
         _isAuthenticating = true;
@@ -52,8 +48,8 @@ class _FingerprintDialogState extends State<FingerprintDialog> {
     }
 
     try {
-      final hasBiometrics = await BiometricService.hasBiometrics();
-      
+      final hasBiometrics = await BiometricService.authenticate();
+
       if (!hasBiometrics) {
         if (_isMounted) {
           setState(() {
@@ -65,7 +61,7 @@ class _FingerprintDialogState extends State<FingerprintDialog> {
       }
 
       final success = await BiometricService.authenticate();
-      
+
       if (success && _isMounted) {
         _authCompleted = true;
         widget.onSuccess();
@@ -104,9 +100,7 @@ class _FingerprintDialogState extends State<FingerprintDialog> {
         return false;
       },
       child: Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         backgroundColor: Colors.white,
         child: Padding(
           padding: const EdgeInsets.all(24),

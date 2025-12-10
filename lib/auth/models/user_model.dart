@@ -17,7 +17,7 @@ class UserModel {
   final String state;
   final String pincode;
 
-  final String aadharNumber;
+  final int aadharNumber;
 
   final String referedByMobile;
   final String referedByName;
@@ -65,7 +65,7 @@ class UserModel {
       city: json['city'] ?? '',
       state: json['state'] ?? '',
       pincode: json['pincode'] ?? '',
-      aadharNumber: json['aadhar_number'] ?? '',
+      aadharNumber: int.parse(json['aadhar_number'].toString()),
       referedByMobile: json['refered_by_mobile'] ?? '',
       referedByName: json['refered_by_name'] ?? '',
 
