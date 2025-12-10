@@ -94,6 +94,7 @@ Widget cpfExplanationCard(buffalo) {
         const SizedBox(height: 14),
 
         cpfPoint("1 Unit Purchase gives you ✅ 2 Buffaloes + 2 Calves"),
+         cpfPoint("1 Unit CPF (cattle protection fund) costs ₹26000"),
 
         cpfPoint(
           "Total Investment Value: ₹${AppConstants().formatIndianAmount(price)}",
@@ -114,7 +115,7 @@ Widget cpfExplanationCard(buffalo) {
         const Divider(height: 25),
 
         cpfPoint(
-          "If you purchase CPF for ₹${AppConstants().formatIndianAmount(cpf)}, you will receive ✅ 1 additional Buffalo CPF absolutely FREE!",
+          "For every purchase of 1 unit (2 Murrah buffaloes), the CPF for the second buffalo is provided completely free for a full duration of 1 year.",
           isHighlight: true,
         ),
       ]),

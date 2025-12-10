@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:animal_kart_demo2/auth/providers/auth_provider.dart';
 import 'package:animal_kart_demo2/routes/routes.dart';
+import 'package:animal_kart_demo2/utils/save_user.dart';
 import 'package:animal_kart_demo2/widgets/floating_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,6 +27,7 @@ class OtpScreen extends ConsumerStatefulWidget {
 
 class _OtpScreenState extends ConsumerState<OtpScreen> {
   final otpController = TextEditingController();
+  
 
   String deviceId = "";
   String deviceModel = "";
@@ -133,11 +135,15 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                               "OTP Verified Successfully",
                             );
 
-                            final prefs =
+                             final user = ref.read(authProvider).userProfile;
+                              final prefs =
                                 await SharedPreferences.getInstance();
+                             if (user != null) {
+                                  await saveUserToPrefs(user);
+                              }
                             await prefs.setBool('isLoggedIn', true);
 
-                            // FORM FILLED → HOME
+
                             if (widget.isFormFilled == true) {
                               Navigator.pushReplacementNamed(
                                 context,

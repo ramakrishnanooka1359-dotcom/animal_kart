@@ -37,12 +37,12 @@ class AppConstants {
       image: "assets/images/buffalo_image3.png",
       subtitle:
           "Choose near by buffalo carts with transparent pricing and trusted owners",
-      title: "Find the Cart Cart in Second.",
+      title: "Find the Cart  in Second.",
     ),
     OnboardingData(
       image: "assets/images/buffalo_image1.png",
       subtitle: "Live updates quick support,and smooth payments in one place",
-      title: "Track Your Ride,Hassle - Free",
+      title: "Track Your Ride - Free",
     ),
   ];
   String formatIndianAmount(num amount) {

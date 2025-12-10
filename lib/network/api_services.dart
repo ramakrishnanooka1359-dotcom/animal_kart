@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:animal_kart_demo2/auth/models/device_details.dart';
+import 'package:animal_kart_demo2/auth/models/user_model.dart';
 import 'package:animal_kart_demo2/auth/models/whatsapp_otp_response.dart';
 import 'package:animal_kart_demo2/buffalo/models/buffalo.dart';
 import 'package:animal_kart_demo2/utils/app_constants.dart';
@@ -77,7 +78,7 @@ class ApiServices {
   }
 }
 
-static Future<bool> updateUserProfile({
+static Future<UserModel?> updateUserProfile({
   required String mobile,
   required Map<String, dynamic> body,
 }) async {
@@ -93,19 +94,19 @@ static Future<bool> updateUserProfile({
       body: jsonEncode(body),
     );
 
-    
-
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return data["status"] == "success";
-    } else {
-      return false;
+
+      if (data["status"] == "success" && data["user"] != null) {
+        return UserModel.fromJson(data["user"]);
+      }
     }
+    return null;
   } catch (e) {
-    
-    return false;
+    return null;
   }
 }
+
 
 
   

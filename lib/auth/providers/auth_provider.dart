@@ -50,9 +50,8 @@ class AuthController extends ChangeNotifier {
 
 
   //UPDATE USER DATA API
- 
-  Future<bool> updateUserdata({
-  required String userId, // mobile number
+Future<UserModel?> updateUserdata({
+  required String userId,
   Map<String, dynamic>? extraFields,
 }) async {
   _isLoading = true;
@@ -69,23 +68,21 @@ class AuthController extends ChangeNotifier {
       payload.addAll(extraFields);
     }
 
-    debugPrint("UPDATE PAYLOAD: $payload");
-    debugPrint("MOBILE: $userId");
-
-    final success = await ApiServices.updateUserProfile(
+    final user = await ApiServices.updateUserProfile(
       mobile: userId,
       body: payload,
     );
 
-    return success;
+    return user;
   } catch (e) {
     debugPrint("UPDATE ERROR: $e");
-    return false;
+    return null;
   } finally {
     _isLoading = false;
     notifyListeners();
   }
 }
+
 
 
   

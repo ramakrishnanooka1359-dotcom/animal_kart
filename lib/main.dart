@@ -1,5 +1,6 @@
 import 'package:animal_kart_demo2/auth/biometric_lock_screen.dart';
 import 'package:animal_kart_demo2/auth/firebase_options.dart';
+import 'package:animal_kart_demo2/auth/screens/register_form.dart';
 import 'package:animal_kart_demo2/theme/theme_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -81,6 +82,9 @@ class MyApp extends ConsumerWidget {
         }
         return child ?? const SizedBox();
       },
+      // home: RegisterScreen(
+      //   phoneNumberFromLogin: 
+      //   "6305447441"),
     );
   }
 }

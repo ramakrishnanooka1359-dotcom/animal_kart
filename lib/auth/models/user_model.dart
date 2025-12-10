@@ -65,9 +65,7 @@ class UserModel {
       city: json['city'] ?? '',
       state: json['state'] ?? '',
       pincode: json['pincode'] ?? '',
-
       aadharNumber: json['aadhar_number'] ?? '',
-
       referedByMobile: json['refered_by_mobile'] ?? '',
       referedByName: json['refered_by_name'] ?? '',
 

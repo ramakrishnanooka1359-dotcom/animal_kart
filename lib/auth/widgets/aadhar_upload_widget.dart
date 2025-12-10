@@ -4,14 +4,16 @@ import 'package:animal_kart_demo2/utils/svg_utils.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:animal_kart_demo2/utils/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AadhaarUploadWidget extends StatelessWidget {
+class AadhaarUploadWidget extends ConsumerWidget {
   final File? file;
   final String title;
   final VoidCallback onRemove;
   final VoidCallback onCamera;
   final VoidCallback onGallery;
   final bool isFrontImage;
+  final double? uploadProgress;
 
   const AadhaarUploadWidget({
     super.key,
@@ -21,10 +23,11 @@ class AadhaarUploadWidget extends StatelessWidget {
     required this.onCamera,
     required this.onGallery,
     this.isFrontImage = true,
+    this.uploadProgress,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
     return Card(
       elevation: 2,
       child: Padding(
@@ -52,11 +55,44 @@ class AadhaarUploadWidget extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: Image.file(
-            file!,
-            height: 150,
-            width: double.infinity,
-            fit: BoxFit.cover,
+          child: Stack(
+            children: [
+              Image.file(
+                file!,
+                height: 150,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+              if (uploadProgress != null /* && uploadProgress! < 0.01 */)
+                Positioned.fill(
+                  child: Container(
+                    color: Colors.black26,
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircularProgressIndicator(
+                            value: uploadProgress,
+                            backgroundColor: Colors.grey[200],
+                            valueColor: AlwaysStoppedAnimation<Color>(kPrimaryGreen),
+                            strokeWidth: 4,
+                          ),
+                          const SizedBox(height: 8),
+                          if (uploadProgress != null)
+                            Text(
+                              '${(uploadProgress! * 100).toStringAsFixed(0)}%',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
         Positioned(

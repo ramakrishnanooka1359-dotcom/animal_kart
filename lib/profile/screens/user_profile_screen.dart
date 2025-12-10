@@ -1,9 +1,11 @@
-import 'package:animal_kart_demo2/auth/providers/auth_provider.dart';
+import 'package:animal_kart_demo2/auth/models/user_model.dart';
+
 import 'package:animal_kart_demo2/l10n/app_localizations.dart';
 import 'package:animal_kart_demo2/routes/routes.dart';
 import 'package:animal_kart_demo2/services/biometric_service.dart';
 import 'package:animal_kart_demo2/services/secure_storage_service.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
+import 'package:animal_kart_demo2/utils/save_user.dart' as UserPrefsService;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +23,8 @@ class UserProfileScreen extends ConsumerStatefulWidget {
 class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
   bool _isBiometricEnabled = false;
   bool _isLoading = true;
+  UserModel? _user;
+
 
   
 
@@ -30,6 +34,14 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
   void initState() {
     super.initState();
     _loadBiometricStatus();
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    final user = await UserPrefsService.loadUserFromPrefs();
+    if (mounted) {
+      setState(() => _user = user);
+    }
   }
 
   Future<void> _loadBiometricStatus() async {
@@ -126,20 +138,17 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
 
   Widget _buildProfileContent(BuildContext context) {
     final currentLocale = ref.watch(localeProvider).locale;
-    final user = ref.watch(authProvider).userProfile;
+   
 
     final profileData = {
-      'Email': user?.email ?? '',
-      'Gender': user?.gender ?? '',
-      'Address': user?.address ?? '',
-      'City': user?.city ?? '',
-      'State': user?.state ?? '',
-      'Pincode': user?.pincode ?? '',
-      'Referred By Mobile': user?.referedByMobile ?? '',
-      'Referred By Name': user?.referedByName ?? '',
+      'Email': _user?.email ?? '',
+      'Gender': _user?.gender ?? '',
+      'Aadhar Card Number': _user?.aadharNumber ?? '',
+      'Referred By Mobile': _user?.referedByMobile ?? '',
+      'Referred By Name': _user?.referedByName ?? '',
     };
 
-    final aadhaarNumber = user?.aadharNumber ?? '';
+  
     return Scaffold(
       backgroundColor: Theme.of(context).mainThemeBgColor,
       body: SingleChildScrollView(
@@ -197,23 +206,6 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
             const SizedBox(height: 12),
             _infoCard(context, items: profileData),
             const SizedBox(height: 20),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                context.tr('Aadhaar Card Number'),
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            _infoCard(context, items: {"": aadhaarNumber}),
-
-            const SizedBox(height: 40),
-
-            
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
@@ -416,7 +408,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
     );
 
     if (shouldLogout == true) {
-      // Clear biometric settings on logout
+      
       await SecureStorageService.enableBiometric(false);
 
       Navigator.of(

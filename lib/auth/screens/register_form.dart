@@ -5,6 +5,7 @@ import 'package:animal_kart_demo2/routes/routes.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
 import 'package:animal_kart_demo2/utils/app_colors.dart';
 import 'package:animal_kart_demo2/auth/widgets/aadharvalidation_widget.dart';
+import 'package:animal_kart_demo2/utils/save_user.dart';
 import 'package:animal_kart_demo2/widgets/custom_widgets.dart';
 import 'package:animal_kart_demo2/widgets/floating_toast.dart';
 import 'package:animal_kart_demo2/auth/widgets/aadhar_upload_widget.dart';
@@ -13,7 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 class RegisterScreen extends ConsumerStatefulWidget {
   final String phoneNumberFromLogin;
@@ -60,6 +61,8 @@ int calculateAge(DateTime birthDate) {
   @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(authProvider).isLoading;
+ final isFrontUploading= ref.watch(userProfileProvider.select((val)=>val.frontUploadProgress));
+ final isBackUploading= ref.watch(userProfileProvider.select((val)=>val.backUploadProgress));
 
 
     return Scaffold(
@@ -344,6 +347,8 @@ int calculateAge(DateTime birthDate) {
                           // Delete from Firebase and update local state
                           await _deleteAadhaarFront();
                         },
+                      uploadProgress:isFrontUploading
+                      
                       ),
 
                       const SizedBox(height: 25),
@@ -372,6 +377,8 @@ int calculateAge(DateTime birthDate) {
                           // Delete from Firebase and update local state
                           await _deleteAadhaarBack();
                         },
+                      uploadProgress: isBackUploading,
+                      
                       ),
                       const SizedBox(height: 10),
                     ],
@@ -605,20 +612,21 @@ int calculateAge(DateTime birthDate) {
     debugPrint(extraFields.toString());
     debugPrint(userId);
 
-    final success = await auth.updateUserdata(
+    final user = await auth.updateUserdata(
       userId: userId, 
       extraFields: extraFields, 
     );
 
     if (!mounted) return;
-    if (success) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isProfileCompleted', true);
-      Navigator.pushReplacementNamed(context, AppRouter.home);
+    if (user != null) {
+        await saveUserToPrefs(user);
+        Navigator.pushReplacementNamed(context, AppRouter.home);
     } else {
-      FloatingToast.showSimpleToast(
-        'Failed to update profile. Please try again.',
-      );
+        FloatingToast.showSimpleToast(
+          'Failed to update profile. Please try again.',
+        );
     }
+
+    
   }
 }

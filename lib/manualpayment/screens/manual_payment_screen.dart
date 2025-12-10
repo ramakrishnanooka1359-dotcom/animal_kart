@@ -17,20 +17,28 @@ class ManualPaymentScreen extends StatefulWidget {
 }
 
 class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
-  bool showBankForm = true;   
+  bool showBankForm = true;
   bool showChequeForm = false;
 
-
+  // Bank Transfer Controllers
   final bankAmountCtrl = TextEditingController();
   final utrCtrl = TextEditingController();
   final bankNameCtrl = TextEditingController();
+  final ifscCodeCtrl = TextEditingController();
+  final transactionDateCtrl = TextEditingController();
+  String transferMode = 'NEFT'; // Default value
+  List<String> transferModes = ['NEFT', 'RTGS', 'IMPS'];
   File? bankScreenshot;
 
+  // Cheque Payment Controllers
   final chequeNoCtrl = TextEditingController();
-  final chequeBankCtrl = TextEditingController();
-  final chequeNameCtrl = TextEditingController();
   final chequeDateCtrl = TextEditingController();
-  File? chequeImage;
+  final chequeAmountCtrl = TextEditingController();
+  final chequeBankNameCtrl = TextEditingController();
+  final chequeIfscCodeCtrl = TextEditingController();
+  final chequeUtrRefCtrl = TextEditingController();
+  File? chequeFrontImage;
+  File? chequeBackImage;
 
   Future<File?> pickImage(bool isCamera) async {
     final picked = await ImagePicker().pickImage(
@@ -43,6 +51,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
   void initState() {
     super.initState();
     bankAmountCtrl.text = widget.totalAmount.toString();
+    chequeAmountCtrl.text = widget.totalAmount.toString();
   }
 
   @override
@@ -52,22 +61,25 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
       appBar: AppBar(
         title: const Text("Manual Payment"),
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
-
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             Text(
               "Amount to Pay: ₹${widget.totalAmount}",
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-
             const SizedBox(height: 20),
 
- 
+            // Payment Mode Selection
             Row(
               children: [
                 Expanded(
@@ -102,7 +114,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
 
             const SizedBox(height: 20),
 
-
+            // Forms
             if (showBankForm) _bankTransferForm(),
             if (showChequeForm) _chequePaymentForm(),
           ],
@@ -111,7 +123,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
     );
   }
 
- 
+  // Payment Mode Selection Button
   Widget _paymentSelectButton({
     required String title,
     required bool isSelected,
@@ -140,7 +152,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
     );
   }
 
-
+  // Bank Transfer Form
   Widget _bankTransferForm() {
     return Card(
       color: akWhiteColor,
@@ -153,6 +165,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
 
+            // Amount
             TextFormField(
               controller: bankAmountCtrl,
               readOnly: true,
@@ -160,19 +173,91 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
             ),
             const SizedBox(height: 15),
 
+            // UTR Number
             TextFormField(
               controller: utrCtrl,
               decoration: fieldDeco("UTR Number"),
             ),
             const SizedBox(height: 15),
 
+            // Bank Name
             TextFormField(
               controller: bankNameCtrl,
               decoration: fieldDeco("Bank Name"),
             ),
+            const SizedBox(height: 15),
+
+            // IFSC Code
+            TextFormField(
+              controller: ifscCodeCtrl,
+              decoration: fieldDeco("IFSC Code"),
+            ),
+            const SizedBox(height: 15),
+
+            // Transaction Date
+            TextFormField(
+              controller: transactionDateCtrl,
+              readOnly: true,
+              decoration: fieldDeco("Transaction Date").copyWith(
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.calendar_month),
+                  onPressed: () async {
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(1990),
+                      lastDate: DateTime.now(),
+                    );
+                    if (picked != null) {
+                      transactionDateCtrl.text =
+                          "${picked.day}-${picked.month}-${picked.year}";
+                    }
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 15),
+
+            // Transfer Mode Dropdown
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Transfer Mode",
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: DropdownButton<String>(
+                    value: transferMode,
+                    isExpanded: true,
+                    underline: const SizedBox(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        transferMode = newValue!;
+                      });
+                    },
+                    items: transferModes
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
 
             const SizedBox(height: 20),
 
+            // Payment Screenshot Upload
             AadhaarUploadWidget(
               title: "Upload Payment Screenshot",
               file: bankScreenshot,
@@ -192,9 +277,26 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
 
             const SizedBox(height: 20),
 
+            // Submit Button
             _submitButton(() {
               if (utrCtrl.text.isEmpty) {
                 FloatingToast.showSimpleToast("Enter UTR Number");
+                return;
+              }
+              if (bankNameCtrl.text.isEmpty) {
+                FloatingToast.showSimpleToast("Enter Bank Name");
+                return;
+              }
+              if (ifscCodeCtrl.text.isEmpty) {
+                FloatingToast.showSimpleToast("Enter IFSC Code");
+                return;
+              }
+              if (transactionDateCtrl.text.isEmpty) {
+                FloatingToast.showSimpleToast("Select Transaction Date");
+                return;
+              }
+              if (bankScreenshot == null) {
+                FloatingToast.showSimpleToast("Upload Payment Screenshot");
                 return;
               }
               FloatingToast.showSimpleToast("Bank Transfer Submitted");
@@ -205,9 +307,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
     );
   }
 
-  // ----------------------------------------------------------
-  // CHEQUE PAYMENT FORM
-  // ----------------------------------------------------------
+  // Cheque Payment Form
   Widget _chequePaymentForm() {
     return Card(
       color: akWhiteColor,
@@ -220,28 +320,14 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
 
-            Text("Amount: ₹${widget.totalAmount}",
-                style: const TextStyle(fontSize: 18)),
-            const SizedBox(height: 15),
-
+            // Cheque Number
             TextFormField(
               controller: chequeNoCtrl,
               decoration: fieldDeco("Cheque Number"),
             ),
             const SizedBox(height: 15),
 
-            TextFormField(
-              controller: chequeBankCtrl,
-              decoration: fieldDeco("Bank & Branch"),
-            ),
-            const SizedBox(height: 15),
-
-            TextFormField(
-              controller: chequeNameCtrl,
-              decoration: fieldDeco("Name on Cheque"),
-            ),
-            const SizedBox(height: 15),
-
+            // Cheque Date
             TextFormField(
               controller: chequeDateCtrl,
               readOnly: true,
@@ -253,7 +339,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
                       context: context,
                       initialDate: DateTime.now(),
                       firstDate: DateTime(1990),
-                      lastDate: DateTime.now(),
+                      lastDate: DateTime(2100),
                     );
                     if (picked != null) {
                       chequeDateCtrl.text =
@@ -263,31 +349,106 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 15),
+
+            // Cheque Amount
+            TextFormField(
+              controller: chequeAmountCtrl,
+              readOnly: true,
+              decoration: fieldDeco("Cheque Amount"),
+            ),
+            const SizedBox(height: 15),
+
+            // Bank Name
+            TextFormField(
+              controller: chequeBankNameCtrl,
+              decoration: fieldDeco("Bank Name"),
+            ),
+            const SizedBox(height: 15),
+
+            // IFSC Code
+            TextFormField(
+              controller: chequeIfscCodeCtrl,
+              decoration: fieldDeco("IFSC Code"),
+            ),
+            const SizedBox(height: 15),
+
+            // UTR/Reference Number
+            TextFormField(
+              controller: chequeUtrRefCtrl,
+              decoration: fieldDeco("UTR/Reference Number"),
+            ),
 
             const SizedBox(height: 20),
 
+            // Cheque Front Image
             AadhaarUploadWidget(
-              title: "Upload Cheque Image",
-              file: chequeImage,
+              title: "Upload Cheque Front Image",
+              file: chequeFrontImage,
               isFrontImage: true,
               onCamera: () async {
                 final file = await pickImage(true);
-                if (file != null) setState(() => chequeImage = file);
+                if (file != null) setState(() => chequeFrontImage = file);
               },
               onGallery: () async {
                 final file = await pickImage(false);
-                if (file != null) setState(() => chequeImage = file);
+                if (file != null) setState(() => chequeFrontImage = file);
               },
               onRemove: () {
-                setState(() => chequeImage = null);
+                setState(() => chequeFrontImage = null);
               },
             ),
 
             const SizedBox(height: 20),
 
+            // Cheque Back Image
+            AadhaarUploadWidget(
+              title: "Upload Cheque Back Image",
+              file: chequeBackImage,
+              isFrontImage: true,
+              onCamera: () async {
+                final file = await pickImage(true);
+                if (file != null) setState(() => chequeBackImage = file);
+              },
+              onGallery: () async {
+                final file = await pickImage(false);
+                if (file != null) setState(() => chequeBackImage = file);
+              },
+              onRemove: () {
+                setState(() => chequeBackImage = null);
+              },
+            ),
+
+            const SizedBox(height: 20),
+
+            // Submit Button
             _submitButton(() {
               if (chequeNoCtrl.text.isEmpty) {
                 FloatingToast.showSimpleToast("Enter Cheque Number");
+                return;
+              }
+              if (chequeDateCtrl.text.isEmpty) {
+                FloatingToast.showSimpleToast("Select Cheque Date");
+                return;
+              }
+              if (chequeBankNameCtrl.text.isEmpty) {
+                FloatingToast.showSimpleToast("Enter Bank Name");
+                return;
+              }
+              if (chequeIfscCodeCtrl.text.isEmpty) {
+                FloatingToast.showSimpleToast("Enter IFSC Code");
+                return;
+              }
+              if (chequeUtrRefCtrl.text.isEmpty) {
+                FloatingToast.showSimpleToast("Enter UTR/Reference Number");
+                return;
+              }
+              if (chequeFrontImage == null) {
+                FloatingToast.showSimpleToast("Upload Cheque Front Image");
+                return;
+              }
+              if (chequeBackImage == null) {
+                FloatingToast.showSimpleToast("Upload Cheque Back Image");
                 return;
               }
               FloatingToast.showSimpleToast("Cheque Details Submitted");
@@ -298,9 +459,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
     );
   }
 
-  // ----------------------------------------------------------
-  // SUBMIT BUTTON
-  // ----------------------------------------------------------
+  // Submit Button
   Widget _submitButton(VoidCallback onPressed) {
     return SizedBox(
       width: double.infinity,
@@ -309,7 +468,8 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: kPrimaryGreen,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25)),
         ),
         child: const Text(
           "Submit",

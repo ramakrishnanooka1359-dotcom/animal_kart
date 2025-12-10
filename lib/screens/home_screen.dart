@@ -1,3 +1,4 @@
+import 'package:animal_kart_demo2/auth/models/user_model.dart';
 import 'package:animal_kart_demo2/auth/providers/auth_provider.dart';
 import 'package:animal_kart_demo2/buffalo/screens/buffalo_list_screen.dart';
 import 'package:animal_kart_demo2/l10n/app_localizations.dart';
@@ -6,6 +7,7 @@ import 'package:animal_kart_demo2/profile/screens/user_profile_screen.dart';
 import 'package:animal_kart_demo2/routes/routes.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
 import 'package:animal_kart_demo2/utils/app_colors.dart';
+import 'package:animal_kart_demo2/utils/save_user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -20,11 +22,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       int _selectedIndex = 0;
 
       late final List<Widget> _pages;
+      UserModel? localUser;
 
       @override
       void initState() {
         super.initState();
-
+        _loadLocalUser();
         _pages = const [
           BuffaloListScreen(),
           // CartScreen(showAppBar: false),
@@ -32,8 +35,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           UserProfileScreen(),
         ];
       }
+      Future<void> _loadLocalUser() async {
+      localUser = await loadUserFromPrefs();
+          setState(() {});
+      }
 
- void _onItemTapped(int index) {
+      void _onItemTapped(int index) {
        setState(() => _selectedIndex = index);
       }
 
@@ -71,26 +78,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        userProfile?.name ?? 'User Profile',
+                        localUser?.name ?? 'User Profile',
                         style: TextStyle(
                           color: Theme.of(context).primaryTextColor,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      if (userProfile?.mobile != null)
+                      
                         Text(
-                          '+91 ${userProfile!.mobile }',
+                          '+91 ${localUser?.mobile ?? ''}',
                           style: TextStyle(
-                            color: Theme.of(context).subTotalsTextColor,
+                            color: Theme.of(context).primaryTextColor,
                             fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                     ],
                   );
                 }
 
-                // ORDERS TAB → "Order History"
+               
                 if (_selectedIndex == 1) {
                   return const Text(
                     "Order History",
@@ -102,7 +110,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   );
                 }
 
-                // HOME TAB → LOGO LEFT ALIGNED
+              
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -135,7 +143,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           Icons.notifications_none_sharp,
                           color: Colors.white,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                           Navigator.pushNamed(context, AppRouter.notification);
+                        },
                       ),
                     ),
                   ),

@@ -4,7 +4,7 @@ import 'package:animal_kart_demo2/buffalo/widgets/custom_buffalo_details.dart';
 import 'package:animal_kart_demo2/services/razorpay_service.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
 import 'package:animal_kart_demo2/utils/app_colors.dart';
-import 'package:animal_kart_demo2/widgets/payment_widgets/manual_payment_screen.dart';
+import 'package:animal_kart_demo2/manualpayment/screens/manual_payment_screen.dart';
 import 'package:animal_kart_demo2/widgets/payment_widgets/successful_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
