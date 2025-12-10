@@ -1,9 +1,9 @@
 import 'dart:io';
+import 'package:animal_kart_demo2/manualpayment/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
 import 'package:animal_kart_demo2/utils/app_colors.dart';
-import 'package:animal_kart_demo2/widgets/custom_widgets.dart';
 import 'package:animal_kart_demo2/auth/widgets/aadhar_upload_widget.dart';
 import 'package:animal_kart_demo2/widgets/floating_toast.dart';
 
@@ -19,6 +19,9 @@ class ManualPaymentScreen extends StatefulWidget {
 class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
   bool showBankForm = true;
   bool showChequeForm = false;
+  final GlobalKey<FormState> _bankFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _chequeFormKey = GlobalKey<FormState>();
+
 
   // Bank Transfer Controllers
   final bankAmountCtrl = TextEditingController();
@@ -26,9 +29,11 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
   final bankNameCtrl = TextEditingController();
   final ifscCodeCtrl = TextEditingController();
   final transactionDateCtrl = TextEditingController();
-  String transferMode = 'NEFT'; // Default value
+  String transferMode = 'NEFT'; 
   List<String> transferModes = ['NEFT', 'RTGS', 'IMPS'];
   File? bankScreenshot;
+  String? bankScreenshotError;
+
 
   // Cheque Payment Controllers
   final chequeNoCtrl = TextEditingController();
@@ -39,6 +44,8 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
   final chequeUtrRefCtrl = TextEditingController();
   File? chequeFrontImage;
   File? chequeBackImage;
+  String? chequeFrontImageError;
+  String? chequeBackImageError;
 
   Future<File?> pickImage(bool isCamera) async {
     final picked = await ImagePicker().pickImage(
@@ -158,47 +165,58 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
       color: akWhiteColor,
       child: Padding(
         padding: const EdgeInsets.all(15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("Bank Transfer Details (NEFT/RTGS/IMPS)",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 12),
+        child: Form(
+          key: _bankFormKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Bank Transfer Details (NEFT/RTGS/IMPS)",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 12),
 
-            // Amount
-            TextFormField(
-              controller: bankAmountCtrl,
-              readOnly: true,
-              decoration: fieldDeco("Amount Paid"),
-            ),
-            const SizedBox(height: 15),
+              // Amount Field
+              ValidatedTextField(
+                controller: bankAmountCtrl,
+                label: "Amount Paid",
+                readOnly: true,
+              ),
+              const SizedBox(height: 15),
 
-            // UTR Number
-            TextFormField(
-              controller: utrCtrl,
-              decoration: fieldDeco("UTR Number"),
-            ),
-            const SizedBox(height: 15),
+              // UTR Number Field
+              ValidatedTextField(
+                controller: utrCtrl,
+                label: "UTR Number",
+                validator: BankTransferValidators.validateUTR,
+                keyboardType: TextInputType.text,
+                maxLength: 22,
+              ),
+              const SizedBox(height: 8),
 
-            // Bank Name
-            TextFormField(
-              controller: bankNameCtrl,
-              decoration: fieldDeco("Bank Name"),
-            ),
-            const SizedBox(height: 15),
+              // Bank Name Field
+              ValidatedTextField(
+                controller: bankNameCtrl,
+                label: "Bank Name",
+                validator: BankTransferValidators.validateBankName,
+                keyboardType: TextInputType.text,
+              ),
+              const SizedBox(height: 8),
 
-            // IFSC Code
-            TextFormField(
-              controller: ifscCodeCtrl,
-              decoration: fieldDeco("IFSC Code"),
-            ),
-            const SizedBox(height: 15),
+              // IFSC Code Field
+              ValidatedTextField(
+                controller: ifscCodeCtrl,
+                label: "IFSC Code",
+                validator: BankTransferValidators.validateIFSC,
+                keyboardType: TextInputType.text,
+                maxLength: 11,
+              ),
+              const SizedBox(height: 8),
 
-            // Transaction Date
-            TextFormField(
-              controller: transactionDateCtrl,
-              readOnly: true,
-              decoration: fieldDeco("Transaction Date").copyWith(
+              // Transaction Date Field
+              ValidatedTextField(
+                controller: transactionDateCtrl,
+                label: "Transaction Date",
+                readOnly: true,
+                validator: BankTransferValidators.validateTransactionDate,
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.calendar_month),
                   onPressed: () async {
@@ -210,250 +228,346 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
                     );
                     if (picked != null) {
                       transactionDateCtrl.text =
-                          "${picked.day}-${picked.month}-${picked.year}";
+                          "${picked.day.toString().padLeft(2, '0')}-${picked.month.toString().padLeft(2, '0')}-${picked.year}";
                     }
                   },
                 ),
               ),
-            ),
-            const SizedBox(height: 15),
+              const SizedBox(height: 8),
 
-            // Transfer Mode Dropdown
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Transfer Mode",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey.shade300),
+              // Transfer Mode Dropdown
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const FieldTitle("Transfer Mode"),
+                  const SizedBox(height: 4),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: DropdownButton<String>(
+                      value: transferMode,
+                      isExpanded: true,
+                      underline: const SizedBox(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          transferMode = newValue!;
+                        });
+                      },
+                      items: transferModes
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: DropdownButton<String>(
-                    value: transferMode,
-                    isExpanded: true,
-                    underline: const SizedBox(),
-                    onChanged: (String? newValue) {
+                ],
+              ),
+
+              const SizedBox(height: 20),
+
+              // Payment Screenshot Upload with validation
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AadhaarUploadWidget(
+                    title: "Upload Payment Screenshot",
+                    file: bankScreenshot,
+                    isFrontImage: true,
+                    onCamera: () async {
+                      final file = await pickImage(true);
+                      if (file != null) {
+                        setState(() {
+                          bankScreenshot = file;
+                          bankScreenshotError = null;
+                        });
+                      }
+                    },
+                    onGallery: () async {
+                      final file = await pickImage(false);
+                      if (file != null) {
+                        setState(() {
+                          bankScreenshot = file;
+                          bankScreenshotError = null;
+                        });
+                      }
+                    },
+                    onRemove: () {
                       setState(() {
-                        transferMode = newValue!;
+                        bankScreenshot = null;
+                        bankScreenshotError = null;
                       });
                     },
-                    items: transferModes
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
                   ),
-                ),
-              ],
-            ),
+                  if (bankScreenshotError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4, left: 8),
+                      child: Text(
+                        bankScreenshotError!,
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
 
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            // Payment Screenshot Upload
-            AadhaarUploadWidget(
-              title: "Upload Payment Screenshot",
-              file: bankScreenshot,
-              isFrontImage: true,
-              onCamera: () async {
-                final file = await pickImage(true);
-                if (file != null) setState(() => bankScreenshot = file);
-              },
-              onGallery: () async {
-                final file = await pickImage(false);
-                if (file != null) setState(() => bankScreenshot = file);
-              },
-              onRemove: () {
-                setState(() => bankScreenshot = null);
-              },
-            ),
-
-            const SizedBox(height: 20),
-
-            // Submit Button
-            _submitButton(() {
-              if (utrCtrl.text.isEmpty) {
-                FloatingToast.showSimpleToast("Enter UTR Number");
-                return;
-              }
-              if (bankNameCtrl.text.isEmpty) {
-                FloatingToast.showSimpleToast("Enter Bank Name");
-                return;
-              }
-              if (ifscCodeCtrl.text.isEmpty) {
-                FloatingToast.showSimpleToast("Enter IFSC Code");
-                return;
-              }
-              if (transactionDateCtrl.text.isEmpty) {
-                FloatingToast.showSimpleToast("Select Transaction Date");
-                return;
-              }
-              if (bankScreenshot == null) {
-                FloatingToast.showSimpleToast("Upload Payment Screenshot");
-                return;
-              }
-              FloatingToast.showSimpleToast("Bank Transfer Submitted");
-            }),
-          ],
+              // Submit Button with validation
+              _submitButton(() {
+               
+                if (_bankFormKey.currentState!.validate()) {
+                  
+                  final screenshotError =
+                      BankTransferValidators.validatePaymentScreenshot(
+                          bankScreenshot);
+                  if (screenshotError != null) {
+                    setState(() {
+                      bankScreenshotError = screenshotError;
+                    });
+                    return;
+                  }                  
+                  FloatingToast.showSimpleToast("Bank Transfer Submitted");
+                  
+                }
+              }),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // Cheque Payment Form
   Widget _chequePaymentForm() {
     return Card(
       color: akWhiteColor,
       child: Padding(
         padding: const EdgeInsets.all(15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("Cheque Payment Details",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 12),
+        child: Form(
+          key: _chequeFormKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Cheque Payment Details",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 12),
 
-            // Cheque Number
-            TextFormField(
-              controller: chequeNoCtrl,
-              decoration: fieldDeco("Cheque Number"),
-            ),
-            const SizedBox(height: 15),
+              // Cheque Number
+              ValidatedTextField(
+                controller: chequeNoCtrl,
+                label: "Cheque Number",
+                validator: ChequePaymentValidators.validateChequeNumber,
+                keyboardType: TextInputType.number,
+                maxLength: 10,
+              ),
+              const SizedBox(height: 8),
 
-            // Cheque Date
-            TextFormField(
-              controller: chequeDateCtrl,
-              readOnly: true,
-              decoration: fieldDeco("Cheque Date").copyWith(
+              // Cheque Date
+              ValidatedTextField(
+                controller: chequeDateCtrl,
+                label: "Cheque Date",
+                readOnly: true,
+                validator: ChequePaymentValidators.validateChequeDate,
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.calendar_month),
                   onPressed: () async {
                     final picked = await showDatePicker(
                       context: context,
                       initialDate: DateTime.now(),
-                      firstDate: DateTime(1990),
-                      lastDate: DateTime(2100),
+                      firstDate: DateTime.now().subtract(const Duration(days: 90)),
+                      lastDate: DateTime.now(),
                     );
                     if (picked != null) {
                       chequeDateCtrl.text =
-                          "${picked.day}-${picked.month}-${picked.year}";
+                          "${picked.day.toString().padLeft(2, '0')}-${picked.month.toString().padLeft(2, '0')}-${picked.year}";
                     }
                   },
                 ),
               ),
-            ),
-            const SizedBox(height: 15),
+              const SizedBox(height: 8),
 
-            // Cheque Amount
-            TextFormField(
-              controller: chequeAmountCtrl,
-              readOnly: true,
-              decoration: fieldDeco("Cheque Amount"),
-            ),
-            const SizedBox(height: 15),
+              // Cheque Amount
+              ValidatedTextField(
+                controller: chequeAmountCtrl,
+                label: "Cheque Amount",
+                readOnly: true,
+              ),
+              const SizedBox(height: 8),
 
-            // Bank Name
-            TextFormField(
-              controller: chequeBankNameCtrl,
-              decoration: fieldDeco("Bank Name"),
-            ),
-            const SizedBox(height: 15),
+              // Bank Name
+              ValidatedTextField(
+                controller: chequeBankNameCtrl,
+                label: "Bank Name",
+                validator: ChequePaymentValidators.validateChequeBankName,
+                keyboardType: TextInputType.text,
+              ),
+              const SizedBox(height: 8),
 
-            // IFSC Code
-            TextFormField(
-              controller: chequeIfscCodeCtrl,
-              decoration: fieldDeco("IFSC Code"),
-            ),
-            const SizedBox(height: 15),
+              // IFSC Code
+              ValidatedTextField(
+                controller: chequeIfscCodeCtrl,
+                label: "IFSC Code",
+                validator: ChequePaymentValidators.validateChequeIFSC,
+                keyboardType: TextInputType.text,
+                maxLength: 11,
+              ),
+              const SizedBox(height: 8),
 
-            // UTR/Reference Number
-            TextFormField(
-              controller: chequeUtrRefCtrl,
-              decoration: fieldDeco("UTR/Reference Number"),
-            ),
+              // UTR/Reference Number
+              ValidatedTextField(
+                controller: chequeUtrRefCtrl,
+                label: "UTR/Reference Number",
+                validator: ChequePaymentValidators.validateChequeUTRRef,
+                keyboardType: TextInputType.text,
+                maxLength: 30,
+              ),
+              const SizedBox(height: 20),
 
-            const SizedBox(height: 20),
+              // Cheque Front Image with validation
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AadhaarUploadWidget(
+                    title: "Upload Cheque Front Image",
+                    file: chequeFrontImage,
+                    isFrontImage: true,
+                    onCamera: () async {
+                      final file = await pickImage(true);
+                      if (file != null) {
+                        setState(() {
+                          chequeFrontImage = file;
+                          chequeFrontImageError = null;
+                        });
+                      }
+                    },
+                    onGallery: () async {
+                      final file = await pickImage(false);
+                      if (file != null) {
+                        setState(() {
+                          chequeFrontImage = file;
+                          chequeFrontImageError = null;
+                        });
+                      }
+                    },
+                    onRemove: () {
+                      setState(() {
+                        chequeFrontImage = null;
+                        chequeFrontImageError = null;
+                      });
+                    },
+                  ),
+                  if (chequeFrontImageError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4, left: 8),
+                      child: Text(
+                        chequeFrontImageError!,
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
 
-            // Cheque Front Image
-            AadhaarUploadWidget(
-              title: "Upload Cheque Front Image",
-              file: chequeFrontImage,
-              isFrontImage: true,
-              onCamera: () async {
-                final file = await pickImage(true);
-                if (file != null) setState(() => chequeFrontImage = file);
-              },
-              onGallery: () async {
-                final file = await pickImage(false);
-                if (file != null) setState(() => chequeFrontImage = file);
-              },
-              onRemove: () {
-                setState(() => chequeFrontImage = null);
-              },
-            ),
+              const SizedBox(height: 20),
 
-            const SizedBox(height: 20),
+              // Cheque Back Image with validation
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AadhaarUploadWidget(
+                    title: "Upload Cheque Back Image",
+                    file: chequeBackImage,
+                    isFrontImage: true,
+                    onCamera: () async {
+                      final file = await pickImage(true);
+                      if (file != null) {
+                        setState(() {
+                          chequeBackImage = file;
+                          chequeBackImageError = null;
+                        });
+                      }
+                    },
+                    onGallery: () async {
+                      final file = await pickImage(false);
+                      if (file != null) {
+                        setState(() {
+                          chequeBackImage = file;
+                          chequeBackImageError = null;
+                        });
+                      }
+                    },
+                    onRemove: () {
+                      setState(() {
+                        chequeBackImage = null;
+                        chequeBackImageError = null;
+                      });
+                    },
+                  ),
+                  if (chequeBackImageError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4, left: 8),
+                      child: Text(
+                        chequeBackImageError!,
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
 
-            // Cheque Back Image
-            AadhaarUploadWidget(
-              title: "Upload Cheque Back Image",
-              file: chequeBackImage,
-              isFrontImage: true,
-              onCamera: () async {
-                final file = await pickImage(true);
-                if (file != null) setState(() => chequeBackImage = file);
-              },
-              onGallery: () async {
-                final file = await pickImage(false);
-                if (file != null) setState(() => chequeBackImage = file);
-              },
-              onRemove: () {
-                setState(() => chequeBackImage = null);
-              },
-            ),
+              const SizedBox(height: 20),
 
-            const SizedBox(height: 20),
+              // Submit Button with validation
+              _submitButton(() {
+                // Validate form fields
+                if (_chequeFormKey.currentState!.validate()) {
+                  // Validate images
+                  final frontImageError =
+                      ChequePaymentValidators.validateChequeFrontImage(
+                          chequeFrontImage);
+                  final backImageError =
+                      ChequePaymentValidators.validateChequeBackImage(
+                          chequeBackImage);
 
-            // Submit Button
-            _submitButton(() {
-              if (chequeNoCtrl.text.isEmpty) {
-                FloatingToast.showSimpleToast("Enter Cheque Number");
-                return;
-              }
-              if (chequeDateCtrl.text.isEmpty) {
-                FloatingToast.showSimpleToast("Select Cheque Date");
-                return;
-              }
-              if (chequeBankNameCtrl.text.isEmpty) {
-                FloatingToast.showSimpleToast("Enter Bank Name");
-                return;
-              }
-              if (chequeIfscCodeCtrl.text.isEmpty) {
-                FloatingToast.showSimpleToast("Enter IFSC Code");
-                return;
-              }
-              if (chequeUtrRefCtrl.text.isEmpty) {
-                FloatingToast.showSimpleToast("Enter UTR/Reference Number");
-                return;
-              }
-              if (chequeFrontImage == null) {
-                FloatingToast.showSimpleToast("Upload Cheque Front Image");
-                return;
-              }
-              if (chequeBackImage == null) {
-                FloatingToast.showSimpleToast("Upload Cheque Back Image");
-                return;
-              }
-              FloatingToast.showSimpleToast("Cheque Details Submitted");
-            }),
-          ],
+                  bool hasError = false;
+                  
+                  if (frontImageError != null) {
+                    setState(() {
+                      chequeFrontImageError = frontImageError;
+                    });
+                    hasError = true;
+                  }
+                  
+                  if (backImageError != null) {
+                    setState(() {
+                      chequeBackImageError = backImageError;
+                    });
+                    hasError = true;
+                  }
+                  
+                  if (hasError) return;
+
+                  // If all validations pass
+                  FloatingToast.showSimpleToast("Cheque Details Submitted");
+                  
+                }
+              }),
+            ],
+          ),
         ),
       ),
     );
