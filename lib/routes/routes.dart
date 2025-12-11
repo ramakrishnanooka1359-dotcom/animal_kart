@@ -2,8 +2,10 @@ import 'package:animal_kart_demo2/auth/screens/login_screen.dart';
 import 'package:animal_kart_demo2/auth/screens/otp_screen.dart';
 import 'package:animal_kart_demo2/auth/screens/register_form.dart';
 import 'package:animal_kart_demo2/buffalo/screens/bufflo_details_screen.dart';
+import 'package:animal_kart_demo2/manualpayment/screens/payment_pending_screen.dart';
 import 'package:animal_kart_demo2/notification/screens/notification_screen.dart';
 import 'package:animal_kart_demo2/onboarding/screens/onboarding_screen.dart';
+import 'package:animal_kart_demo2/orders/screens/orders_screen.dart';
 import 'package:animal_kart_demo2/screens/home_screen.dart';
 import 'package:animal_kart_demo2/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -17,11 +19,13 @@ class AppRouter {
   static const String home = '/home';
   static const String notification = '/notification';
   static const String buffaloDetails = '/buffalodetails';
+  static const String orders = '/orders';
+  static const String PaymentPending = '/paymentPending';
   //static const String addBuffalocart = '/cart';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
-    final args = settings.arguments as Map<String, dynamic>?;
-  
+    final args = settings.arguments;
+
     switch (settings.name) {
       case splash:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
@@ -54,15 +58,31 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) {
             final isHomeRoute = settings.name == AppRouter.home;
+
+            // Read tab index only if arguments are provided
+            final selectedTab = settings.arguments is int
+                ? settings.arguments as int
+                : 0;
+
             if (isHomeRoute) {
-              return const HomeScreen();
+              return HomeScreen(selectedIndex: selectedTab);
             } else {
-              return const LoginScreen(); // or your onboarding screen
+              return const LoginScreen();
             }
           },
         );
+
+        case orders:
+           return MaterialPageRoute(
+          builder: (_) => OrdersScreen(),
+        );
+        case PaymentPending:
+          return MaterialPageRoute(
+          builder: (_) => PaymentPendingScreen(),
+        );
       case buffaloDetails:
-        final buffaloId = args?['buffaloId'] as String? ?? '';
+        final data = args as Map<String, dynamic>?;
+      final buffaloId = data?['buffaloId'] ?? '';
         return MaterialPageRoute(
           builder: (_) => BuffaloDetailsScreen(buffaloId: buffaloId),
         );

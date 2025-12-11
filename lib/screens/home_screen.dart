@@ -12,7 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+  final int selectedIndex;
+
+  const HomeScreen({super.key,this.selectedIndex = 0});
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -28,6 +30,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       void initState() {
         super.initState();
         _loadLocalUser();
+        _selectedIndex = widget.selectedIndex;
         _pages = const [
           BuffaloListScreen(),
           // CartScreen(showAppBar: false),
@@ -35,6 +38,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           UserProfileScreen(),
         ];
       }
+
+        @override
+        void didChangeDependencies() {
+          super.didChangeDependencies();
+
+          final args = ModalRoute.of(context)?.settings.arguments;
+          if (args is int) {
+            setState(() {
+              _selectedIndex = args;
+            });
+          }
+        }
+
+
       Future<void> _loadLocalUser() async {
       localUser = await loadUserFromPrefs();
           setState(() {});
@@ -44,16 +61,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
        setState(() => _selectedIndex = index);
       }
 
-  @override
-  Widget build(BuildContext context) {
-    // final cart = ref.watch(cartProvider);
-    final authState = ref.watch(authProvider);
-    final userProfile = authState.userProfile;
+      @override
+      Widget build(BuildContext context) {
+        // final cart = ref.watch(cartProvider);
+        final authState = ref.watch(authProvider);
+        final userProfile = authState.userProfile;
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).mainThemeBgColor,
+        return Scaffold(
+          backgroundColor: Theme.of(context).mainThemeBgColor,
 
-      // ---------- CONDITIONAL COMMON APPBAR ----------
+      
                 appBar: AppBar(
               automaticallyImplyLeading: false,
               backgroundColor: Theme.of(context).isLightTheme
@@ -67,10 +84,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
 
-              // Center title only for Orders & Profile
+             
               centerTitle: _selectedIndex != 0,
 
-              // ---------------- TITLE ----------------
+              
               title: () {
                 // PROFILE
                 if (_selectedIndex == 2) {
@@ -122,10 +139,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 );
               }(),
 
-              // ---------------- ACTIONS ----------------
+             
               actions: () {
-                if (_selectedIndex == 1) return const <Widget>[]; // Orders
-                if (_selectedIndex == 2) return const <Widget>[]; // Profile
+                if (_selectedIndex == 1) return const <Widget>[]; 
+                if (_selectedIndex == 2) return const <Widget>[]; 
 
                 // HOME → show notification
                 return <Widget>[

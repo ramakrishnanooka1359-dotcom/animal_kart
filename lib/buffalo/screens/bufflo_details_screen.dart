@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:animal_kart_demo2/buffalo/providers/buffalo_details_provider.dart';
 import 'package:animal_kart_demo2/buffalo/widgets/custom_buffalo_details.dart';
+import 'package:animal_kart_demo2/buffalo/widgets/insurance_sheet.dart';
 import 'package:animal_kart_demo2/services/razorpay_service.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
 import 'package:animal_kart_demo2/utils/app_colors.dart';
@@ -96,7 +97,14 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
                 ),
                 const SizedBox(height: 24),
                 cpfExplanationCard(buffalo),
-              
+                const SizedBox(height: 10,),
+                InsuranceSheet(
+                  price: buffalo.price,
+                  insurance: buffalo.insurance,
+                  showCancelIcon:false,
+                  showNote:false,
+                  isDragShowIcon:false
+                ),
                 const SizedBox(height: 24),
                 _cpfCheckboxAndSelector(buffalo),
                 const SizedBox(height: 28),
@@ -204,7 +212,7 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
   }
 
 
-    Widget _paymentSection(
+  Widget _paymentSection(
       BuildContext context, buffalo, int totalAmount) {
     return Container(
       padding: const EdgeInsets.all(18),

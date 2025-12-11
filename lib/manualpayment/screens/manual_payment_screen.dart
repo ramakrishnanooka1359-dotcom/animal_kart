@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:animal_kart_demo2/manualpayment/widgets/common_widgets.dart';
+import 'package:animal_kart_demo2/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
@@ -24,7 +25,10 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
 
 
   // Bank Transfer Controllers
+
   final bankAmountCtrl = TextEditingController();
+  final bankAccountNumber = TextEditingController();
+  final bankAccountHolderName = TextEditingController();
   final utrCtrl = TextEditingController();
   final bankNameCtrl = TextEditingController();
   final ifscCodeCtrl = TextEditingController();
@@ -36,6 +40,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
 
 
   // Cheque Payment Controllers
+  
   final chequeNoCtrl = TextEditingController();
   final chequeDateCtrl = TextEditingController();
   final chequeAmountCtrl = TextEditingController();
@@ -320,8 +325,6 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
               ),
 
               const SizedBox(height: 20),
-
-              // Submit Button with validation
               _submitButton(() {
                
                 if (_bankFormKey.currentState!.validate()) {
@@ -336,6 +339,10 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
                     return;
                   }                  
                   FloatingToast.showSimpleToast("Bank Transfer Submitted");
+                   Navigator.pushReplacementNamed(
+                                context,
+                                AppRouter.PaymentPending,
+                    ); 
                   
                 }
               }),
@@ -560,6 +567,10 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
                   }
                   
                   if (hasError) return;
+                    Navigator.pushReplacementNamed(
+                        context,
+                      AppRouter.PaymentPending,
+                    ); 
 
                   // If all validations pass
                   FloatingToast.showSimpleToast("Cheque Details Submitted");

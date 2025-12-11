@@ -1,3 +1,4 @@
+import 'package:animal_kart_demo2/buffalo/widgets/insurance_sheet.dart';
 import 'package:animal_kart_demo2/l10n/app_localizations.dart';
 import 'package:animal_kart_demo2/routes/routes.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
@@ -263,178 +264,19 @@ class BuffaloCard extends ConsumerWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       ),
-      builder: (_) => _insuranceSheet(context, price, insurance),
+      builder: (_) => InsuranceSheet(
+      price: price,
+      insurance: insurance,
+      showCancelIcon:true,
+      showNote:true,
+      isDragShowIcon:true
+
+    ),
     );
   }
 
-  // ===================== INSURANCE SHEET =====================
-  Widget _insuranceSheet(BuildContext context, int price, int insurance) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Drag Handle
-          Container(
-            width: 50,
-            height: 5,
-            margin: const EdgeInsets.only(bottom: 14),
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(20),
-            ),
-          ),
-
-          // Header Row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                context.tr("CPF (Cattle Protection Fund) Offer"),
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-              ),
-              GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: const CircleAvatar(
-                  radius: 16,
-                  backgroundColor: Colors.black12,
-                  child: Icon(Icons.close, color: Colors.black),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 20),
-
-          // ================= Insurance Table =================
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: const Color(0xFF10B981), width: 1),
-            ),
-            child: Column(
-              children: [
-                // Header Row
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 18,
-                    vertical: 12,
-                  ),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFDFF7ED),
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(18),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(context.tr("S.No"), style: _headerStyle),
-                      ),
-                      Expanded(
-                        child: Text(context.tr("Price"), style: _headerStyle),
-                      ),
-                      Expanded(
-                        child: Text(
-                          context.tr("Insurance"),
-                          textAlign: TextAlign.right,
-                          style: _headerStyle,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Row 1
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-                  color: Color(0xFF10B981),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          "1",
-                          style: TextStyle(fontSize: 14, color: Colors.white),
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          price.toString(),
-                          style: TextStyle(fontSize: 14, color: Colors.white),
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          insurance.toString(),
-                          textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 14, color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Row 2
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 18,
-                    vertical: 14,
-                  ),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFF4FFFA),
-                    borderRadius: BorderRadius.vertical(
-                      bottom: Radius.circular(18),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text("2", style: TextStyle(fontSize: 14)),
-                      ),
-                      Expanded(
-                        child: Text(
-                          price.toString(),
-                          style: TextStyle(fontSize: 14),
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          context.tr("Free"),
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF10B981),
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: Theme.of(context).isLightTheme
-                  ? const Color(0xFFEFFFF7)
-                  : akLightBlueCardDarkColor,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Text(
-              context.tr("insurance_note"),
-
-              style: TextStyle(fontSize: 15, height: 1.4),
-            ),
-          ),
-
-          const SizedBox(height: 25),
-        ],
-      ),
-    );
-  }
+  
+  
 }
 
-const _headerStyle = TextStyle(fontSize: 14, fontWeight: FontWeight.w600);
+
