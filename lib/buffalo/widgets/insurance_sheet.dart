@@ -90,7 +90,13 @@ class InsuranceSheet extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Grand Total", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+               Text(
+  context.tr("grandTotal"),
+  style: const TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w700,
+  ),
+),
                 Text(
                   grandTotal.toString(),
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black),

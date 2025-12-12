@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:animal_kart_demo2/l10n/app_localizations.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
 import 'package:animal_kart_demo2/utils/svg_utils.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AadhaarUploadWidget extends ConsumerWidget {
   final File? file;
-  final String title;
+  final String title; // Now using localization key
   final VoidCallback onRemove;
   final VoidCallback onCamera;
   final VoidCallback onGallery;
@@ -27,7 +28,7 @@ class AadhaarUploadWidget extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context,WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       elevation: 2,
       child: Padding(
@@ -35,22 +36,21 @@ class AadhaarUploadWidget extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: Theme.of(context).textTheme.titleMedium),
+            Text(context.tr(title), style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
 
             /// ✅ NO UPLOAD LOGIC, ONLY STATIC PREVIEW
             if (file != null)
-              _buildFilePreview()
+              _buildFilePreview(context)
             else
-              _buildUploadButtons(),
+              _buildUploadButtons(context),
           ],
         ),
       ),
     );
   }
 
-  /// ✅ IMAGE PREVIEW WITH DELETE
-  Widget _buildFilePreview() {
+  Widget _buildFilePreview(BuildContext context) {
     return Stack(
       children: [
         ClipRRect(
@@ -63,7 +63,7 @@ class AadhaarUploadWidget extends ConsumerWidget {
                 width: double.infinity,
                 fit: BoxFit.cover,
               ),
-              if (uploadProgress != null /* && uploadProgress! < 0.01 */)
+              if (uploadProgress != null)
                 Positioned.fill(
                   child: Container(
                     color: Colors.black26,
@@ -117,8 +117,7 @@ class AadhaarUploadWidget extends ConsumerWidget {
     );
   }
 
-  /// ✅ PICK FROM CAMERA OR GALLERY
-  Widget _buildUploadButtons() {
+  Widget _buildUploadButtons(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -139,13 +138,13 @@ class AadhaarUploadWidget extends ConsumerWidget {
               const SizedBox(height: 8),
               TextButton(
                 onPressed: onGallery,
-                child: const Text(
-                  "Upload Image",
-                  style: TextStyle(fontSize: 18),
+                child: Text(
+                  context.tr("uploadImage"),
+                  style: const TextStyle(fontSize: 18),
                 ),
               ),
-              const Text("Upload photos of max size 10MB in JPG, JPEG"),
-              const Text("or"),
+              Text(context.tr("uploadPhotosNote")),
+              Text(context.tr("or")),
               const SizedBox(height: 6),
               ElevatedButton(
                 onPressed: onCamera,
@@ -155,7 +154,7 @@ class AadhaarUploadWidget extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(6),
                   ),
                 ),
-                child: const Text("Open Camera"),
+                child: Text(context.tr("openCamera")),
               ),
             ],
           ),

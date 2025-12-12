@@ -2,7 +2,7 @@ import 'package:animal_kart_demo2/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:animal_kart_demo2/utils/app_constants.dart';
 import 'package:animal_kart_demo2/utils/app_colors.dart';
-
+import 'package:animal_kart_demo2/l10n/app_localizations.dart';
 
 Widget circleButton(IconData icon, {bool isDisabled = false}) {
   return CircleAvatar(
@@ -13,15 +13,15 @@ Widget circleButton(IconData icon, {bool isDisabled = false}) {
   );
 }
 
-
-Widget priceRow(String title, int value, {bool isBold = false}) {
+Widget priceRow(BuildContext context, String titleKey, int value,
+    {bool isBold = false}) {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 6),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          title,
+          context.tr(titleKey),
           style: TextStyle(
             fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
           ),
@@ -40,6 +40,7 @@ Widget priceRow(String title, int value, {bool isBold = false}) {
 
 
 Widget priceExplanation({
+  required BuildContext context,
   required buffalo,
   required int units,
   required int insuranceUnits,
@@ -55,22 +56,27 @@ Widget priceExplanation({
       borderRadius: BorderRadius.circular(16),
       border: Border.all(color: const Color(0xFFB2E3A8)),
     ),
-    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Text(
-        "Price Summary",
-        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
-      ),
-      const SizedBox(height: 12),
-      priceRow("Buffalo Price", buffaloPrice),
-      priceRow("CPF Amount", cpfAmount),
-      const Divider(height: 24),
-      priceRow("Total Payable", total, isBold: true),
-    ]),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          context.tr('price_summary'),
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+        ),
+        const SizedBox(height: 12),
+
+        priceRow(context, "buffalo_price", buffaloPrice),
+        priceRow(context, "cpf_amount", cpfAmount),
+
+        const Divider(height: 24),
+
+        priceRow(context, "total_payable", total, isBold: true),
+      ],
+    ),
   );
 }
 
-
-Widget cpfExplanationCard(buffalo) {
+Widget cpfExplanationCard(BuildContext context, buffalo) {
   final price = buffalo.price * 2;
   final cpf = buffalo.insurance;
   final assetValue = 6396000;
@@ -90,39 +96,43 @@ Widget cpfExplanationCard(buffalo) {
         const Text(
           "CPF Offer (Cattle Protection Fund)",
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 14),
+          ),
+          const SizedBox(height: 14),
 
-        cpfPoint("1 Unit Purchase gives you ✅ 2 Buffaloes + 2 Calves"),
-         cpfPoint("1 Unit CPF (cattle protection fund) costs ₹26000"),
+          cpfPoint(context.tr('cpf_point1')),
+          cpfPoint(context.tr('cpf_point2')),
 
-        cpfPoint(
-          "Total Investment Value: ₹${AppConstants().formatIndianAmount(price)}",
-        ),
+          cpfPoint(
+            "${context.tr('total_investment_value')} "
+            "₹${AppConstants().formatIndianAmount(price)}",
+          ),
 
-        cpfPoint(
-          "After 10 years, Expected Asset Market Value: ₹${AppConstants().formatIndianAmount(assetValue)}",
-        ),
+          cpfPoint(
+            "${context.tr('asset_value_10_years')} "
+            "₹${AppConstants().formatIndianAmount(assetValue)}",
+          ),
 
-        cpfPoint(
-          "After 10 years, Expected Milk Revenue: ₹${AppConstants().formatIndianAmount(revenue10Years)}",
-        ),
+          cpfPoint(
+            "${context.tr('revenue_10_years')} "
+            "₹${AppConstants().formatIndianAmount(revenue10Years)}",
+          ),
 
-        cpfPoint(
-          "Your Revenue Break-even will be achieved within $breakEvenMonths months",
-        ),
+          cpfPoint(
+            "${context.tr('revenue_breakeven')} "
+            "$breakEvenMonths ${context.tr('months')}",
+          ),
 
-        const Divider(height: 25),
+          const Divider(height: 25),
 
-        cpfPoint(
-          "For every purchase of 1 unit (2 Murrah buffaloes), the CPF for the second buffalo is provided completely free for a full duration of 1 year.",
-          isHighlight: true,
-        ),
-      ]),
+          cpfPoint(
+            context.tr('cpf_free_note'),
+            isHighlight: true,
+          ),
+        ],
+      ),
     ),
   );
 }
-
 
 Widget cpfPoint(String text, {bool isHighlight = false}) {
   return Padding(
@@ -151,37 +161,37 @@ Widget cpfPoint(String text, {bool isHighlight = false}) {
   );
 }
 
-
-Future<void> showCpfConfirmationDialog(BuildContext context, Function onYesPressed) async {
-    return showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Confirm without CPF"),
-          content: const Text("Are you sure you want to proceed without CPF? This may affect your insurance coverage."),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
+Future<void> showCpfConfirmationDialog(
+    BuildContext context, Function onYesPressed) async {
+  return showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(context.tr('confirm_without_cpf')),
+        content: Text(context.tr('confirm_without_cpf_msg')),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
                 Navigator.of(context).pop(); // Close dialog
-              },
-              child: const Text(
-                "No",
-                style: TextStyle(color: Colors.red),
-              ),
+            },
+            child: Text(
+              context.tr('no'),
+              style: const TextStyle(color: Colors.red),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); 
-                onYesPressed(); // Execute the payment action
-              },
-              child: const Text(
-                "Yes",
-                style: TextStyle(color: Colors.green),
-              ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              onYesPressed();
+            },
+            child: Text(
+              context.tr('yes'),
+              style: const TextStyle(color: Colors.green),
             ),
-          ],
-        );
-      },
-    );
-  }
+          ),
+        ],
+      );
+    },
+  );
+}

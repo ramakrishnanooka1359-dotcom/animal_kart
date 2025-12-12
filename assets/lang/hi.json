@@ -100,7 +100,73 @@
   "paid": "भुगतान",
   "invoice": "इनवॉइस",
   "orders":"ऑर्डर",
-  "orderHistory": "ऑर्डर इतिहास"
+  "orderHistory": "ऑर्डर इतिहास",
+    "price_summary": "मूल्य सारांश",
+  "buffalo_price": "भैंस की कीमत",
+  "cpf_amount": "CPF राशि",
+  "total_payable": "कुल भुगतान योग्य",
+
+  "cpf_title": "CPF ऑफ़र (Cattle Protection Fund)",
+  "cpf_point1": "1 यूनिट खरीदने पर मिलता है ✅ 2 भैंसें + 2 बछड़े",
+  "cpf_point2": "1 यूनिट CPF (Cattle Protection Fund) की कीमत ₹26000",
+
+  "total_investment_value": "कुल निवेश मूल्य:",
+  "asset_value_10_years": "10 वर्षों बाद अनुमानित संपत्ति मूल्य:",
+  "revenue_10_years": "10 वर्षों बाद अनुमानित दूध आय:",
+  "revenue_breakeven": "आपका ब्रेक-ईवन प्राप्त होगा",
+  "months": "महीनों में",
+
+  "cpf_free_note": "1 यूनिट (2 मुर्रा भैंसें) खरीदने पर, दूसरी भैंस का CPF पूरे 1 वर्ष के लिए पूरी तरह मुफ्त प्रदान किया जाता है।",
+
+  "confirm_without_cpf": "CPF के बिना जारी रखें?",
+  "confirm_without_cpf_msg": "क्या आप CPF के बिना आगे बढ़ना चाहते हैं? इससे आपके बीमा कवरेज पर प्रभाव पड़ सकता है।",
+  
+  "yes": "हाँ",
+  "no": "नहीं",
+  "includeCpf": "CPF शामिल करें",
+  "cpfSelection": "CPF चयन",
+  "maxCpf": "अधिकतम CPF",
+  "cpfPerBuffalo": "प्रति भैंस CPF",
+  "onlinePayment": "ऑनलाइन भुगतान",
+  "manualPayment": "मैन्युअल भुगतान",
+  "grandTotal": "कुल योग",
+  "buffaloDetails": "भैंस विवरण",
+  "amountToPay": "भुगतान करने की राशि",
+  "bankTransfer": "बैंक ट्रांसफर",
+  "cheque": "चेक",
+  "bankTransferDetails": "बैंक ट्रांसफर विवरण (NEFT/RTGS/IMPS)",
+  "chequePaymentDetails": "चेक भुगतान विवरण",
+  "amountPaid": "भरी गई राशि",
+  "utrNumber": "UTR संख्या",
+  "bankName": "बैंक का नाम",
+  "ifscCode": "IFSC कोड",
+  "transactionDate": "लेनदेन की तारीख",
+  "transferMode": "ट्रांसफर मोड",
+  "uploadPaymentScreenshot": "भुगतान स्क्रीनशॉट अपलोड करें",
+  "chequeNumber": "चेक संख्या",
+  "chequeDate": "चेक तारीख",
+  "chequeAmount": "चेक राशि",
+  "utrReferenceNumber": "UTR/संदर्भ संख्या",
+  "uploadChequeFrontImage": "चेक का फ्रंट इमेज अपलोड करें",
+  "uploadChequeBackImage": "चेक का बैक इमेज अपलोड करें",
+  "submit": "सबमिट करें",
+  "bankTransferSubmitted": "बैंक ट्रांसफर पूरा हुआ",
+  "uploadImage": "छवि अपलोड करें",
+  "uploadPhotosNote": "अधिकतम आकार 10MB की JPG, JPEG फ़ोटो अपलोड करें",
+  "or": "या",
+  "openCamera": "कैमरा खोलें",
+  "paymentSuccess": "आपका भुगतान सफल रहा",
+  "paymentThankYou": "आपके भुगतान के लिए धन्यवाद। हम जल्द ही और विवरण के साथ संपर्क करेंगे",
+  "backToHome": "होम पर वापस जाएं",
+  "paymentPending": "आपकी भुगतान स्थिति लंबित है",
+  "paymentPendingDescription": "आपके भुगतान के लिए धन्यवाद। हमारी एडमिन टीम प्रस्तुत विवरणों की समीक्षा कर रही है और 3 व्यावसायिक दिनों के भीतर भुगतान की पुष्टि करेगी। पुष्टि पूर्ण होने के बाद आपको सूचित किया जाएगा।",
+  "backToOrders": "ऑर्डर्स पर वापस जाएं"
+
+
+
+
+
+
 
 
 

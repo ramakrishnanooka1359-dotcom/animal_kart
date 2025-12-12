@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:animal_kart_demo2/l10n/app_localizations.dart';
 import 'package:animal_kart_demo2/manualpayment/widgets/common_widgets.dart';
 import 'package:animal_kart_demo2/routes/routes.dart';
 import 'package:flutter/material.dart';
@@ -71,7 +72,8 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
     return Scaffold(
       backgroundColor: kFieldBg,
       appBar: AppBar(
-        title: const Text("Manual Payment"),
+        title: Text(context.tr("manualPayment")),
+
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
@@ -86,7 +88,8 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Amount to Pay: ₹${widget.totalAmount}",
+              "${context.tr("amountToPay")}: ₹${widget.totalAmount}",
+
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
@@ -96,7 +99,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
               children: [
                 Expanded(
                   child: _paymentSelectButton(
-                    title: "Bank Transfer",
+                    title: context.tr("bankTransfer"),
                     isSelected: showBankForm,
                     color: Colors.green,
                     onTap: () {
@@ -110,7 +113,8 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: _paymentSelectButton(
-                    title: "Cheque",
+                    title: context.tr("cheque"),
+
                     isSelected: showChequeForm,
                     color: Colors.orange,
                     onTap: () {
@@ -175,14 +179,16 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Bank Transfer Details (NEFT/RTGS/IMPS)",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              
+              Text(context.tr("bankTransferDetails"),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               const SizedBox(height: 12),
 
               // Amount Field
               ValidatedTextField(
                 controller: bankAmountCtrl,
-                label: "Amount Paid",
+                label: context.tr("amountPaid"),
+
                 readOnly: true,
               ),
               const SizedBox(height: 15),
@@ -190,7 +196,8 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
               // UTR Number Field
               ValidatedTextField(
                 controller: utrCtrl,
-                label: "UTR Number",
+                label: context.tr("utrNumber"),
+
                 validator: BankTransferValidators.validateUTR,
                 keyboardType: TextInputType.text,
                 maxLength: 22,
@@ -200,7 +207,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
               // Bank Name Field
               ValidatedTextField(
                 controller: bankNameCtrl,
-                label: "Bank Name",
+                label: context.tr("bankName"),
                 validator: BankTransferValidators.validateBankName,
                 keyboardType: TextInputType.text,
               ),
@@ -209,7 +216,8 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
               // IFSC Code Field
               ValidatedTextField(
                 controller: ifscCodeCtrl,
-                label: "IFSC Code",
+                label: context.tr("ifscCode"),
+
                 validator: BankTransferValidators.validateIFSC,
                 keyboardType: TextInputType.text,
                 maxLength: 11,
@@ -219,7 +227,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
               // Transaction Date Field
               ValidatedTextField(
                 controller: transactionDateCtrl,
-                label: "Transaction Date",
+                label: context.tr("transactionDate"),
                 readOnly: true,
                 validator: BankTransferValidators.validateTransactionDate,
                 suffixIcon: IconButton(
@@ -244,7 +252,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const FieldTitle("Transfer Mode"),
+                   FieldTitle(context.tr("transferMode")),
                   const SizedBox(height: 4),
                   Container(
                     decoration: BoxDecoration(
@@ -281,7 +289,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AadhaarUploadWidget(
-                    title: "Upload Payment Screenshot",
+                    title: context.tr("uploadPaymentScreenshot"),
                     file: bankScreenshot,
                     isFrontImage: true,
                     onCamera: () async {
@@ -313,7 +321,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
                     Padding(
                       padding: const EdgeInsets.only(top: 4, left: 8),
                       child: Text(
-                        bankScreenshotError!,
+                        context.tr(bankScreenshotError!),
                         style: const TextStyle(
                           color: Colors.red,
                           fontSize: 12,
@@ -338,7 +346,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
                     });
                     return;
                   }                  
-                  FloatingToast.showSimpleToast("Bank Transfer Submitted");
+                  FloatingToast.showSimpleToast(context.tr("bankTransferSubmitted"));
                    Navigator.pushReplacementNamed(
                                 context,
                                 AppRouter.PaymentPending,
@@ -363,14 +371,14 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Cheque Payment Details",
+              Text(context.tr("chequePaymentDetails"),
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               const SizedBox(height: 12),
 
               // Cheque Number
               ValidatedTextField(
                 controller: chequeNoCtrl,
-                label: "Cheque Number",
+                label: context.tr("chequeNumber"),
                 validator: ChequePaymentValidators.validateChequeNumber,
                 keyboardType: TextInputType.number,
                 maxLength: 10,
@@ -380,7 +388,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
               // Cheque Date
               ValidatedTextField(
                 controller: chequeDateCtrl,
-                label: "Cheque Date",
+                label: context.tr("chequeDate"),
                 readOnly: true,
                 validator: ChequePaymentValidators.validateChequeDate,
                 suffixIcon: IconButton(
@@ -404,7 +412,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
               // Cheque Amount
               ValidatedTextField(
                 controller: chequeAmountCtrl,
-                label: "Cheque Amount",
+                label: context.tr("chequeAmount"),
                 readOnly: true,
               ),
               const SizedBox(height: 8),
@@ -412,7 +420,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
               // Bank Name
               ValidatedTextField(
                 controller: chequeBankNameCtrl,
-                label: "Bank Name",
+                label: context.tr("bankName"),
                 validator: ChequePaymentValidators.validateChequeBankName,
                 keyboardType: TextInputType.text,
               ),
@@ -421,7 +429,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
               // IFSC Code
               ValidatedTextField(
                 controller: chequeIfscCodeCtrl,
-                label: "IFSC Code",
+                label: context.tr("ifscCode"),
                 validator: ChequePaymentValidators.validateChequeIFSC,
                 keyboardType: TextInputType.text,
                 maxLength: 11,
@@ -431,7 +439,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
               // UTR/Reference Number
               ValidatedTextField(
                 controller: chequeUtrRefCtrl,
-                label: "UTR/Reference Number",
+                label: context.tr("utrReferenceNumber"),
                 validator: ChequePaymentValidators.validateChequeUTRRef,
                 keyboardType: TextInputType.text,
                 maxLength: 30,
@@ -443,7 +451,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AadhaarUploadWidget(
-                    title: "Upload Cheque Front Image",
+                    title: context.tr("uploadChequeFrontImage"),
                     file: chequeFrontImage,
                     isFrontImage: true,
                     onCamera: () async {
@@ -493,7 +501,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AadhaarUploadWidget(
-                    title: "Upload Cheque Back Image",
+                    title: context.tr("uploadChequeBackImage"),
                     file: chequeBackImage,
                     isFrontImage: true,
                     onCamera: () async {
@@ -573,7 +581,7 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
                     ); 
 
                   // If all validations pass
-                  FloatingToast.showSimpleToast("Cheque Details Submitted");
+                  FloatingToast.showSimpleToast(context.tr("chequeDetailsSubmitted"));
                   
                 }
               }),
@@ -596,8 +604,8 @@ class _ManualPaymentScreenState extends State<ManualPaymentScreen> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(25)),
         ),
-        child: const Text(
-          "Submit",
+        child:  Text(
+          context.tr("submit"),
           style: TextStyle(color: Colors.white, fontSize: 17),
         ),
       ),

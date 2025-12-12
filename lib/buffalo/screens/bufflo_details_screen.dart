@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:animal_kart_demo2/buffalo/providers/buffalo_details_provider.dart';
 import 'package:animal_kart_demo2/buffalo/widgets/custom_buffalo_details.dart';
 import 'package:animal_kart_demo2/buffalo/widgets/insurance_sheet.dart';
+import 'package:animal_kart_demo2/l10n/app_localizations.dart';
 import 'package:animal_kart_demo2/services/razorpay_service.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
 import 'package:animal_kart_demo2/utils/app_colors.dart';
@@ -76,9 +77,10 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
             leading: IconButton(
               icon: Icon(Icons.arrow_back_ios_new,
                   color: Theme.of(context).primaryTextColor),
-              onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(context),
             ),
-            title: const Text("Buffalo Details"),
+            title: Text(context.tr("buffaloDetails"),
+)
           ),
           bottomNavigationBar:
               _paymentSection(context, buffalo, totalAmount),
@@ -96,7 +98,9 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                cpfExplanationCard(buffalo),
+                cpfExplanationCard(context, buffalo),
+
+                //cpfExplanationCard(buffalo),
                 const SizedBox(height: 10,),
                 InsuranceSheet(
                   price: buffalo.price,
@@ -109,6 +113,7 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
                 _cpfCheckboxAndSelector(buffalo),
                 const SizedBox(height: 28),
                 priceExplanation(
+                  context: context,
                   buffalo:buffalo,
                   units:units,
                   insuranceUnits:insuranceUnits,
@@ -152,115 +157,115 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
 
 
   
-  Widget _cpfCheckboxAndSelector(buffalo) {
-    final maxCpf = units;
+ Widget _cpfCheckboxAndSelector(buffalo) {
+  final maxCpf = units;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE8F8FF),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, 
-        children: [
+  return Container(
+    margin: const EdgeInsets.symmetric(horizontal: 16),
+    padding: const EdgeInsets.all(14),
+    decoration: BoxDecoration(
+      color: const Color(0xFFE8F8FF),
+      borderRadius: BorderRadius.circular(16),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
           // Checkbox for CPF selection
-          Row(
-            children: [
-              Checkbox(
-                value: isCpfSelected,
-                onChanged: (bool? value) {
-                  setState(() {
-                    isCpfSelected = value ?? false;
-                    if (!isCpfSelected) {
+        Row(
+          children: [
+            Checkbox(
+              value: isCpfSelected,
+              onChanged: (bool? value) {
+                setState(() {
+                  isCpfSelected = value ?? false;
+                  if (!isCpfSelected) {
                       insuranceUnits = 0; // Reset insurance units when CPF is unselected
-                    } else {
+                  } else {
                       insuranceUnits = 1; // Set default insurance units when CPF is selected
-                    }
-                  });
-                },
-              ),
-              const SizedBox(width: 8),
-              Text(
-                "Include CPF",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: isCpfSelected ? Colors.black : Colors.grey,
-                ),
-              ),
-            ],
-          ),
-          
-          // Only show CPF details if checkbox is selected
-          if (isCpfSelected) ...[
-            const SizedBox(height: 8),
-            const Divider(),
-            const SizedBox(height: 8),
-            const Text("CPF Selection",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 6),
-            Text("Max CPF: $maxCpf"),
-            Text("CPF per Buffalo: ₹${buffalo.insurance}"),
-            const SizedBox(height: 12),
-            
-          ],
-        ],
-      ),
-    );
-  }
-
-
-  Widget _paymentSection(
-      BuildContext context, buffalo, int totalAmount) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        SizedBox(
-          height: 55,
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () {
-              
-              if (!isCpfSelected) {
-                showCpfConfirmationDialog(context, () {
-                  // User clicked Yes - proceed with online payment
-                  _processOnlinePayment(totalAmount);
+                  }
                 });
-              } else {
-                _processOnlinePayment(totalAmount);
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: kPrimaryGreen,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40)),
+              },
             ),
-            child: const Text("Online Payment",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700)),
+            const SizedBox(width: 8),
+            Text(
+              context.tr("includeCpf"),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: isCpfSelected ? Colors.black : Colors.grey,
+              ),
+            ),
+          ],
+        ),
+
+          // Only show CPF details if checkbox is selected
+        if (isCpfSelected) ...[
+          const SizedBox(height: 8),
+          const Divider(),
+          const SizedBox(height: 8),
+
+          Text(
+            context.tr("cpfSelection"),
+            style: const TextStyle(
+                fontSize: 16, fontWeight: FontWeight.w700),
+          ),
+
+          const SizedBox(height: 6),
+
+          Text("${context.tr("maxCpf")}: $maxCpf"),
+
+          Text("${context.tr("cpfPerBuffalo")}: ₹${buffalo.insurance}"),
+
+          const SizedBox(height: 12),
+        ],
+      ],
+    ),
+  );
+}
+
+
+Widget _paymentSection(
+    BuildContext context, buffalo, int totalAmount) {
+  return Container(
+    padding: const EdgeInsets.all(18),
+    child: Column(mainAxisSize: MainAxisSize.min, children: [
+      SizedBox(
+        height: 55,
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: () {
+              
+            if (!isCpfSelected) {
+              showCpfConfirmationDialog(context, () {
+                  // User clicked Yes - proceed with online payment
+                _processOnlinePayment(totalAmount);
+              });
+            } else {
+              _processOnlinePayment(totalAmount);
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: kPrimaryGreen,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(40)),
+          ),
+          child: Text(
+             context.tr("onlinePayment"),
+            style: const TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.w700),
           ),
         ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 55,
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () {
-              if (!isCpfSelected) {
-                showCpfConfirmationDialog(context, () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          ManualPaymentScreen(totalAmount: totalAmount),
-                    ),
-                  );
-                });
-              } else {
+      ),
+      const SizedBox(height: 12),
+      SizedBox(
+        height: 55,
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: () {
+            if (!isCpfSelected) {
+              showCpfConfirmationDialog(context, () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -268,23 +273,34 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
                         ManualPaymentScreen(totalAmount: totalAmount),
                   ),
                 );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.amber,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40)),
-            ),
-            child: const Text("Manual Payment",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700)),
+              });
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      ManualPaymentScreen(totalAmount: totalAmount),
+                ),
+              );
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.amber,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(40)),
+          ),
+          child: Text(
+             context.tr("manualPayment"),
+            style: const TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.w700),
           ),
         ),
-      ]),
-    );
-  }
+      ),
+    ]),
+  );
+}
 
   void _processOnlinePayment(int totalAmount) {
     final razorpay = RazorPayService(

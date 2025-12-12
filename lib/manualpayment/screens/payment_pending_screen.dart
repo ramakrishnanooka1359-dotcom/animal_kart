@@ -1,7 +1,7 @@
-
 import 'package:animal_kart_demo2/routes/routes.dart';
 import 'package:animal_kart_demo2/utils/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:animal_kart_demo2/l10n/app_localizations.dart';
 
 class PaymentPendingScreen extends StatefulWidget {
   const PaymentPendingScreen({super.key});
@@ -44,25 +44,22 @@ class _PaymentPendingScreenState extends State<PaymentPendingScreen> {
           ),
 
           const SizedBox(height: 25),
-
-          const Text(
-            "Your payment status is Pending",
+          Text(
+            context.tr("paymentPending"),
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
           ),
 
           const SizedBox(height: 12),
-
-          
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 40),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Text(
-              "Thank you for your payment.Our admin team is reviewing the submitted details and will verify the payment within 3 business days. You will be notified once the verification is complete.",
+              context.tr("paymentPendingDescription"),
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 15,
                 color: Colors.grey,
               ),
@@ -85,15 +82,15 @@ class _PaymentPendingScreenState extends State<PaymentPendingScreen> {
               ),
             ),
             onPressed: () {
-                 Navigator.pushReplacementNamed(
-                  context,
-                  AppRouter.home,
-                  arguments: 1,   
+              Navigator.pushReplacementNamed(
+                context,
+                AppRouter.home,
+                arguments: 1,
               );
             },
-            child: const Text(
-              "Back to Orders",
-              style: TextStyle(
+            child: Text(
+              context.tr("backToOrders"),
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,

@@ -97,7 +97,70 @@
   "paid": "Paid",
   "invoice": "Invoice",
   "orders":"Orders",
-  "orderHistory": "Order History"
+  "orderHistory": "Order History",
+  "price_summary": "Price Summary",
+  "buffalo_price": "Buffalo Price",
+  "cpf_amount": "CPF Amount",
+  "total_payable": "Total Payable",
+
+  "cpf_title": "CPF Offer (Cattle Protection Fund)",
+  "cpf_point1": "1 Unit Purchase gives you ✅ 2 Buffaloes + 2 Calves",
+  "cpf_point2": "1 Unit CPF (Cattle Protection Fund) costs ₹26000",
+
+  "total_investment_value": "Total Investment Value:",
+  "asset_value_10_years": "After 10 years, Expected Asset Market Value:",
+  "revenue_10_years": "After 10 years, Expected Milk Revenue:",
+  "revenue_breakeven": "Your Revenue Break-even will be achieved within",
+  "months": "months",
+
+  "cpf_free_note": "For every purchase of 1 unit (2 Murrah buffaloes), the CPF for the second buffalo is provided completely free for a full duration of 1 year.",
+
+  "confirm_without_cpf": "Confirm without CPF",
+  "confirm_without_cpf_msg": "Are you sure you want to proceed without CPF? This may affect your insurance coverage.",
+  
+  "grandTotal": "Grand Total",
+  "includeCpf": "Include CPF",
+  "cpfSelection": "CPF Selection",
+  "maxCpf": "Max CPF",
+  "cpfPerBuffalo": "CPF per Buffalo",
+  "onlinePayment": "Online Payment",
+  "manualPayment": "Manual Payment",
+  "buffaloDetails": "Buffalo Details",
+  "manualPayment": "Manual Payment",
+  "amountToPay": "Amount to Pay",
+  "bankTransfer": "Bank Transfer",
+  "cheque": "Cheque",
+  "bankTransferDetails": "Bank Transfer Details (NEFT/RTGS/IMPS)",
+  "chequePaymentDetails": "Cheque Payment Details",
+  "amountPaid": "Amount Paid",
+  "utrNumber": "UTR Number",
+  "bankName": "Bank Name",
+  "ifscCode": "IFSC Code",
+  "transactionDate": "Transaction Date",
+  "transferMode": "Transfer Mode",
+  "uploadPaymentScreenshot": "Upload Payment Screenshot",
+  "chequeNumber": "Cheque Number",
+  "chequeDate": "Cheque Date",
+  "chequeAmount": "Cheque Amount",
+  "utrReferenceNumber": "UTR/Reference Number",
+  "uploadChequeFrontImage": "Upload Cheque Front Image",
+  "uploadChequeBackImage": "Upload Cheque Back Image",
+  "submit": "Submit",
+  "bankTransferSubmitted": "Bank Transfer Completed",
+  "uploadImage": "Upload Image",
+  "uploadPhotosNote": "Upload photos of max size 10MB in JPG, JPEG",
+  "or": "or",
+  "openCamera": "Open Camera",
+   "paymentSuccess": "Your payment was successful",
+  "paymentThankYou": "Thank you for your payment. We will be in contact with more details shortly",
+  "backToHome": "Back to Home",
+  "paymentPending": "Your payment status is Pending",
+  "paymentPendingDescription": "Thank you for your payment. Our admin team is reviewing the submitted details and will verify the payment within 3 business days. You will be notified once the verification is complete.",
+  "backToOrders": "Back to Orders"
+
+
+
+
 
 
   

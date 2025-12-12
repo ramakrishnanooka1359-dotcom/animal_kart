@@ -1,6 +1,6 @@
-
 import 'package:animal_kart_demo2/utils/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:animal_kart_demo2/l10n/app_localizations.dart';
 
 class BookingSuccessScreen extends StatefulWidget {
   const BookingSuccessScreen({super.key});
@@ -47,25 +47,22 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen> {
           ),
 
           const SizedBox(height: 25),
-
-          const Text(
-            "Your payment was successful",
+          Text(
+            context.tr("paymentSuccess"),
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
           ),
 
           const SizedBox(height: 12),
-
-          
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 40),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Text(
-              "Thank you for your payment. We will be in contact with more details shortly",
+              context.tr("paymentThankYou"),
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 15,
                 color: Colors.grey,
               ),
@@ -90,11 +87,11 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen> {
               ),
             ),
             onPressed: () {
-              Navigator.pop(context); 
+              Navigator.pop(context);
             },
-            child: const Text(
-              "Back to Home",
-              style: TextStyle(
+            child: Text(
+              context.tr("backToHome"),
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
