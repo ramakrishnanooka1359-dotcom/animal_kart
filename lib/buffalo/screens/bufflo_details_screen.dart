@@ -177,18 +177,19 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
             children: [
               Checkbox(
                 value: isCpfSelected,
-                onChanged: (bool? value) {
-                  setState(() {
-                    isCpfSelected = value ?? false;
-                    if (!isCpfSelected) {
-                      insuranceUnits =
-                          0; // Reset insurance units when CPF is unselected
-                    } else {
-                      insuranceUnits =
-                          1; // Set default insurance units when CPF is selected
-                    }
-                  });
-                },
+                onChanged: (value) {},
+                // onChanged: (bool? value) {
+                //   setState(() {
+                //     isCpfSelected = value ?? false;
+                //     if (!isCpfSelected) {
+                //       insuranceUnits =
+                //           0; // Reset insurance units when CPF is unselected
+                //     } else {
+                //       insuranceUnits =
+                //           1; // Set default insurance units when CPF is selected
+                //     }
+                //   });
+                // },
               ),
               const SizedBox(width: 8),
               Text(
