@@ -23,6 +23,9 @@ class BuffaloCard extends ConsumerWidget {
     final bool isNetwork = firstImage.startsWith("http");
     final int basePrice = buffalo.price * 2;
     final int cpfPrice = buffalo.insurance ;
+    final bool isCpfAvailable =
+    buffalo.inStock && buffalo.insurance > 0;
+
 
     return GestureDetector(
       onTap: disabled
@@ -148,39 +151,44 @@ class BuffaloCard extends ConsumerWidget {
 
                         const SizedBox(width: 12),
 
-                        OutlinedButton.icon(
-                          onPressed: () => _showInsuranceInfo(
-                            context,
-                            buffalo.price,
-                            buffalo.insurance,
-                          ),
-                          icon: const Icon(
-                            Icons.info_outline,
-                            size: 18,
-                            color: Colors.black,
-                          ),
-                          label: Text(
-                            context.tr("CPF "),
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: Theme.of(context).isLightTheme
-                                ? Color(0xFFF9FAFB)
-                                : akLightBlueCardLightColor,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            side: BorderSide.none,
-                          ),
-                        ),
+                     OutlinedButton.icon(
+  onPressed: isCpfAvailable
+      ? () => _showInsuranceInfo(
+            context,
+            buffalo.price,
+            buffalo.insurance,
+          )
+      : null, // 🚫 disabled when not available
+  icon: Icon(
+    Icons.info_outline,
+    size: 18,
+    color: isCpfAvailable ? Colors.black : Colors.grey,
+  ),
+  label: Text(
+    context.tr("CPF"),
+    style: TextStyle(
+      color: isCpfAvailable ? Colors.black : Colors.grey,
+      fontSize: 13,
+      fontWeight: FontWeight.w500,
+    ),
+  ),
+  style: OutlinedButton.styleFrom(
+    backgroundColor: isCpfAvailable
+        ? (Theme.of(context).isLightTheme
+            ? const Color(0xFFF9FAFB)
+            : akLightBlueCardLightColor)
+        : Colors.grey.shade200,
+    padding: const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 10,
+    ),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(30),
+    ),
+    side: BorderSide.none,
+  ),
+),
+
                       ],
                     ),
 
@@ -194,61 +202,73 @@ class BuffaloCard extends ConsumerWidget {
 
                     const SizedBox(height: 5),
 
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Price Text
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              context.tr("Price"),
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            Text(
-                              "₹$basePrice  CPF - ₹$cpfPrice ",
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
+Row(
+  children: [
+    /// PRICE SECTION
+    Expanded(
+      flex: 3,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.tr("Price"),
+            style: const TextStyle(
+              fontSize: 13,
+              color: Colors.grey,
+            ),
+          ),
+          Text(
+            "₹$basePrice  CPF - ₹$cpfPrice",
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    ),
 
-                        ElevatedButton(
-                          onPressed: disabled ? null : () {
-                            Navigator.pushNamed(
-                              context,
-                              AppRouter.buffaloDetails,
-                              arguments: {'buffaloId': buffalo.id},
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: kPrimaryGreen,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 28,
-                              vertical: 14,
-                            ),
-                          ),
-                          child: Text(
-                              context.tr("buy"),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
-                              ),
-                            ),
+    const SizedBox(width: 8),
 
+    /// BUY BUTTON
+ElevatedButton(
+  onPressed: disabled
+      ? null
+      : () {
+          Navigator.pushNamed(
+            context,
+            AppRouter.buffaloDetails,
+            arguments: {'buffaloId': buffalo.id},
+          );
+        },
+  style: ElevatedButton.styleFrom(
+    backgroundColor: kPrimaryGreen,
+    elevation: 0,
+    minimumSize: const Size(0, 38), // 👈 slightly taller
+    padding: const EdgeInsets.symmetric(
+      horizontal: 18, // 👈 little wider
+      vertical: 8,
+    ),
+    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(22),
+    ),
+  ),
+  child: Text(
+    context.tr("buy"),
+    style: const TextStyle(
+      fontSize: 13, // 👈 readable
+      fontWeight: FontWeight.w600,
+      color: Colors.black,
+    ),
+  ),
+),
 
-                        ),
-                      ],
-                    ),
+  ],
+)
+
                   ],
                 ),
               ),
