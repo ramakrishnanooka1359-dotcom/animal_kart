@@ -2,6 +2,15 @@ import 'package:animal_kart_demo2/utils/app_colors.dart';
 import 'package:animal_kart_demo2/utils/app_constants.dart';
 import 'package:flutter/material.dart';
 
+// New Color Palette
+const Color akForestWhisper = Color(0xFF238E8B);
+const Color akElectricLime = Color(0xFFE7EE57);
+const Color akSageStone = Color(0xFF4C7570);
+const Color akPureCanvas = Color(0xFFF4F4F4);
+const Color akSunsetBurst = Color(0xFFF85B37);
+const Color akMintBreeze = Color(0xFFB9DBBF);
+const Color akCharcoalShadow = Color(0xFF232828);
+
 extension CustomThemeExt on ThemeData {
   bool get isLightTheme => (brightness == Brightness.light);
   Color get whiteColor => isLightTheme ? akWhiteColor : akBlackColor;
@@ -89,7 +98,7 @@ extension CustomThemeExt on ThemeData {
 }
 
 //Light Theme Colors
-const Color kPrimaryLightColor = kPrimaryGreen;
+const Color kPrimaryLightColor = akForestWhisper;
 const Color akInactiveButtonLightColor = Color(0xff97b9d1);
 const Color akBorderLightColor = Color(0xFFD7E2EB);
 const Color akTableHeaderLightColor = Color(0xFFF3F3F3);
@@ -114,8 +123,8 @@ const Color akAlertGreenColor = Color(0XFF1A873C);
 // #E66811 · 16%
 
 //Dark Theme Colors
-const Color akDarkThemeBackgroundColor = Color(0xFF27292B);
-const Color kPrimaryDarkColor = kPrimaryGreen;
+const Color akDarkThemeBackgroundColor = akCharcoalShadow;
+const Color kPrimaryDarkColor = akForestWhisper;
 const Color akInactiveButtonDarkColor = Color.fromARGB(255, 161, 188, 206);
 const Color akBorderDarkColor = akWhiteColor12;
 const Color akTableHeaderDarkColor = Color(0xFF5A5E63);
@@ -201,19 +210,46 @@ const Color color11 = Color(0XFF27292b);
 ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
   fontFamily: kRoboto,
-  primarySwatch: akBlueColor,
-  colorScheme: ColorScheme.fromSeed(seedColor: kPrimaryLightColor),
+  primaryColor: akForestWhisper,
+  scaffoldBackgroundColor: akPureCanvas,
+  primarySwatch: akBlueColor, // Legacy, but kept for compatibility if needed
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: akForestWhisper,
+    primary: akForestWhisper,
+    secondary: akSunsetBurst,
+    surface: Colors.white,
+    background: akPureCanvas,
+  ),
+  appBarTheme: const AppBarTheme(
+    backgroundColor: akForestWhisper,
+    foregroundColor: Colors.white,
+    elevation: 0,
+  ),
+  useMaterial3: true,
 ).copyWith();
 
 ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
   fontFamily: kRoboto,
+  primaryColor: akMintBreeze,
+  scaffoldBackgroundColor: akCharcoalShadow,
+  canvasColor: akCharcoalShadow,
   primarySwatch: akBlueColor,
   colorScheme: ColorScheme.fromSeed(
-    seedColor: kPrimaryDarkColor,
+    seedColor: akForestWhisper,
     brightness: Brightness.dark,
-    background: akDarkThemeBackgroundColor,
+    primary: akMintBreeze,
+    secondary: akElectricLime,
+    background: akCharcoalShadow,
+    surface: akSageStone,
+    onSurface: Colors.white,
   ),
+  appBarTheme: const AppBarTheme(
+    backgroundColor: akCharcoalShadow,
+    foregroundColor: Colors.white,
+    elevation: 0,
+  ),
+  useMaterial3: true,
 ).copyWith();
 Color getColorForName(String name) {
   if (name.isNotEmpty) {
