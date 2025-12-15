@@ -8,7 +8,11 @@ class OrderUnit {
   final String? status;
   final String paymentStatus;
   final String? paymentType;
+  final String? orderDate;
   final List<OrderedBuffalo> buffalos;
+
+  /// 🔹 New field to store backend text for button/status
+  
 
   OrderUnit({
     required this.id,
@@ -20,7 +24,9 @@ class OrderUnit {
     this.status,
     required this.paymentStatus,
     this.paymentType,
+    this.orderDate,
     required this.buffalos,
+    
   });
 
   factory OrderUnit.fromJson(Map<String, dynamic> json) {
@@ -34,9 +40,12 @@ class OrderUnit {
       status: json['status'],
       paymentStatus: json['paymentStatus'] ?? '',
       paymentType: json['paymentType'],
+      orderDate: json['orderDate'] ?? '15-12-2025',
       buffalos: (json['buffalos'] as List? ?? [])
           .map((e) => OrderedBuffalo.fromJson(e))
           .toList(),
+      
+      // 🔹 Use backend text if provided, fallback to paymentStatus
     );
   }
 }
