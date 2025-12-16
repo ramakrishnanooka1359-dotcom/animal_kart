@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -76,7 +77,9 @@ class InvoiceGenerator {
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
                       _infoColumn("Invoice No", order.id),
-                      _infoColumn("Order Date", order.placedAt ?? ""),
+                      _infoColumn("Order Date", formatOrderDate(order.placedAt))
+
+                     // _infoColumn("Order Date", order.placedAt ?? ""),
                     ],
                   ),
 
@@ -129,8 +132,9 @@ class InvoiceGenerator {
                                 b.ageYears > 0,
                           )
                           .map(
-                            (b) => buildRow(
-                              "Buffalo ID: ${b.id}\nAge: ${b.ageYears} years",
+                         (b) => buildRow(
+                              "Buffalo ID: ${order.buffaloId}",
+                              //"Buffalo ID: ${b.id}\nAge: ${b.ageYears} years",
                               "1",
                               "RS 175,000",
                               "Rs 175,000",
@@ -156,6 +160,9 @@ class InvoiceGenerator {
                       ],
                     ),
                   ),
+                  pw.SizedBox(height: 20),
+
+                  _termsAndConditions(),
 
                   pw.Spacer(),
 
@@ -253,6 +260,31 @@ class InvoiceGenerator {
       ],
     );
   }
+static pw.Widget _termsAndConditions() {
+  return pw.Column(
+    crossAxisAlignment: pw.CrossAxisAlignment.start,
+    children: [
+      pw.Text(
+        "Terms & Conditions",
+        style: pw.TextStyle(
+          fontSize: 11,
+          fontWeight: pw.FontWeight.bold,
+        ),
+      ),
+      pw.SizedBox(height: 6),
+      pw.Text(
+        "1.This purchase is non-refundable.\n"
+        "2.Once the order is confirmed, no cancellation or refund will be provided.\n"
+        "3.The company is not responsible for delays caused by unforeseen circumstances.\n"
+        "4.This invoice is generated electronically and does not require a signature.",
+        style: pw.TextStyle(
+          fontSize: 9,
+          color: PdfColors.grey800,
+        ),
+      ),
+    ],
+  );
+}
 
   static pw.Widget _infoColumn(String label, String value) {
     return pw.Column(
@@ -274,3 +306,16 @@ class InvoiceGenerator {
     );
   }
 }
+
+
+String formatOrderDate(String? rawDate) {
+  if (rawDate == null || rawDate.isEmpty) return "";
+
+  try {
+    DateTime dt = DateTime.parse(rawDate);
+    return DateFormat('dd MMM yyyy, hh:mm a').format(dt); // e.g., 16 Dec 2025, 05:30 PM
+  } catch (e) {
+    return rawDate; // fallback if parsing fails
+  }
+}
+

@@ -1,5 +1,4 @@
 import 'package:animal_kart_demo2/auth/models/user_model.dart';
-import 'package:animal_kart_demo2/auth/providers/auth_provider.dart';
 import 'package:animal_kart_demo2/buffalo/screens/buffalo_list_screen.dart';
 import 'package:animal_kart_demo2/l10n/app_localizations.dart';
 import 'package:animal_kart_demo2/orders/screens/orders_screen.dart';
@@ -7,16 +6,17 @@ import 'package:animal_kart_demo2/profile/screens/user_profile_screen.dart';
 import 'package:animal_kart_demo2/routes/routes.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
 import 'package:animal_kart_demo2/utils/app_colors.dart';
-import 'package:animal_kart_demo2/utils/save_user.dart';
-import 'package:animal_kart_demo2/widgets/coin_widget.dart'; // CoinBadge
+import 'package:animal_kart_demo2/widgets/coin_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:animal_kart_demo2/utils/save_user.dart';
 import 'package:translator/translator.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   final int selectedIndex;
 
-  const HomeScreen({super.key,this.selectedIndex = 0});
+  const HomeScreen({super.key, this.selectedIndex = 0});
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -28,7 +28,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   late final List<Widget> _pages;
   UserModel? localUser;
   final translator = GoogleTranslator();
-String? localizedUserName;
+  String? localizedUserName;
 
   @override
   void initState() {
@@ -51,26 +51,43 @@ String? localizedUserName;
     setState(() => _selectedIndex = index);
   }
 
+  void _goToOrdersTab() => setState(() => _selectedIndex = 1);
+  void _goToHomeTab() => setState(() => _selectedIndex = 0);
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).mainThemeBgColor,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Theme.of(context).isLightTheme
-            ? kPrimaryDarkColor
-            : Colors.grey[850],
-        elevation: 0,
-        toolbarHeight: 90,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
-        ),
-        centerTitle: _selectedIndex != 0,
+    return WillPopScope(
+     onWillPop: () async {
+  if (_selectedIndex != 0) {
+    // If not on Home tab, go to Home tab
+    _goToHomeTab();
+    return false; // prevent default back
+  } else {
+    // On Home tab, exit the app
+    SystemNavigator.pop(); // explicitly exit app
+    return false; // prevent default back as we already handled it
+  }
+},
+
+      child: Scaffold(
+        backgroundColor: Theme.of(context).mainThemeBgColor,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: Theme.of(context).isLightTheme
+              ? kPrimaryDarkColor
+              : Colors.grey[850],
+          elevation: 0,
+          toolbarHeight: 90,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
+          ),
+          centerTitle: _selectedIndex != 0,
         title: _buildTitle(context),
         actions: _buildActions(context),
+        ),
+        body: IndexedStack(index: _selectedIndex, children: _pages),
+        bottomNavigationBar: _buildBottomNav(),
       ),
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: _buildBottomNav(),
     );
   }
 
@@ -83,17 +100,17 @@ String? localizedUserName;
         children: [
           Text(
             localUser?.name ?? 'User Profile',
-            style: TextStyle(
-              color: Theme.of(context).primaryTextColor,
-              fontSize: 24,
+              style: TextStyle(
+                  color: Theme.of(context).primaryTextColor,
+                  fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
           Text(
             '+91 ${localUser?.mobile ?? ''}',
-            style: TextStyle(
-              color: Theme.of(context).secondaryTextColor,
-              fontSize: 18,
+              style: TextStyle(
+                  color: Theme.of(context).secondaryTextColor,
+                  fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -123,15 +140,15 @@ String? localizedUserName;
 List<Widget> _buildActions(BuildContext context) {
   if (_selectedIndex == 1) return const []; // Orders → no actions
 
-  List<Widget> actions = [
-    const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 12),
-      child: CoinBadge(),
+    List<Widget> actions = [
+      const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 12),
+        child: CoinBadge(),
     ),
-  ];
+    ];
 
   // Only Home → add notifications
-  if (_selectedIndex == 0) {
+    if (_selectedIndex == 0) {
     actions.add(
       Padding(
         padding: const EdgeInsets.only(right: 16),
@@ -151,10 +168,10 @@ List<Widget> _buildActions(BuildContext context) {
         ),
       ),
     );
-  }
+    }
 
-  return actions;
-}
+    return actions;
+  }
 
 
   // ---------- Bottom Navigation ----------
@@ -208,10 +225,10 @@ List<Widget> _buildActions(BuildContext context) {
           const SizedBox(height: 4),
           Text(
             context.tr(label),
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: isSelected ? kPrimaryGreen : Colors.grey.shade600,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? kPrimaryGreen : Colors.grey.shade600,
             ),
           ),
         ],
@@ -219,3 +236,20 @@ List<Widget> _buildActions(BuildContext context) {
     );
   }
 }
+
+// ---------------- Orders Tab Wrapper ----------------
+// class OrdersScreenWrapper extends StatelessWidget {
+//   final VoidCallback goToHome;
+//   const OrdersScreenWrapper({super.key, required this.goToHome});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return WillPopScope(
+//       onWillPop: () async {
+//         goToHome();
+//         return false;
+//       },
+//       child: OrdersScreen(),
+//     );
+//   }
+// }

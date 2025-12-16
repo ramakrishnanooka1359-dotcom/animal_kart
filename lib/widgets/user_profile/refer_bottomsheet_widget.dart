@@ -1,131 +1,210 @@
 import 'package:animal_kart_demo2/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:animal_kart_demo2/l10n/app_localizations.dart';
 
 class ReferBottomSheet extends StatelessWidget {
   final String referralCode;
+  final double unitPrice;
+  final double userCoins;
 
-  const ReferBottomSheet({super.key, required this.referralCode});
+  const ReferBottomSheet({
+    super.key,
+    required this.referralCode,
+    this.unitPrice = 363000,
+    this.userCoins = 0,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isSmallScreen = screenHeight < 700;
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        isSmallScreen ? 8 : 12,
+        16,
+        isSmallScreen ? 12 : 20,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 6),
+          /// Drag Handle
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade400,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          SizedBox(height: isSmallScreen ? 8 : 12),
 
-          // Title
+          /// Title
           Text(
-            context.tr('refer_earn_title'),
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+            "Refer & Earn",
+            style: TextStyle(
+              fontSize: isSmallScreen ? 18 : 22,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 4),
 
-          // Description
+          /// Subtitle
           Text(
-            context.tr("refer_description"),
-            style: const TextStyle(fontSize: 13, color: Colors.grey),
+            "Invite friends, earn coins, and convert them into full units.",
             textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 14),
-
-          // Referral Code Card
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.green.withOpacity(0.18),
-                  blurRadius: 12,
-                  spreadRadius: 1,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  referralCode,
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: 1.6),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.copy, size: 20),
-                  onPressed: () {
-                    final message = "${context.tr('refer_earn_title')} - $referralCode";
-                    Clipboard.setData(ClipboardData(text: message));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(context.tr("copy_message")),
-                        duration: const Duration(milliseconds: 900),
-                      ),
-                    );
-                  },
-                ),
-              ],
+            style: TextStyle(
+              fontSize: isSmallScreen ? 12 : 14,
+              color: Colors.grey.shade600,
             ),
           ),
+          SizedBox(height: isSmallScreen ? 8 : 12),
 
-          const SizedBox(height: 14),
-
-          // How it works
+          /// Section Title
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              context.tr("how_it_works"),
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+              "How it works",
+              style: TextStyle(
+                fontSize: isSmallScreen ? 14 : 16,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: isSmallScreen ? 6 : 8),
 
-          _stepTile(context, "1️⃣  ${context.tr("step1")}"),
-          _stepTile(context, "2️⃣  ${context.tr("step2")}"),
-          _stepTile(context, "3️⃣  ${context.tr("step3")}"),
+          /// Steps (Compact)
+          _stepCard(
+            isSmallScreen,
+            icon: Icons.shopping_cart,
+            title: "Purchase Unit",
+            description: "Buy a unit and unlock referral rewards.",
+          ),
+          _stepCard(
+            isSmallScreen,
+            icon: Icons.currency_rupee,
+            title: "Earn Coins",
+            description: "Every referral gives 5% unit value as coins.",
+          ),
+          _stepCard(
+            isSmallScreen,
+            icon: Icons.auto_graph,
+            title: "Complete Unit",
+            description: "Accumulate coins equal to one unit.",
+          ),
+          _stepCard(
+            isSmallScreen,
+            icon: Icons.swap_horiz,
+            title: "Transfer",
+            description: "Transfer by entering basic details",
+          ),
 
-          const SizedBox(height: 18),
+          SizedBox(height: isSmallScreen ? 8 : 12),
 
-          // SHARE BUTTON
+          /// Share Button
           SizedBox(
             width: double.infinity,
-            height: 50,
+            height: isSmallScreen ? 44 : 48,
             child: ElevatedButton(
-              onPressed: () => _shareReferral(),
+              onPressed: _shareReferral,
               style: ElevatedButton.styleFrom(
-                backgroundColor: kPrimaryDarkColor, // Replace kPrimaryDarkColor if needed
-                elevation: 1,
+                backgroundColor: kPrimaryDarkColor,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40),
+                  borderRadius: BorderRadius.circular(30),
                 ),
               ),
-              child: Text(
-                context.tr('share'),
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.white),
+              child: const Text(
+                "Share Referral Code",
+                style: TextStyle(color: Colors.white, fontSize: 14),
               ),
             ),
           ),
-          const SizedBox(height: 10),
+
+          /// Transfer Button (Conditional)
+          if (userCoins >= unitPrice) ...[
+            SizedBox(height: isSmallScreen ? 6 : 8),
+            SizedBox(
+              width: double.infinity,
+              height: isSmallScreen ? 44 : 48,
+              child: OutlinedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const TransferUnitScreen(),
+                    ),
+                  );
+                },
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: kPrimaryDarkColor),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: Text(
+                  "Transfer Unit",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: kPrimaryDarkColor,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
   }
 
-  Widget _stepTile(BuildContext context, String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+  /// Compact Step Card
+  Widget _stepCard(
+    bool compact, {
+    required IconData icon,
+    required String title,
+    required String description,
+  }) {
+    return Container(
+      margin: EdgeInsets.only(bottom: compact ? 6 : 10),
+      padding: EdgeInsets.symmetric(
+        vertical: compact ? 6 : 10,
+        horizontal: 12,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Row(
         children: [
-          const SizedBox(width: 4),
+          CircleAvatar(
+            radius: compact ? 14 : 18,
+            backgroundColor: kPrimaryDarkColor.withOpacity(0.12),
+            child: Icon(
+              icon,
+              size: compact ? 14 : 18,
+              color: kPrimaryDarkColor,
+            ),
+          ),
+          const SizedBox(width: 10),
           Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(fontSize: 14, color: Colors.black87),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: compact ? 12 : 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  description,
+                  style: TextStyle(
+                    fontSize: compact ? 11 : 13,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -134,6 +213,21 @@ class ReferBottomSheet extends StatelessWidget {
   }
 
   void _shareReferral() {
-    Share.share("Use my referral code $referralCode and get 1000 coins on signup! 🐃🔥");
+    Share.share(
+      "Use my referral code $referralCode and earn coins towards a full unit 🐃🔥",
+    );
+  }
+}
+
+/// Dummy Transfer Screen
+class TransferUnitScreen extends StatelessWidget {
+  const TransferUnitScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Transfer Unit")),
+      body: const Center(child: Text("Transfer Unit Form Goes Here")),
+    );
   }
 }
