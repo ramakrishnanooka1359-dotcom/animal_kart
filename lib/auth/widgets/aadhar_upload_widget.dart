@@ -154,7 +154,12 @@ class AadhaarUploadWidget extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(6),
                   ),
                 ),
-                child: Text(context.tr("openCamera")),
+                child: Text(context.tr("openCamera",),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),),
               ),
             ],
           ),
