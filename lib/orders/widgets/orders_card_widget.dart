@@ -18,14 +18,32 @@ class BuffaloOrderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isPendingPayment =
         order.paymentStatus.toUpperCase() == "PENDING_PAYMENT";
+    final bool isAdminVerificationPending = order.paymentStatus.toUpperCase() == "PENDING_ADMIN_VERIFICATION";
     final bool isPaid = order.paymentStatus.toUpperCase() == "PAID";
-    final bool isUnderReview =
-        order.paymentStatus.toUpperCase() == "UNDER_REVIEW";
+   final String paymentStatus = order.paymentStatus.toUpperCase();
+    late final Color statusColor;
+    late final String statusText;
+    
 
-    final Color statusColor = isPaid ? Colors.green : Colors.orange;
-    final String statusText = isPaid
-        ? context.tr("paid")
-        : context.tr("pending");
+    switch (paymentStatus) {
+  case "PAID":
+    statusColor = Colors.green;
+    statusText = context.tr("paid");
+    break;
+
+  case "PENDING_ADMIN_VERIFICATION":
+    statusColor = Colors.blue;
+    statusText = context.tr("verification pending");
+    break;
+
+  case "PENDING_PAYMENT":
+  default:
+    statusColor = Colors.orange;
+    statusText = context.tr("pending");
+}
+
+   
+
 
     const int totalAmount = 363000;
 
@@ -214,7 +232,7 @@ class BuffaloOrderCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                      if (isUnderReview)
+                      if (isAdminVerificationPending)
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
@@ -225,7 +243,7 @@ class BuffaloOrderCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Text(
-                            "Under Review",
+                            "Admin Verification Pending",
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 10,
@@ -233,7 +251,7 @@ class BuffaloOrderCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                      if (isPaid && order.paymentType != null) ...[
+                      if ((isPaid  ) && order.paymentType != null) ...[
                         Container(
                           margin: const EdgeInsets.only(left: 8),
                           padding: const EdgeInsets.symmetric(
@@ -282,7 +300,7 @@ class BuffaloOrderCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
 
-                  if (isPendingPayment || isUnderReview)
+                  if (isPendingPayment || isAdminVerificationPending)
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
