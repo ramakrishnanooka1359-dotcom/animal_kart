@@ -2,6 +2,7 @@
 import 'dart:io';
 import 'package:animal_kart_demo2/manualpayment/model/manual_payment_form_model.dart';
 import 'package:animal_kart_demo2/manualpayment/provider/manual_payment_provider.dart';
+import 'package:animal_kart_demo2/manualpayment/widgets/capital_convert_widget.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -508,6 +509,10 @@ Future<void> _handleBankTransferSubmit() async {
                 validator: BankTransferValidators.validateUTR,
                 keyboardType: TextInputType.text,
                 maxLength: 22,
+                inputFormatters: [
+    UpperCaseTextFormatter(), 
+  ],
+
               ),
               const SizedBox(height: 8),
 
@@ -525,6 +530,9 @@ Future<void> _handleBankTransferSubmit() async {
                 validator: BankTransferValidators.validateIFSC,
                 keyboardType: TextInputType.text,
                 maxLength: 11,
+                inputFormatters: [
+    UpperCaseTextFormatter(), 
+  ],
               ),
               const SizedBox(height: 8),
 
@@ -728,6 +736,10 @@ Future<void> _handleBankTransferSubmit() async {
                 validator: ChequePaymentValidators.validateChequeIFSC,
                 keyboardType: TextInputType.text,
                 maxLength: 11,
+                inputFormatters: [
+    UpperCaseTextFormatter(), 
+  ],
+
               ),
               const SizedBox(height: 8),
 
@@ -737,6 +749,10 @@ Future<void> _handleBankTransferSubmit() async {
                 validator: ChequePaymentValidators.validateChequeUTRRef,
                 keyboardType: TextInputType.text,
                 maxLength: 30,
+                inputFormatters: [
+    UpperCaseTextFormatter(), 
+  ],
+
               ),
 
               const SizedBox(height: 20),

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:animal_kart_demo2/widgets/custom_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class FieldTitle extends StatelessWidget {
   final String title;
@@ -217,6 +218,7 @@ class ValidatedTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final TextInputType? keyboardType;
   final int? maxLength;
+  final List<TextInputFormatter>? inputFormatters; 
 
   const ValidatedTextField({
     Key? key,
@@ -227,6 +229,7 @@ class ValidatedTextField extends StatelessWidget {
     this.suffixIcon,
     this.keyboardType,
     this.maxLength,
+    this.inputFormatters,
   }) : super(key: key);
 
   @override
@@ -241,6 +244,7 @@ class ValidatedTextField extends StatelessWidget {
           readOnly: readOnly,
           keyboardType: keyboardType,
           maxLength: maxLength,
+          inputFormatters: inputFormatters, 
           decoration: fieldDeco("").copyWith(
             suffixIcon: suffixIcon,
             errorStyle: const TextStyle(

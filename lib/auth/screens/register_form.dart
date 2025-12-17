@@ -581,33 +581,40 @@ Future<void> _loadUserData() async {
 
   // SELECT DOB ------
   Future<void> selectDOB() async {
-    final now = DateTime.now();
+  final now = DateTime.now();
 
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime(now.year - 21),
-      firstDate: DateTime(1960),
-      lastDate: now,
-      builder: (context, child) {
-        return Theme(
-          data: ThemeData(
-            colorScheme: ColorScheme.light(
-              primary: kPrimaryGreen,
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
-            ),
-            dialogBackgroundColor: Colors.white,
+  
+  final maxAllowedDOB = DateTime(
+    now.year - 21,
+    now.month,
+    now.day,
+  );
+
+  final picked = await showDatePicker(
+    context: context,
+    initialDate: maxAllowedDOB,
+    firstDate: DateTime(1960),
+    lastDate: maxAllowedDOB, 
+    builder: (context, child) {
+      return Theme(
+        data: ThemeData(
+          colorScheme: ColorScheme.light(
+            primary: kPrimaryGreen,
+            onPrimary: Colors.white,
+            onSurface: Colors.black,
           ),
-          child: child!,
-        );
-      },
-    );
+          dialogBackgroundColor: Colors.white,
+        ),
+        child: child!,
+      );
+    },
+  );
 
-    if (picked != null) {
-      selectedDOB = picked;
-      dobCtrl.text = "${picked.month}-${picked.day}-${picked.year}";
-    }
+  if (picked != null) {
+    selectedDOB = picked;
+    dobCtrl.text = "${picked.day}-${picked.month}-${picked.year}";
   }
+}
 
   // SUBMIT FORM ------
   void submitForm() async {
