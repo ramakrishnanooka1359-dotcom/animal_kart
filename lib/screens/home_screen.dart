@@ -2,6 +2,7 @@ import 'package:animal_kart_demo2/auth/models/user_model.dart';
 
 import 'package:animal_kart_demo2/buffalo/screens/buffalo_list_screen.dart';
 import 'package:animal_kart_demo2/l10n/app_localizations.dart';
+import 'package:animal_kart_demo2/orders/providers/orders_providers.dart';
 import 'package:animal_kart_demo2/orders/screens/orders_screen.dart';
 import 'package:animal_kart_demo2/profile/screens/user_profile_screen.dart';
 import 'package:animal_kart_demo2/routes/routes.dart';
@@ -12,7 +13,6 @@ import 'package:animal_kart_demo2/widgets/coin_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:animal_kart_demo2/utils/save_user.dart';
 import 'package:translator/translator.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -50,6 +50,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _onItemTapped(int index) {
+    if (index == 1) {
+     
+      ref.read(ordersProvider.notifier).loadOrders();
+    }
     setState(() => _selectedIndex = index);
   }
 
@@ -61,13 +65,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return WillPopScope(
      onWillPop: () async {
   if (_selectedIndex != 0) {
-    // If not on Home tab, go to Home tab
+    
     _goToHomeTab();
-    return false; // prevent default back
+    return false; 
   } else {
-    // On Home tab, exit the app
-    SystemNavigator.pop(); // explicitly exit app
-    return false; // prevent default back as we already handled it
+    
+    SystemNavigator.pop();
+    return false; 
   }
 },
 
@@ -138,10 +142,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
 
-// ---------- AppBar Actions ----------
+
 List<Widget> _buildActions(BuildContext context) {
   switch (_selectedIndex) {
-    case 0: // BuffaloListScreen (Home)
+    case 0: 
       return [
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 12),
@@ -165,9 +169,9 @@ List<Widget> _buildActions(BuildContext context) {
           ),
         ),
       ];
-    case 1: // OrdersScreen
+    case 1: 
       return const [];
-    case 2: // UserProfileScreen
+    case 2: 
       return const [];
     default:
       return const [];
@@ -238,19 +242,3 @@ List<Widget> _buildActions(BuildContext context) {
   }
 }
 
-// ---------------- Orders Tab Wrapper ----------------
-// class OrdersScreenWrapper extends StatelessWidget {
-//   final VoidCallback goToHome;
-//   const OrdersScreenWrapper({super.key, required this.goToHome});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return WillPopScope(
-//       onWillPop: () async {
-//         goToHome();
-//         return false;
-//       },
-//       child: OrdersScreen(),
-//     );
-//   }
-// }

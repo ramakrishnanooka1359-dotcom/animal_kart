@@ -18,7 +18,7 @@ class OrdersController extends StateNotifier<List<OrderUnit>> {
 
   Future<void> loadOrders() async {
     try {
-      // Set loading to true using the same ref
+     
       ref.read(ordersLoadingProvider.notifier).state = true;
       
       final prefs = await SharedPreferences.getInstance();
@@ -33,11 +33,11 @@ class OrdersController extends StateNotifier<List<OrderUnit>> {
       final orders = await ApiServices.fetchOrders(userId);
       state = orders;
     } catch (error) {
-      // Handle error appropriately
+      
       state = [];
-      rethrow;
+     
     } finally {
-      // Always set loading to false when done
+      
       ref.read(ordersLoadingProvider.notifier).state = false;
     }
   }
