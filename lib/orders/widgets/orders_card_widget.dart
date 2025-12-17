@@ -16,13 +16,17 @@ class BuffaloOrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isPendingPayment =
+ final bool isPendingPayment =
         order.paymentStatus.toUpperCase() == "PENDING_PAYMENT";
     final bool isAdminVerificationPending = order.paymentStatus.toUpperCase() == "PENDING_ADMIN_VERIFICATION";
     final bool isPaid = order.paymentStatus.toUpperCase() == "PAID";
    final String paymentStatus = order.paymentStatus.toUpperCase();
     late final Color statusColor;
     late final String statusText;
+    final bool showPaymentType =
+      (isPaid || isAdminVerificationPending) &&
+      order.paymentType != null;
+
     
 
     switch (paymentStatus) {
@@ -232,6 +236,51 @@ class BuffaloOrderCard extends StatelessWidget {
                             ),
                           ),
                         ),
+                    
+                    if (showPaymentType) ...[
+                      /// PAYMENT TYPE CHIP (VISIBLE FOR PAID + ADMIN VERIFICATION)
+                      Container(
+                        margin: const EdgeInsets.only(left: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: isPaid ? Colors.green : Colors.green,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          order.paymentType!
+                              .replaceAll("_", " ")
+                              .toUpperCase(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+
+                      /// INVOICE ONLY WHEN PAID
+                      if (isPaid)
+                        GestureDetector(
+                          onTap: onTapInvoice,
+                          child: Container(
+                            margin: const EdgeInsets.only(left: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              context.tr("invoice"),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                    const SizedBox(width: 6),
                       if (isAdminVerificationPending)
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -251,51 +300,7 @@ class BuffaloOrderCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                      if ((isPaid  ) && order.paymentType != null) ...[
-                        Container(
-                          margin: const EdgeInsets.only(left: 8),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.green,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            order.paymentType!
-                                .replaceAll("_", " ")
-                                .toUpperCase(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: onTapInvoice,
-                          child: Container(
-                            margin: const EdgeInsets.only(left: 8),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              context.tr("invoice"),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+
                     ],
                   ),
                   const SizedBox(height: 6),
