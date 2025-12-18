@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:animal_kart_demo2/buffalo/providers/buffalo_details_provider.dart';
+import 'package:animal_kart_demo2/buffalo/widgets/custom_buffalo_details.dart';
 import 'package:animal_kart_demo2/buffalo/widgets/insurance_sheet.dart';
 import 'package:animal_kart_demo2/l10n/app_localizations.dart';
 import 'package:animal_kart_demo2/routes/routes.dart';
@@ -120,8 +121,11 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
                 ),
                 
                 const SizedBox(height: 14),
+                cpfExplanationCard(context,buffalo),
+                const SizedBox(height: 18),
                 _cpfCheckboxAndSelector(buffalo),
                 const SizedBox(height: 18),
+                
                 priceExplanation(
                   context: context,
                   buffalo: buffalo,
@@ -131,6 +135,7 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
                   cpfAmount: cpfAmount,
                   total: totalAmount,
                 ),
+                
               ],
             ),
           ),
@@ -358,6 +363,7 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Checkbox for CPF selection
+          
           Row(
             children: [
               Checkbox(
