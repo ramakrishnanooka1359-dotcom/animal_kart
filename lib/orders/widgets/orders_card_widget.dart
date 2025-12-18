@@ -1,5 +1,6 @@
 import 'package:animal_kart_demo2/l10n/app_localizations.dart';
 import 'package:animal_kart_demo2/orders/widgets/dat_time_helper_widget.dart';
+import 'package:animal_kart_demo2/orders/widgets/tracker_screen.dart';
 import 'package:animal_kart_demo2/utils/convert.dart';
 import 'package:flutter/material.dart';
 import '../models/order_model.dart';
@@ -156,39 +157,39 @@ Padding(
         ),
       ),
 
-      // ---------------- VERTICAL DIVIDER ----------------
-      Container(
-        height: 70, // match image or content height
-        width: 1,
-        color: Colors.grey.withOpacity(0.5),
-        margin: const EdgeInsets.symmetric(horizontal: 10),
-      ),
+        // ---------------- VERTICAL DIVIDER ----------------
+        Container(
+          height: 70, // match image or content height
+          width: 1,
+          color: Colors.grey.withOpacity(0.5),
+          margin: const EdgeInsets.symmetric(horizontal: 10),
+        ),
 
       // ---------------- TOTAL COLUMN ----------------
-      Column(
-        mainAxisAlignment: MainAxisAlignment.start, // top alignment
-        crossAxisAlignment: CrossAxisAlignment.start, // 👈 important: align left
-        children: [
-          Text(
-            "Total",
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+          Column(
+                    mainAxisAlignment: MainAxisAlignment.start, // top alignment
+                    crossAxisAlignment: CrossAxisAlignment.start, // 👈 important: align left
+                    children: [
+                      Text(
+                        "Total",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    // const SizedBox(height: 4),
+                      Text(
+                        "₹${_formatAmount(order.totalCost)}",
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-         // const SizedBox(height: 4),
-          Text(
-            "₹${_formatAmount(order.totalCost)}",
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ],
-      ),
-    ],
-  ),
-),
 
 
             _divider(),
@@ -244,7 +245,35 @@ Padding(
                         ),
 
                     if (showPaymentType) ...[
-                      /// PAYMENT TYPE CHIP (VISIBLE FOR PAID + ADMIN VERIFICATION)
+
+                        if (isPaid)
+                        GestureDetector(
+                          onTap: (){
+                            Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => TrackerScreen(),
+                            ),
+                          );
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(left: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              context.tr("Track"),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                     
                       Container(
                         margin: const EdgeInsets.only(left: 8),
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

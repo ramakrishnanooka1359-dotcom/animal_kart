@@ -40,6 +40,7 @@ dependencies:
   translator: ^1.0.4+1
   geolocator: ^14.0.2
   flutter_file_dialog: ^3.0.3
+  timelines_plus: ^1.0.8
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
