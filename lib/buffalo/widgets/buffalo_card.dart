@@ -25,6 +25,8 @@ class BuffaloCard extends ConsumerWidget {
     final int cpfPrice = buffalo.insurance ;
     final bool isCpfAvailable =
     buffalo.inStock && buffalo.insurance > 0;
+     final int totalPrice =
+    (buffalo.price * 2) + cpfPrice;
 
 
     return GestureDetector(
@@ -216,7 +218,9 @@ class BuffaloCard extends ConsumerWidget {
                                     ),
                                     SizedBox(width: 5,),
                                     Text(
-                                      "₹3,63,000",
+                                    "₹$totalPrice",
+
+
                                       style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
