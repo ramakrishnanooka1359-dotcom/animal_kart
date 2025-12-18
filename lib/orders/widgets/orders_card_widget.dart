@@ -1,4 +1,5 @@
 import 'package:animal_kart_demo2/l10n/app_localizations.dart';
+import 'package:animal_kart_demo2/orders/widgets/dat_time_helper_widget.dart';
 import 'package:animal_kart_demo2/utils/convert.dart';
 import 'package:flutter/material.dart';
 import '../models/order_model.dart';
@@ -16,40 +17,15 @@ class BuffaloOrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
- final bool isPendingPayment =
-        order.paymentStatus.toUpperCase() == "PENDING_PAYMENT";
+    final String status = order.paymentStatus.toUpperCase();
     final bool isAdminVerificationPending = order.paymentStatus.toUpperCase() == "PENDING_ADMIN_VERIFICATION";
-    final bool isPaid = order.paymentStatus.toUpperCase() == "PAID";
-   final String paymentStatus = order.paymentStatus.toUpperCase();
-    late final Color statusColor;
-    late final String statusText;
-    final bool showPaymentType =
+    final bool isPaid = status == "PAID";
+     final bool showPaymentType =
       (isPaid || isAdminVerificationPending) &&
       order.paymentType != null;
 
-    
-
-    switch (paymentStatus) {
-  case "PAID":
-    statusColor = Colors.green;
-    statusText = context.tr("paid");
-    break;
-
-  case "PENDING_ADMIN_VERIFICATION":
-    statusColor = Colors.blue;
-    statusText = context.tr("pending");
-    break;
-
-  case "PENDING_PAYMENT":
-  default:
-    statusColor = Colors.orange;
-    statusText = context.tr("pending");
-}
-
-   
-
-
-    
+    final bool isPendingPayment = status == "PENDING_PAYMENT";
+    final bool isAdminReview = status == "PENDING_ADMIN_VERIFICATION";
 
     return InkWell(
       borderRadius: BorderRadius.circular(14),
@@ -83,202 +59,189 @@ class BuffaloOrderCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    children: [
-                      Text(
-                        "Order Id : ${order.id}",
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      // Text(
-                      //   "Order Placed on: ${DateUtilsHelper.formatPlacedAt(order.placedAt.toString())}",
-                      //   style: const TextStyle(
-                      //     fontSize: 13,
-                      //     fontWeight: FontWeight.w700,
-                      //   ),
-                      // ),
-                    ],
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: statusColor,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      statusText.toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            /// ---------------- FULL WIDTH DIVIDER ----------------
-            Container(
-              height: 1,
-              width: double.infinity,
-              color: Colors.grey.withOpacity(0.4),
-            ),
-
-            /// ---------------- IMAGE + DETAILS + AMOUNT ----------------
-            Padding(
-              padding: const EdgeInsets.all(14),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      "assets/images/buffalo_image2.png",
-                      height: 70,
-                      width: 100,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Breed ID: ${order.breedId}",
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            _valueRow(
-                              context,
-                              "${order.buffaloCount}",
-                              context.tr("buffalo"),
-                            ),
-                            const SizedBox(width: 6),
-                            _valueRow(
-                              context,
-                              "${order.calfCount}",
-                              context.tr("calf"),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        RichText(
-                          text: TextSpan(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start, 
+                        mainAxisSize: MainAxisSize.min,               
+                        children: [
+                          Text(
+                            "Order Id : ${order.id}",
                             style: const TextStyle(
-                              fontSize: 12,
+                              fontSize: 13,
                               fontWeight: FontWeight.w700,
                             ),
-                            children: [
-                              TextSpan(
-                                text: "${order.numUnits} ",
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                              TextSpan(
-                                text: "${context.tr("unit")} + CPF",
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Text(
-                    "₹${_formatAmount(order.totalCost)}",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                          const SizedBox(height: 4),
+                          
+                          Text(
+                            //'',
+                          "Placed on : ${formatToIndianDateTime(order.userCreatedAt)}",
+
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                  if (isPaid)
+                    _statusChip("PAID", Colors.green),
+
+                  if (isPendingPayment)
+                    _statusChip("PENDING", Colors.orange),
+
+                  if (isAdminReview)
+                    _statusChip("ADMIN REVIEW", const Color(0xFF7E57C2)),
                 ],
               ),
             ),
 
-            /// ---------------- DIVIDER BELOW IMAGE ----------------
-            Container(
-              height: 1,
-              width: double.infinity,
-              color: Colors.grey.withOpacity(0.4),
-            ),
+            _divider(),
 
-            /// ---------------- INFO + BUTTONS ----------------
+            /// ================= DETAILS =================
+Padding(
+  padding: const EdgeInsets.all(14),
+  child: Row(
+    crossAxisAlignment: CrossAxisAlignment.start, // aligns everything at the top
+    children: [
+      // ---------------- IMAGE ----------------
+      ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.asset(
+          "assets/images/buffalo_image2.png",
+          height: 70,
+          width: 100,
+          fit: BoxFit.cover,
+        ),
+      ),
+      const SizedBox(width: 10),
+
+      // ---------------- BUFFALO INFO ----------------
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Breed ID: ${order.breedId}",
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                _valueRow(context, "${order.buffaloCount}", context.tr("buffalo")),
+                const SizedBox(width: 6),
+                _valueRow(context, "${order.calfCount}", context.tr("calf")),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              "${order.numUnits} ${context.tr("unit")} + CPF",
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+
+      // ---------------- VERTICAL DIVIDER ----------------
+      Container(
+        height: 70, // match image or content height
+        width: 1,
+        color: Colors.grey.withOpacity(0.5),
+        margin: const EdgeInsets.symmetric(horizontal: 10),
+      ),
+
+      // ---------------- TOTAL COLUMN ----------------
+      Column(
+        mainAxisAlignment: MainAxisAlignment.start, // top alignment
+        crossAxisAlignment: CrossAxisAlignment.start, // 👈 important: align left
+        children: [
+          Text(
+            "Total",
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+         // const SizedBox(height: 4),
+          Text(
+            "₹${_formatAmount(order.totalCost)}",
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    ],
+  ),
+),
+
+
+            _divider(),
+
+            /// ================= BOTTOM SECTION =================
             Padding(
               padding: const EdgeInsets.all(14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+
+                  /// BUTTONS
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
+
+                      /// PAY → ONLY PENDING PAYMENT
                       if (isPendingPayment)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.blueAccent,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Text(
-                            "Pending Payment",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ManualPaymentScreen(
+                                    totalAmount: order.totalCost,
+                                    unitId: order.id,
+                                    userId: order.userId,
+                                    buffaloId: order.breedId,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Container(
+                                                margin: const EdgeInsets.only(left: 8),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.redAccent,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Center(
+                                child: const Text(
+                                  "PAY NOW",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                    if (isPendingPayment)
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ManualPaymentScreen(
-                            totalAmount: order.totalCost,
-                            unitId: order.id,
-                            userId: order.userId,
-                            buffaloId: order.breedId,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.only(left: 8),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.redAccent,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Text(
-                        "PAY",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
 
                     if (showPaymentType) ...[
                       /// PAYMENT TYPE CHIP (VISIBLE FOR PAID + ADMIN VERIFICATION)
@@ -323,45 +286,21 @@ class BuffaloOrderCard extends StatelessWidget {
                           ),
                         ),
                     ],
-                    const SizedBox(width: 6),
-                      if (isAdminVerificationPending)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Color(0xFF7E57C2),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Text(
-                            "Admin Verification Pending",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-
-                    ],
+                    ]
                   ),
+
                   const SizedBox(height: 6),
 
-                  if (isPendingPayment || isAdminVerificationPending)
+                  /// INFO MESSAGE
+                  if (isPendingPayment || isAdminReview)
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(
-                          Icons.info_outline,
-                          color: Colors.grey,
-                          size: 16,
-                        ),
+                        const Icon(Icons.info_outline, size: 16, color: Colors.grey),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             isPendingPayment
-                                ? "Please fill the form with cheque or bank details to complete payment"
+                                ? "Cheque/Bank details in next step"
                                 : "Order is under review by Admin",
                             style: const TextStyle(
                               fontSize: 12,
@@ -381,25 +320,38 @@ class BuffaloOrderCard extends StatelessWidget {
     );
   }
 
-  /// ---------------- VALUE + LABEL
-  Widget _valueRow(BuildContext context, String value, String label) {
-    return RichText(
-      text: TextSpan(
-        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
-        children: [
-          TextSpan(
-            text: "$value ",
-            style: const TextStyle(
-              fontWeight: FontWeight.w700,
-              color: Colors.black,
-            ),
-          ),
-          TextSpan(
-            text: label,
-            style: const TextStyle(color: Colors.black),
-          ),
-        ],
+  /// ================= HELPERS =================
+
+  Widget _statusChip(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(12),
       ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+
+  Widget _divider() {
+    return Container(
+      height: 1,
+      width: double.infinity,
+      color: Colors.grey.withOpacity(0.4),
+    );
+  }
+
+  Widget _valueRow(BuildContext context, String value, String label) {
+    return Text(
+      "$value $label",
+      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
     );
   }
 
