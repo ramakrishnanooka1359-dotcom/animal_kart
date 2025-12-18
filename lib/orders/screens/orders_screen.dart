@@ -75,7 +75,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                                 PdfViewerScreen(filePath: filePath),
                           ),
                         );
-                        print('Invoice tapped for order: ${order.id}');
+                        
                       },
                     ),
                   );

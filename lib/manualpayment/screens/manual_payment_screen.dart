@@ -1,6 +1,5 @@
 // lib/manualpayment/manual_payment_screen.dart
 import 'dart:io';
-import 'package:animal_kart_demo2/manualpayment/model/manual_payment_form_model.dart';
 import 'package:animal_kart_demo2/manualpayment/provider/manual_payment_provider.dart';
 import 'package:animal_kart_demo2/manualpayment/widgets/capital_convert_widget.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -275,10 +274,10 @@ Future<void> _handleBankTransferSubmit() async {
     };
 
     final payload = {
-      "unitId": widget.unitId,
+      "orderId": widget.unitId,
       "paymentType": "BANK_TRANSFER",
       "userId": widget.userId,
-      "buffaloId": widget.buffaloId,
+      "breedId": widget.buffaloId,
       "transaction": transactionData,
     };
 
@@ -349,10 +348,10 @@ Future<void> _handleBankTransferSubmit() async {
     };
 
     final payload = {
-      "unitId": widget.unitId,
+      "orderId": widget.unitId,
       "paymentType": "CHEQUE",
       "userId": widget.userId,
-      "buffaloId": widget.buffaloId,
+      "breedId": widget.buffaloId,
       "transaction": transactionData,
     };
 

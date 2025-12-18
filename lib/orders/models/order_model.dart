@@ -1,3 +1,5 @@
+import 'package:animal_kart_demo2/orders/models/buffalo_model.dart';
+
 class OrderUnit {
   final String id;
   final String userId;
@@ -22,7 +24,7 @@ class OrderUnit {
   final int totalCost;
 
   final bool withCpf;
-  final List<dynamic> buffalos;
+  final List<BuffaloModel> buffalos;
 
   OrderUnit({
     required this.id,
@@ -47,40 +49,46 @@ class OrderUnit {
   });
 
   factory OrderUnit.fromJson(Map<String, dynamic> json) {
-  DateTime? parseDate(String? value) {
-    if (value == null || value.isEmpty) return null;
-    return DateTime.parse(value);
+    DateTime? parseDate(String? value) {
+      if (value == null || value.isEmpty) return null;
+      return DateTime.parse(value);
+    }
+
+    return OrderUnit(
+      id: json['id'] ?? '',
+      userId: json['userId'] ?? '',
+      userCreatedAt: parseDate(json['userCreatedAt']),
+      paymentSessionDate: parseDate(json['paymentSessionDate']),
+      breedId: json['breedId'] ?? '',
+
+      numUnits: parseInt(json['numUnits']),
+      buffaloCount: parseInt(json['buffaloCount']),
+      calfCount: parseInt(json['calfCount']),
+
+      status: json['status'],
+      paymentStatus: json['paymentStatus'] ?? 'UNKNOWN',
+      paymentType: json['paymentType'],
+
+      placedAt: DateTime.parse(json['placedAt']),
+      approvalDate: parseDate(json['approvalDate']),
+
+      baseUnitCost: parseInt(json['baseUnitCost']),
+      cpfUnitCost: parseInt(json['cpfUnitCost']),
+      unitCost: parseInt(json['unitCost']),
+      totalCost: parseInt(json['totalCost']),
+
+      withCpf: json['withCpf'] ?? false,
+
+      buffalos: (json['buffalos'] as List? ?? [])
+          .map((e) => BuffaloModel.fromJson(e))
+          .toList(),
+    );
   }
-
-  return OrderUnit(
-    id: json['id'] ?? '',
-    userId: json['userId'] ?? '',
-    userCreatedAt: parseDate(json['userCreatedAt']),
-    paymentSessionDate: parseDate(json['paymentSessionDate']),
-    breedId: json['breedId'] ?? '',
-
-    numUnits: parseInt(json['numUnits']),
-    buffaloCount: parseInt(json['buffaloCount']),
-    calfCount: parseInt(json['calfCount']),
-
-    status: json['status'],
-    paymentStatus: json['paymentStatus'] ?? 'UNKNOWN',
-    paymentType: json['paymentType'],
-
-    placedAt: DateTime.parse(json['placedAt']),
-    approvalDate: parseDate(json['approvalDate']),
-
-    baseUnitCost: parseInt(json['baseUnitCost']),
-    cpfUnitCost: parseInt(json['cpfUnitCost']),
-    unitCost: parseInt(json['unitCost']),
-    totalCost: parseInt(json['totalCost']),
-
-    withCpf: json['withCpf'] ?? false,
-    buffalos: json['buffalos'] ?? [],
-  );
 }
 
-}
+
+
+
 int parseInt(dynamic value) {
   if (value == null) return 0;
   if (value is int) return value;

@@ -49,7 +49,7 @@ class BuffaloOrderCard extends StatelessWidget {
    
 
 
-    const int totalAmount = 363000;
+    
 
     return InkWell(
       borderRadius: BorderRadius.circular(14),
@@ -59,7 +59,7 @@ class BuffaloOrderCard extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ManualPaymentScreen(
-                    totalAmount: totalAmount,
+                    totalAmount: order.totalCost,
                     unitId: order.id,
                     userId: order.userId,
                     buffaloId: order.breedId,
@@ -83,18 +83,29 @@ class BuffaloOrderCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// ---------------- ORDER DATE + STATUS ----------------
+            
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "Order Placed on: ${DateUtilsHelper.formatPlacedAt(order.placedAt.toString())}",
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  Column(
+                    children: [
+                      Text(
+                        "Order Id : ${order.id}",
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      // Text(
+                      //   "Order Placed on: ${DateUtilsHelper.formatPlacedAt(order.placedAt.toString())}",
+                      //   style: const TextStyle(
+                      //     fontSize: 13,
+                      //     fontWeight: FontWeight.w700,
+                      //   ),
+                      // ),
+                    ],
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -146,7 +157,7 @@ class BuffaloOrderCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Buffalo ID: ${order.breedId}",
+                          "Breed ID: ${order.breedId}",
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
@@ -191,7 +202,7 @@ class BuffaloOrderCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "₹${_formatAmount(totalAmount)}",
+                    "₹${_formatAmount(order.totalCost)}",
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -237,37 +248,37 @@ class BuffaloOrderCard extends StatelessWidget {
                           ),
                         ),
                     if (isPendingPayment)
-  GestureDetector(
-    onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ManualPaymentScreen(
-            totalAmount: totalAmount,
-            unitId: order.id,
-            userId: order.userId,
-            buffaloId: order.breedId,
-          ),
-        ),
-      );
-    },
-    child: Container(
-      margin: const EdgeInsets.only(left: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.redAccent,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: const Text(
-        "PAY",
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    ),
-  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ManualPaymentScreen(
+                            totalAmount: order.totalCost,
+                            unitId: order.id,
+                            userId: order.userId,
+                            buffaloId: order.breedId,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.only(left: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.redAccent,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Text(
+                        "PAY",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
 
                     if (showPaymentType) ...[
                       /// PAYMENT TYPE CHIP (VISIBLE FOR PAID + ADMIN VERIFICATION)
