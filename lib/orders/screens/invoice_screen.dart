@@ -124,39 +124,59 @@ class InvoiceGenerator {
                           _tableHeader("Amount"),
                         ],
                       ),
+buildRow(
+  "Breed: ${order.breedId}\n"
+  "Buffalos: ${order.buffaloCount}\n"
+  "Calves: ${order.calfCount}",
+  order.numUnits.toString(),
+  formatAmount(order.baseUnitCost),
+  formatAmount(order.baseUnitCost * order.numUnits),
+),
 
-                      ...order.buffalos
-                          .where(
-                            (b) =>
-                                b.type.toLowerCase() == 'buffalo' &&
-                                b.ageYears > 0,
-                          )
-                          .map(
-                         (b) => buildRow(
-                              "Buffalo ID: ${order.breedId}",
-                              //"Buffalo ID: ${b.id}\nAge: ${b.ageYears} years",
-                              "1",
-                              "RS 175,000",
-                              "Rs 175,000",
-                            ),
-                          ),
 
-                      buildRow("CPF Amount", "1", "RS 13,000", "Rs 13,000"),
+if (order.withCpf)
+ if (order.withCpf)
+  buildRow(
+    "CPF Amount",
+    order.numUnits.toString(), 
+    formatAmount(order.cpfUnitCost), 
+    formatAmount(order.cpfUnitCost * order.numUnits), 
+  ),
+
+
                     ],
                   ),
 
                   pw.SizedBox(height: 25),
 
-                  /// ---------- TOTAL ----------
+                  
                   pw.Align(
                     alignment: pw.Alignment.centerRight,
                     child: pw.Column(
                       crossAxisAlignment: pw.CrossAxisAlignment.end,
                       children: [
-                        _priceRow("Subtotal", "Rs 350,000"),
-                        _priceRow("CPF", "Rs 13,000"),
-                        pw.Divider(),
-                        _priceRow("Total", "Rs 363,000", bold: true),
+                        _priceRow(
+  "Subtotal",
+  formatAmount(order.baseUnitCost * order.numUnits),
+),
+
+
+ if (order.withCpf)
+  _priceRow(
+    "CPF (${order.numUnits}x)",
+    formatAmount(order.cpfUnitCost * order.numUnits),
+  ),
+
+
+pw.Divider(),
+
+_priceRow(
+  "Total",
+  formatAmount(order.totalCost),
+  bold: true,
+),
+
+                       
                       ],
                     ),
                   ),
@@ -166,7 +186,7 @@ class InvoiceGenerator {
 
                   pw.Spacer(),
 
-                  /// ---------- FOOTER ----------
+               
                   pw.Center(
                     child: pw.Column(
                       children: [
@@ -308,6 +328,11 @@ static pw.Widget _termsAndConditions() {
 }
 
 
+
+String formatAmount(int value) {
+  final formatted = NumberFormat('#,##,###', 'en_IN').format(value);
+  return 'Rs $formatted';
+}
 
 
 String formatOrderDate(DateTime? date) {
