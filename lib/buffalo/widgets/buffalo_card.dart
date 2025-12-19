@@ -278,7 +278,7 @@ class BuffaloCard extends ConsumerWidget {
 
                         ],
                       ),
-                      Text("* 1 Year Free CPF on the 2nd Buffalo until one year",style: TextStyle(fontSize: 11,),),
+                      Text("* 1-Year Free CPF for the 2nd Buffalo",style: TextStyle(fontSize: 11,),),
 
                   ],
                 ),

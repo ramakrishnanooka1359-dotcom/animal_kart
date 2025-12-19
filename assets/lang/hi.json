@@ -113,7 +113,8 @@
 
   "total_investment_value": "कुल निवेश मूल्य:",
   "asset_value_10_years": "10 वर्षों बाद अनुमानित संपत्ति मूल्य:",
-  "revenue_10_years": "10 वर्षों बाद अनुमानित दूध आय:",
+  "revenue_10_years": "10 वर्षों के बाद, अनुमानित मासिक आय:",
+
   "revenue_breakeven": "आपका ब्रेक-ईवन प्राप्त होगा",
   "months": "महीनों में",
 
@@ -162,7 +163,64 @@
   "backToHome": "होम पर वापस जाएं",
   "paymentPending": "आपकी भुगतान स्थिति लंबित है",
   "paymentPendingDescription": "आपके भुगतान के लिए धन्यवाद। हमारी एडमिन टीम प्रस्तुत विवरणों की समीक्षा कर रही है और 3 व्यावसायिक दिनों के भीतर भुगतान की पुष्टि करेगी। पुष्टि पूर्ण होने के बाद आपको सूचित किया जाएगा।",
-  "backToOrders": "ऑर्डर्स पर वापस जाएं"
+  "backToOrders": "ऑर्डर्स पर वापस जाएं",
+    "selectUnits": "यूनिट चुनें",
+  "maxUnits": "अधिकतम यूनिट",
+  "totalBuffaloes": "कुल भैंसें",
+  "freeCpf": "मुफ़्त CPF",
+  "cpfToBePaid": "भुगतान योग्य CPF",
+  "youSave": "आप बचाते हैं",
+  "pricePerUnit": "प्रति यूनिट मूल्य",
+   "pricePerBuffalo": "प्रति भैंस मूल्य",
+  "cpfCalculation": "CPF गणना",
+  "totalCpfCost": "कुल CPF लागत",
+
+  "freeCpfPerUnit": "नि:शुल्क CPF (प्रति यूनिट 1)",
+  "totalAmount": "कुल राशि",
+  
+  "error": "त्रुटि",
+  "selectUnits": "यूनिट चुनें",
+  "maxUnits": "अधिकतम: 10 यूनिट",
+  "units": "यूनिट",
+  "buffaloes": "भैंसें",
+  "calf": "बछड़ा",
+  "pricePerUnit": "प्रति यूनिट कीमत",
+  "totalBuffaloPrice": "कुल भैंसों की कीमत",
+
+  "noCpfSelected": "CPF चयन नहीं किया गया",
+  "cpfWarning": "आपने CPF बीमा नहीं चुना है। क्या CPF के बिना जारी रखना चाहते हैं?",
+  "no": "नहीं",
+  "yes": "हाँ",
+
+  "paymentFailed": "भुगतान विफल",
+  "userMobileNotFound": "उपयोगकर्ता का मोबाइल नंबर नहीं मिला",
+  "orderPlaced": "ऑर्डर सफलतापूर्वक किया गया!",
+  "orderId": "ऑर्डर आईडी",
+  "orderFailed": "ऑर्डर करने में विफल। कृपया पुनः प्रयास करें।",
+  "errorOccurred": "त्रुटि हुई",
+
+  "youSave": "आप बचाते हैं",
+  "totalAmount": "कुल राशि",
+   "priceBreakdown": "मूल्य विवरण",
+    "orderId": "ऑर्डर आईडी",
+  "placedOn": "ऑर्डर की तारीख",
+  "paid": "भुगतान किया गया",
+  "pending": "लंबित",
+  "adminReview": "एडमिन समीक्षा",
+  "breedId": "नस्ल आईडी",
+  "total": "कुल",
+  "payNow": "अभी भुगतान करें",
+  "bankDetailsNext": "अगले चरण में चेक / बैंक विवरण",
+  "orderUnderReview": "ऑर्डर एडमिन की समीक्षा में है",
+    "track": "ट्रैक करें",
+    "unitsSelected": "चयनित यूनिट"
+
+
+
+
+
+
+
 
 
 

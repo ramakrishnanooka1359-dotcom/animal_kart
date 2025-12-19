@@ -436,6 +436,7 @@ Future<void> _handleBankTransferSubmit() async {
     return Scaffold(
       backgroundColor: kFieldBg,
       appBar: AppBar(
+        
         title: Text(context.tr("manualPayment")),
         centerTitle: true,
         leading: IconButton(
@@ -487,7 +488,10 @@ Future<void> _handleBankTransferSubmit() async {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Bank Transfer Details",
+
+  context.tr("bankTransferDetails"),
+
+
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -497,14 +501,15 @@ Future<void> _handleBankTransferSubmit() async {
 
               ValidatedTextField(
                 controller: bankAmountCtrl,
-                label: "Amount Paid",
+                label: context.tr("amountPaid"),
                 readOnly: true,
               ),
               const SizedBox(height: 15),
 
               ValidatedTextField(
                 controller: utrCtrl,
-                label: "UTR Number",
+                label: context.tr("utrNumber"),
+
                 validator: BankTransferValidators.validateUTR,
                 keyboardType: TextInputType.text,
                 maxLength: 22,
@@ -517,7 +522,8 @@ Future<void> _handleBankTransferSubmit() async {
 
               ValidatedTextField(
                 controller: bankNameCtrl,
-                label: "Bank Name",
+                  label: context.tr("bankName"),
+
                 validator: BankTransferValidators.validateBankName,
                 keyboardType: TextInputType.text,
               ),
@@ -525,7 +531,7 @@ Future<void> _handleBankTransferSubmit() async {
 
               ValidatedTextField(
                 controller: ifscCodeCtrl,
-                label: "IFSC Code",
+                label: context.tr("ifscCode"),
                 validator: BankTransferValidators.validateIFSC,
                 keyboardType: TextInputType.text,
                 maxLength: 11,
@@ -537,7 +543,8 @@ Future<void> _handleBankTransferSubmit() async {
 
                             ValidatedTextField(
                 controller: transactionDateCtrl,
-                label: "Transaction Date",
+                label: context.tr("transactionDate"),
+
                 readOnly: true,
                 validator: (value) =>
                     _validateTransactionDate(value, transferMode),
@@ -567,7 +574,7 @@ Future<void> _handleBankTransferSubmit() async {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const FieldTitle("Transfer Mode"),
+                  FieldTitle(context.tr("transferMode")),
                   const SizedBox(height: 4),
                   Container(
                     decoration: BoxDecoration(
@@ -602,7 +609,8 @@ Future<void> _handleBankTransferSubmit() async {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildAadhaarUploadWidget(
-                    title: "Upload Payment Screenshot",
+                    title: context.tr("uploadPaymentScreenshot"),
+
                     file: bankScreenshot,
                     uploadProgress: bankScreenshotProgress,
                     onCamera: () => _handleImageUpload(
@@ -669,7 +677,8 @@ Future<void> _handleBankTransferSubmit() async {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Cheque Payment Details",
+                context.tr("chequePaymentDetails"),
+
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -679,7 +688,7 @@ Future<void> _handleBankTransferSubmit() async {
 
               ValidatedTextField(
                 controller: chequeNoCtrl,
-                label: "Cheque Number",
+                label: context.tr("chequeNumber"),
                 validator: ChequePaymentValidators.validateChequeNumber,
                 keyboardType: TextInputType.number,
                 maxLength: 10,
@@ -688,7 +697,7 @@ Future<void> _handleBankTransferSubmit() async {
 
               ValidatedTextField(
                 controller: chequeDateCtrl,
-                label: "Cheque Date",
+                label: context.tr("chequeDate"),
                 readOnly: true,
                 validator: ChequePaymentValidators.validateChequeDate,
                 suffixIcon: IconButton(
@@ -716,14 +725,14 @@ Future<void> _handleBankTransferSubmit() async {
 
               ValidatedTextField(
                 controller: chequeAmountCtrl,
-                label: "Cheque Amount",
+                label: context.tr("chequeAmount"),
                 readOnly: true,
               ),
               const SizedBox(height: 8),
 
               ValidatedTextField(
                 controller: chequeBankNameCtrl,
-                label: "Bank Name",
+                label: context.tr("bankName"),
                 validator: ChequePaymentValidators.validateChequeBankName,
                 keyboardType: TextInputType.text,
               ),
@@ -731,7 +740,7 @@ Future<void> _handleBankTransferSubmit() async {
 
               ValidatedTextField(
                 controller: chequeIfscCodeCtrl,
-                label: "IFSC Code",
+                label: context.tr("ifscCode"),
                 validator: ChequePaymentValidators.validateChequeIFSC,
                 keyboardType: TextInputType.text,
                 maxLength: 11,
@@ -744,7 +753,7 @@ Future<void> _handleBankTransferSubmit() async {
 
               ValidatedTextField(
                 controller: chequeUtrRefCtrl,
-                label: "UTR/Reference Number",
+                label: context.tr("utrReferenceNumber"),
                 validator: ChequePaymentValidators.validateChequeUTRRef,
                 keyboardType: TextInputType.text,
                 maxLength: 30,
@@ -760,7 +769,8 @@ Future<void> _handleBankTransferSubmit() async {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildAadhaarUploadWidget(
-                    title: "Upload Cheque Front Image",
+                    title: context.tr("uploadChequeFrontImage"),
+
                     file: chequeFrontImage,
                     uploadProgress: chequeFrontProgress,
                     onCamera: () => _handleImageUpload(
@@ -809,7 +819,8 @@ Future<void> _handleBankTransferSubmit() async {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildAadhaarUploadWidget(
-                    title: "Upload Cheque Back Image",
+title: context.tr("uploadChequeBackImage"),
+
                     file: chequeBackImage,
                     uploadProgress: chequeBackProgress,
                     onCamera: () => _handleImageUpload(
@@ -988,13 +999,14 @@ Future<void> _handleBankTransferSubmit() async {
           const SizedBox(height: 8),
           TextButton(
             onPressed: onGallery,
-            child: const Text(
-              "Upload Image",
+            child:  Text(
+              context.tr("uploadImage"),
+
               style: TextStyle(fontSize: 18),
             ),
           ),
-          const Text("Upload photos from gallery"),
-          const Text("or"),
+           Text(context.tr("uploadPhotosNote")),
+           Text(context.tr("or")),
           const SizedBox(height: 6),
           ElevatedButton(
             onPressed: onCamera,
@@ -1004,7 +1016,7 @@ Future<void> _handleBankTransferSubmit() async {
                 borderRadius: BorderRadius.circular(6),
               ),
             ),
-            child: const Text("Open Camera",
+            child: Text(context.tr("openCamera"),
             style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -1059,8 +1071,9 @@ Widget _buildSubmitButton({
                     color: Colors.white,
                   ),
                 )
-              : const Text(
-                  "Submit",
+              :  Text(
+                  context.tr("submit"),
+
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 17,

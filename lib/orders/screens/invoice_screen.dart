@@ -124,24 +124,24 @@ class InvoiceGenerator {
                           _tableHeader("Amount"),
                         ],
                       ),
-buildRow(
-  "Breed: ${order.breedId}\n"
-  "Buffalos: ${order.buffaloCount}\n"
-  "Calves: ${order.calfCount}",
-  order.numUnits.toString(),
-  formatAmount(order.baseUnitCost),
-  formatAmount(order.baseUnitCost * order.numUnits),
-),
+                    buildRow(
+                      "Breed: ${order.breedId}\n"
+                      "Buffalos: ${order.buffaloCount}\n"
+                      "Calves: ${order.calfCount}",
+                      order.numUnits.toString(),
+                      formatAmount(order.baseUnitCost),
+                      formatAmount(order.baseUnitCost * order.numUnits),
+                    ),
 
 
-if (order.withCpf)
- if (order.withCpf)
-  buildRow(
-    "CPF Amount",
-    order.numUnits.toString(), 
-    formatAmount(order.cpfUnitCost), 
-    formatAmount(order.cpfUnitCost * order.numUnits), 
-  ),
+                    if (order.withCpf)
+                    if (order.withCpf)
+                      buildRow(
+                        "CPF Amount",
+                        order.numUnits.toString(), 
+                        formatAmount(order.cpfUnitCost), 
+                        formatAmount(order.cpfUnitCost * order.numUnits), 
+                      ),
 
 
                     ],
@@ -156,25 +156,25 @@ if (order.withCpf)
                       crossAxisAlignment: pw.CrossAxisAlignment.end,
                       children: [
                         _priceRow(
-  "Subtotal",
-  formatAmount(order.baseUnitCost * order.numUnits),
-),
+                          "Subtotal",
+                          formatAmount(order.baseUnitCost * order.numUnits),
+                        ),
 
 
- if (order.withCpf)
-  _priceRow(
-    "CPF (${order.numUnits}x)",
-    formatAmount(order.cpfUnitCost * order.numUnits),
-  ),
+                        if (order.withCpf)
+                          _priceRow(
+                            "CPF (${order.numUnits}x)",
+                            formatAmount(order.cpfUnitCost * order.numUnits),
+                          ),
 
 
-pw.Divider(),
+                        pw.Divider(),
 
-_priceRow(
-  "Total",
-  formatAmount(order.totalCost),
-  bold: true,
-),
+                        _priceRow(
+                          "Total",
+                          formatAmount(order.totalCost),
+                          bold: true,
+                        ),
 
                        
                       ],
