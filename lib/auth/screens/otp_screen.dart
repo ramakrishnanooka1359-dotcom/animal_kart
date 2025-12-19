@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:io';
+
 import 'package:animal_kart_demo2/auth/providers/auth_provider.dart';
 import 'package:animal_kart_demo2/routes/routes.dart';
 import 'package:animal_kart_demo2/utils/save_user.dart';
@@ -14,9 +16,9 @@ class OtpScreen extends ConsumerStatefulWidget {
   final String otp;
   final bool isFormFilled;
 
-  const OtpScreen({super.key, 
-  
-  required this.phoneNumber,
+  const OtpScreen({
+    super.key,
+    required this.phoneNumber,
     required this.otp,
     required this.isFormFilled,
   });
@@ -27,23 +29,50 @@ class OtpScreen extends ConsumerStatefulWidget {
 
 class _OtpScreenState extends ConsumerState<OtpScreen> {
   final otpController = TextEditingController();
-  
 
   String deviceId = "";
   String deviceModel = "";
+
   bool isOtpValid = false;
   bool _isVerifying = false;
+
+  Timer? _resendTimer;
+  int _resendSeconds = 30;
+  bool _canResendOtp = false;
 
   @override
   void initState() {
     super.initState();
     getDeviceInfo();
+    _startResendTimer();
   }
 
   @override
   void dispose() {
+    _resendTimer?.cancel();
     otpController.dispose();
     super.dispose();
+  }
+
+  void _startResendTimer() {
+    _resendTimer?.cancel();
+    setState(() {
+      _resendSeconds = 30;
+      _canResendOtp = false;
+    });
+
+    _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_resendSeconds == 0) {
+        timer.cancel();
+        setState(() {
+          _canResendOtp = true;
+        });
+      } else {
+        setState(() {
+          _resendSeconds--;
+        });
+      }
+    });
   }
 
   @override
@@ -109,21 +138,49 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                 ),
               ),
 
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
+
+              /// 🔁 RESEND OTP SECTION
+              Center(
+                child: _canResendOtp
+                    ? TextButton(
+                        onPressed: () async {
+                        await ref.read(authProvider).sendWhatsappOtp(widget.phoneNumber);
+
+                          FloatingToast.showSimpleToast(
+                              "OTP resent successfully");
+                          _startResendTimer();
+                        },
+                        child: const Text(
+                          "Resend OTP",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF57BE82),
+                          ),
+                        ),
+                      )
+                    : Text(
+                        "Resend OTP in $_resendSeconds sec",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+              ),
 
               const Spacer(),
 
+              /// ✅ CONTINUE BUTTON
               SizedBox(
                 width: double.infinity,
                 height: 60,
                 child: ElevatedButton(
-                   onPressed: isOtpValid && !_isVerifying
+                  onPressed: isOtpValid && !_isVerifying
                       ? () async {
                           setState(() => _isVerifying = true);
 
                           final enteredOtp = otpController.text.trim();
-
-                          // LOCAL OTP VERIFICATION
                           final isValid = ref
                               .read(authProvider)
                               .verifyWhatsappOtpLocal(enteredOtp);
@@ -132,28 +189,22 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
                           if (isValid) {
                             FloatingToast.showSimpleToast(
-                              "OTP Verified Successfully",
-                            );
+                                "OTP Verified Successfully");
 
-                             final user = ref.read(authProvider).userProfile;
-                              final prefs =
+                            final user =
+                                ref.read(authProvider).userProfile;
+                            final prefs =
                                 await SharedPreferences.getInstance();
-                              debugPrint(user.toString());
-                             if (user != null) {
-                                  await saveUserToPrefs(user);
-                                  debugPrint('✅ User saved to prefs: ${user.firstName} ${user.lastName}');
-                              }
+
+                            if (user != null) {
+                              await saveUserToPrefs(user);
+                            }
                             await prefs.setBool('isLoggedIn', true);
 
-
-                            if (widget.isFormFilled == true) {
+                            if (widget.isFormFilled) {
                               Navigator.pushReplacementNamed(
-                                context,
-                                AppRouter.home,
-                              );
-                            }
-                            // FORM NOT FILLED → PROFILE FORM
-                            else {
+                                  context, AppRouter.home);
+                            } else {
                               Navigator.pushReplacementNamed(
                                 context,
                                 AppRouter.profileForm,
@@ -175,7 +226,6 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                         ? const Color(0xFF57BE82)
                         : Colors.grey.shade300,
                     disabledBackgroundColor: const Color(0xFFBAECD1),
-                    disabledForegroundColor: Colors.grey.shade700,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(35),
                     ),
@@ -216,14 +266,14 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     if (Platform.isAndroid) {
       final android = await deviceInfo.androidInfo;
       setState(() {
-        deviceId = android.id;
-        deviceModel = android.model;
+      deviceId = android.id;
+      deviceModel = android.model;
       });
     } else if (Platform.isIOS) {
       final ios = await deviceInfo.iosInfo;
       setState(() {
-        deviceId = ios.identifierForVendor ?? "";
-        deviceModel = ios.utsname.machine;
+      deviceId = ios.identifierForVendor ?? "";
+      deviceModel = ios.utsname.machine;
       });
     }
   }

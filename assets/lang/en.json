@@ -110,7 +110,7 @@
 
   "total_investment_value": "Total Investment Value:",
   "asset_value_10_years": "After 10 years, Expected Asset Market Value:",
-  "revenue_10_years": "After 10 years, Expected Milk Revenue:",
+  "revenue_10_years": "After 10 years, Expected Monthly Revenue:",
   "revenue_breakeven": "Your Revenue Break-even will be achieved within",
   "months": "months",
 
@@ -127,7 +127,7 @@
   "onlinePayment": "Online Payment",
   "manualPayment": "Manual Payment",
   "buffaloDetails": "Buffalo Details",
-  "manualPayment": "Manual Payment",
+  
   "amountToPay": "Amount to Pay",
   "bankTransfer": "Bank Transfer",
   "cheque": "Cheque",
@@ -157,7 +157,58 @@
   "backToHome": "Back to Home",
   "paymentPending": "Your payment status is Pending",
   "paymentPendingDescription": "Thank you for your payment. Our admin team is reviewing the submitted details and will verify the payment within 3 business days. You will be notified once the verification is complete.",
-  "backToOrders": "Back to Orders"
+  "backToOrders": "Back to Orders",
+   "selectUnits": "Select Units",
+  "maxUnits": "Max Units",
+  "totalBuffaloes": "Total Buffaloes",
+  "freeCpf": "Free CPF",
+  "cpfToBePaid": "CPF to be paid",
+  "youSave": "You Save",
+  "pricePerUnit": "Price Per Unit",
+   "unitsSelected": "Units Selected",
+  
+  "freeCpfPerUnit": "Free CPF (1 per unit)",
+  
+  "pricePerBuffalo": "Price per Buffalo",
+  "cpfCalculation": "CPF Calculation",
+  
+  "totalCpfCost": "Total CPF Cost",
+  
+  
+  "units": "Units",
+  "buffaloes": "buffaloes",
+  "calf": "calf",
+  
+  "totalBuffaloPrice": "Total Buffalo Price",
+
+  "noCpfSelected": "No CPF Selected",
+  "cpfWarning": "You have not selected CPF insurance. Continue without CPF?",
+  "no": "No",
+  "yes": "Yes",
+
+  "paymentFailed": "Payment failed",
+  "userMobileNotFound": "User mobile not found",
+  
+  "orderId": "Order ID",
+  "orderFailed": "Failed to place order. Please try again.",
+  "errorOccurred": "Error",
+"priceBreakdown": "Price Breakdown",
+
+  
+  "totalAmount": "Total Amount",
+   "orderId": "Order ID",
+  "placedOn": "Placed on",
+  "paid": "PAID",
+  "pending": "PENDING",
+  "adminReview": "ADMIN REVIEW",
+  "breedId": "Breed ID",
+  "total": "Total",
+  "payNow": "PAY NOW",
+  "bankDetailsNext": "Cheque/Bank details in next step",
+  "orderUnderReview": "Order is under review by Admin",
+  "track": "Track"
+
+
 
 
 

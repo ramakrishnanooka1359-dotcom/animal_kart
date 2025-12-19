@@ -66,7 +66,11 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
     return buffaloAsync.when(
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (err, _) => Scaffold(body: Center(child: Text("Error: $err"))),
+          error: (err, _) => Scaffold(
+  body: Center(child: Text("${context.tr("error")}: $err")),
+),
+
+     // error: (err, _) => Scaffold(body: Center(child: Text("Error: $err"))),
       data: (buffalo) {
         final buffaloCount = units * 2;
         final buffaloPrice = buffaloCount * buffalo.price;
@@ -171,14 +175,15 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                context.tr("Select Units"),
+                context.tr("selectUnits"),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                 ),
               ),
               Text(
-                "Max: 10 units",
+                context.tr("maxUnits"),
+
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey.shade600,
@@ -198,7 +203,8 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "${context.tr("Units")}: $units",
+                    "${context.tr("units")}: $units",
+                    
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
@@ -206,7 +212,8 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    "${context.tr("Buffaloes")}: ${units * 2} (2 ${context.tr("calf")})",
+                    "${context.tr("buffaloes")}: ${units * 2} (2 ${context.tr("calves")})",
+
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -287,7 +294,9 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "${context.tr("Price Per Unit")}:",
+                "${context.tr("pricePerUnit")}:",
+
+
                 style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               ),
               Text(
@@ -304,7 +313,8 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "${context.tr("Total Buffalo Price")}:",
+              "${context.tr("totalBuffaloPrice")}:",
+
                 style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               ),
               Text(
@@ -392,22 +402,41 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
             const Divider(),
             const SizedBox(height: 8),
 
-            Text(
-              context.tr("cpfSelection"),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-            ),
+Text(
+  context.tr("cpfSelection"),
+  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+),
 
-            const SizedBox(height: 10),
+const SizedBox(height: 10),
 
-            // CPF details with calculation explanation
-            _cpfDetailRow("Total Buffaloes", "$totalBuffaloes buffaloes"),
-            _cpfDetailRow("Free CPF (1 per unit)", "$freeCpfUnits buffaloes"),
-            _cpfDetailRow("CPF to be paid", "$insuranceUnits buffaloes"),
-            _cpfDetailRow("CPF per Buffalo", "₹${cpfPerBuffalo}"),
-            _cpfDetailRow("Total CPF Cost", "₹$totalCpf"),
-            
-            const SizedBox(height: 8),
-            
+// CPF details with calculation explanation
+_cpfDetailRow(
+  context.tr("totalBuffaloes"),
+  "$totalBuffaloes ${context.tr("buffaloes")}",
+),
+
+_cpfDetailRow(
+  context.tr("freeCpfPerUnit"),
+  "$freeCpfUnits ${context.tr("buffaloes")}",
+),
+
+_cpfDetailRow(
+  context.tr("cpfToBePaid"),
+  "$insuranceUnits ${context.tr("buffaloes")}",
+),
+
+_cpfDetailRow(
+  context.tr("cpfPerBuffalo"),
+  "₹$cpfPerBuffalo",
+),
+
+_cpfDetailRow(
+  context.tr("totalCpfCost"),
+  "₹$totalCpf",
+),
+
+const SizedBox(height: 8),
+
            
           ],
         ],
@@ -517,9 +546,13 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
         );
       },
       onPaymentFailed: () {
+        
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text("Payment failed")));
+        ).showSnackBar(
+  SnackBar(content: Text(context.tr("paymentFailed"))),
+);
+;
       },
     );
 
@@ -539,7 +572,9 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
 
     if (userMobile == null) {
       Navigator.pop(context);
-      showToast("User mobile not found");
+      showToast(context.tr("userMobileNotFound"));
+
+      
       return;
     }
 
@@ -568,15 +603,23 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
 
     if (response != null) {
       // Show success message with order details
-      showToast("Order placed successfully! Order ID: ${response.id}");
+      showToast(
+  "${context.tr("orderPlaced")} ${context.tr("orderId")}: ${response.id}",
+);
+
+
       Navigator.pushReplacementNamed(context, AppRouter.home, arguments: 1);
     } else {
-      showToast("Failed to place order. Please try again.");
+      showToast(context.tr("orderFailed"));
+
+      
     }
   } catch (e) {
     if (mounted) {
       Navigator.pop(context);
-      showToast("Error: $e");
+      showToast("${context.tr("errorOccurred")}: $e");
+
+      
       debugPrint("Manual payment error: $e");
     }
   }
@@ -587,21 +630,22 @@ void showCpfConfirmationDialog(BuildContext context, VoidCallback onConfirm) {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Text("No CPF Selected"),
-        content: const Text("You have not selected CPF insurance. Continue without CPF?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("No"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              onConfirm();
-            },
-            child: const Text("Yes"),
-          ),
-        ],
+title: Text(context.tr("noCpfSelected")),
+content: Text(context.tr("cpfWarning")),
+actions: [
+  TextButton(
+    onPressed: () => Navigator.pop(context),
+    child: Text(context.tr("no")),
+  ),
+  TextButton(
+    onPressed: () {
+      Navigator.pop(context);
+      onConfirm();
+    },
+    child: Text(context.tr("yes")),
+  ),
+],
+
       ),
     );
   }
@@ -636,27 +680,65 @@ Widget priceExplanation({
           style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 12),
-        _calcLine("Units Selected", "$units units"),
-        _calcLine("Total Buffaloes", "$totalBuffaloes buffaloes"),
-        _calcLine("Price per Buffalo", "₹${buffalo.price}"),
-        _calcLine("Total Buffalo Price", "₹$buffaloPrice"),
-        const SizedBox(height: 8),
-        
-        // CPF calculation details
-        const Text(
-          "CPF Calculation:",
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: Colors.blue,
-          ),
-        ),
-        const SizedBox(height: 6),
-        _calcLine("Total Buffaloes", "$totalBuffaloes"),
-        _calcLine("Free CPF (1 per unit)", "$freeCpfUnits"),
-        _calcLine("CPF to be paid", "$insuranceUnits"),
-        _calcLine("CPF per Buffalo", "₹$cpfPerBuffalo"),
-        _calcLine("Total CPF Cost", "₹$cpfAmount"),
+       _calcLine(
+  context.tr("unitsSelected"),
+  "$units ${context.tr("unit")}",
+),
+
+_calcLine(
+  context.tr("totalBuffaloes"),
+  "$totalBuffaloes",
+),
+
+_calcLine(
+  context.tr("pricePerBuffalo"),
+  "₹${buffalo.price}",
+),
+
+_calcLine(
+  context.tr("buffalo_price"),
+  "₹$buffaloPrice",
+),
+
+const SizedBox(height: 8),
+
+// CPF calculation details
+Text(
+  context.tr("cpfCalculation"),
+  style: const TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+    color: Colors.blue,
+  ),
+),
+
+const SizedBox(height: 6),
+
+_calcLine(
+  context.tr("totalBuffaloes"),
+  "$totalBuffaloes",
+),
+
+_calcLine(
+  context.tr("freeCpf"),
+  "$freeCpfUnits",
+),
+
+_calcLine(
+  context.tr("cpfToBePaid"),
+  "$insuranceUnits",
+),
+
+_calcLine(
+  context.tr("cpfPerBuffalo"),
+  "₹$cpfPerBuffalo",
+),
+
+_calcLine(
+  context.tr("totalCpfCost"),
+  "₹$cpfAmount",
+),
+
         
         // Savings information
         Container(
@@ -669,8 +751,11 @@ Widget priceExplanation({
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "You Save:",
+               Text(
+                
+  "${context.tr("youSave")}:",
+
+
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -694,7 +779,10 @@ Widget priceExplanation({
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              context.tr("Total Amount"),
+              
+        context.tr("totalAmount"),
+
+
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             Text(

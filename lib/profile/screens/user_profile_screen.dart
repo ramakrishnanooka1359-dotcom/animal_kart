@@ -37,6 +37,20 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
     _loadProfileAndBiometric();
   }
 
+
+
+String maskAadhaar(String aadhaar) {
+  final cleaned = aadhaar.replaceAll(RegExp(r'\s+'), '');
+
+  if (cleaned.length < 4) return '****';
+
+  final last4 = cleaned.substring(cleaned.length - 4);
+  return 'XXXX-XXXX-$last4'; 
+}
+
+
+
+
   Future<void> _loadProfileAndBiometric() async {
     // Load user data
     final user = await UserPrefsService.loadUserFromPrefs();
@@ -75,13 +89,14 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
   // ✅ Aadhaar fix
   final aadhaar = _user!.aadharNumber;
 
-  if (aadhaar != null &&
-      aadhaar.toString().trim().isNotEmpty &&
-      aadhaar.toString() != '0') {
-    data['Aadhaar Card Number'] = aadhaar.toString();
-  }
+if (aadhaar != null &&
+    aadhaar.toString().trim().isNotEmpty &&
+    aadhaar.toString() != '0') {
+  data['Aadhaar Card Number'] =
+      maskAadhaar(aadhaar.toString());
+}
 
-  translatedData = data;
+   translatedData = data;
 }
 
     

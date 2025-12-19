@@ -27,6 +27,24 @@ class BuffaloOrderCard extends StatelessWidget {
 
     final bool isPendingPayment = status == "PENDING_PAYMENT";
     final bool isAdminReview = status == "PENDING_ADMIN_VERIFICATION";
+String localizedPaymentType(BuildContext context, String paymentType) {
+  switch (paymentType) {
+    case "ONLINE_PAYMENT":
+      return context.tr("onlinePayment");
+    case "MANUAL_PAYMENT":
+      return context.tr("manualPayment");
+    case "CASH":
+      return context.tr("cash");
+    case "UPI":
+      return context.tr("upi");
+    case "BANK_TRANSFER":
+      return context.tr("bankTransfer");
+    case "CHEQUE":
+      return context.tr("cheque");
+    default:
+      return paymentType.replaceAll("_", " ");
+  }
+}
 
     return InkWell(
       borderRadius: BorderRadius.circular(14),
@@ -71,7 +89,7 @@ class BuffaloOrderCard extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,               
                         children: [
                           Text(
-                            "Order Id : ${order.id}",
+                            "${context.tr("orderId")} : ${order.id}",
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
@@ -81,7 +99,7 @@ class BuffaloOrderCard extends StatelessWidget {
                           
                           Text(
                             //'',
-                          "Placed on : ${formatToIndianDateTime(order.userCreatedAt)}",
+                          "${context.tr("placedOn")} : ${formatToIndianDateTime(order.userCreatedAt)}",
 
                             style: const TextStyle(
                               fontSize: 12,
@@ -92,14 +110,15 @@ class BuffaloOrderCard extends StatelessWidget {
                         ],
                       ),
 
-                  if (isPaid)
-                    _statusChip("PAID", Colors.green),
+                 if (isPaid)
+  _statusChip(context.tr("paid"), Colors.green),
 
-                  if (isPendingPayment)
-                    _statusChip("PENDING", Colors.orange),
+if (isPendingPayment)
+  _statusChip(context.tr("pending"), Colors.orange),
 
-                  if (isAdminReview)
-                    _statusChip("ADMIN REVIEW", const Color(0xFF7E57C2)),
+if (isAdminReview)
+  _statusChip(context.tr("adminReview"), const Color(0xFF7E57C2)),
+
                 ],
               ),
             ),
@@ -131,7 +150,8 @@ Padding(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "Breed ID: ${order.breedId}",
+              "${context.tr("breedId")}: ${order.breedId}",
+
               style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
@@ -140,19 +160,27 @@ Padding(
             const SizedBox(height: 4),
             Row(
               children: [
-                _valueRow(context, "${order.buffaloCount}", context.tr("buffalo")),
+                _valueRow(context, "${order.buffaloCount}", context.tr("buffaloes")),
                 const SizedBox(width: 6),
-                _valueRow(context, "${order.calfCount}", context.tr("calf")),
+                _valueRow(context, "${order.calfCount}", context.tr("calves")),
               ],
             ),
             const SizedBox(height: 4),
             Text(
-              "${order.numUnits} ${context.tr("unit")} + CPF",
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+  "${order.numUnits} ${order.numUnits == 1 ? context.tr("unit") : context.tr("units")} + CPF",
+  style: const TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w700,
+  ),
+),
+
+            // Text(
+            //   "${order.numUnits} ${context.tr("unit")} + CPF",
+            //   style: const TextStyle(
+            //     fontSize: 12,
+            //     fontWeight: FontWeight.w700,
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -171,7 +199,8 @@ Padding(
                     crossAxisAlignment: CrossAxisAlignment.start, 
                     children: [
                       Text(
-                        "Total",
+                          context.tr("total"),
+
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -231,8 +260,9 @@ Padding(
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Center(
-                                child: const Text(
-                                  "PAY NOW",
+                                child:  Text(
+                                  context.tr("payNow"),
+
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,
@@ -273,7 +303,7 @@ Padding(
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
-                              context.tr("Track"),
+                              context.tr("track"),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 12,
@@ -291,15 +321,16 @@ Padding(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          order.paymentType!
-                              .replaceAll("_", " ")
-                              .toUpperCase(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+  localizedPaymentType(context, order.paymentType!),
+  style: const TextStyle(
+    color: Colors.white,
+    fontSize: 11,
+    fontWeight: FontWeight.w700,
+  ),
+),
+
+
+                        
                       ),
 
                       /// INVOICE ONLY WHEN PAID
@@ -338,8 +369,9 @@ Padding(
                         Expanded(
                           child: Text(
                             isPendingPayment
-                                ? "Cheque/Bank details in next step"
-                                : "Order is under review by Admin",
+                                ? context.tr("bankDetailsNext")
+      : context.tr("orderUnderReview"),
+
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
