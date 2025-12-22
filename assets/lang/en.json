@@ -206,7 +206,32 @@
   "payNow": "PAY NOW",
   "bankDetailsNext": "Cheque/Bank details in next step",
   "orderUnderReview": "Order is under review by Admin",
-  "track": "Track"
+  "track": "Track",
+
+
+  "selectQuantity": "Select Quantity",
+  "maxBuffaloes": "Max Buffaloes",
+  "buffalo": "buffalo",
+  "calves": "calves",
+
+  "buffaloPrice": "Buffalo Price",
+  "totalPrice": "Total Price",
+  "price": "Price",
+
+  "cpfCost": "CPF Cost",
+  "freeCpfDiscount": "Free CPF discount",
+  
+
+  "totalPriceSummary": "Total Price Summary",
+  "moreDetails": "More Details",
+
+  "buffaloPriceBreakdown": "Buffalo Price Breakdown",
+  "cpfBreakdown": "CPF Breakdown",
+  "numberOfBuffaloes": "Number of Buffaloes",
+  
+  "totalUnits": "Total Units",
+  "cpfPerUnit": "CPF per Unit"
+ 
 
 
 

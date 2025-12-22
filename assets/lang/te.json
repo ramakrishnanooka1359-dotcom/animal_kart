@@ -212,7 +212,39 @@
   "bankDetailsNext": "తదుపరి దశలో చెక్ / బ్యాంక్ వివరాలు",
   "orderUnderReview": "ఆర్డర్ అడ్మిన్ పరిశీలనలో ఉంది",
   "track": "ట్రాక్ చేయండి",
-  "unitsSelected": "ఎంచుకున్న యూనిట్లు"
+  "unitsSelected": "ఎంచుకున్న యూనిట్లు",
+  
+  "selectQuantity": "పరిమాణాన్ని ఎంచుకోండి",
+  "maxBuffaloes": "గరిష్ట గేదెలు",
+
+  "buffalo": "గేదె",
+  "buffaloes": "గేదెలు",
+  "calf": "దూడ",
+  "calves": "దూడలు",
+
+  "buffaloPrice": "గేదె ధర",
+  "totalPrice": "మొత్తం ధర",
+  "price": "ధర",
+
+  "cpfCost": "CPF ఖర్చు",
+  "freeCpfDiscount": "ఉచిత CPF తగ్గింపు",
+  "totalCpfCost": "మొత్తం CPF ఖర్చు",
+
+  "totalPriceSummary": "మొత్తం ధర సారాంశం",
+  "moreDetails": "మరిన్ని వివరాలు",
+
+  "buffaloPriceBreakdown": "గేదె ధర వివరాలు",
+  "cpfBreakdown": "CPF వివరాలు",
+
+  "numberOfBuffaloes": "గేదెల సంఖ్య",
+  "pricePerBuffalo": "ప్రతి గేదె ధర",
+  "totalUnits": "మొత్తం యూనిట్లు",
+  "cpfPerUnit": "ప్రతి యూనిట్ CPF",
+  "freeCpf": "ఉచిత CPF",
+
+  "grandTotal": "గ్రాండ్ టోటల్"
+
+
 
 
 

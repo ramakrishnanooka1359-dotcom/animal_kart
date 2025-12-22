@@ -213,7 +213,38 @@
   "bankDetailsNext": "अगले चरण में चेक / बैंक विवरण",
   "orderUnderReview": "ऑर्डर एडमिन की समीक्षा में है",
     "track": "ट्रैक करें",
-    "unitsSelected": "चयनित यूनिट"
+    "unitsSelected": "चयनित यूनिट",
+
+  "selectQuantity": "मात्रा चुनें",
+  "maxBuffaloes": "अधिकतम भैंसें",
+
+  "buffalo": "भैंस",
+  "buffaloes": "भैंसें",
+  "calf": "बछड़ा",
+  "calves": "बछड़े",
+
+  "buffaloPrice": "भैंस की कीमत",
+  "totalPrice": "कुल कीमत",
+  "price": "कीमत",
+
+  "cpfCost": "CPF लागत",
+  "freeCpfDiscount": "मुफ़्त CPF छूट",
+  "totalCpfCost": "कुल CPF लागत",
+
+  "totalPriceSummary": "कुल कीमत सारांश",
+  "moreDetails": "अधिक विवरण",
+
+  "buffaloPriceBreakdown": "भैंस कीमत विवरण",
+  "cpfBreakdown": "CPF विवरण",
+
+  "numberOfBuffaloes": "भैंसों की संख्या",
+  "pricePerBuffalo": "प्रति भैंस कीमत",
+  "totalUnits": "कुल यूनिट",
+  "cpfPerUnit": "प्रति यूनिट CPF",
+  "freeCpf": "मुफ़्त CPF",
+
+  "grandTotal": "कुल योग"
+
 
 
 

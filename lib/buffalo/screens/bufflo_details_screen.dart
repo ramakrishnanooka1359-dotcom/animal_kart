@@ -211,14 +211,15 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                context.tr("Select Quantity"),
+                context.tr("selectQuantity"),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                 ),
               ),
               Text(
-                context.tr("Max Buffaloes"),
+                  context.tr("maxBuffaloes"),
+
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey.shade600,
@@ -246,9 +247,13 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
                   ),
                   const SizedBox(height: 4),
                  Text(
-                "$totalBuffaloes ${totalBuffaloes == 1 ? context.tr("buffalo") : context.tr("buffaloes")}, "
-                "$totalCalves ${totalCalves == 1 ? context.tr("calf") : context.tr("calves")}",
-                style: const TextStyle(
+                  "$totalBuffaloes ${totalBuffaloes == 1 
+                    ? context.tr("buffalo") 
+                    : context.tr("buffaloes")}, "
+                  "$totalCalves ${totalCalves == 1 
+                    ? context.tr("calf") 
+                    : context.tr("calves")}",
+                    style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -339,7 +344,9 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "${context.tr("Buffalo Price")} :",
+                "${context.tr("buffaloPrice")} :",
+
+
                 style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               ),
               Text(
@@ -356,7 +363,9 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "${context.tr("Total Price")} (${buffalo.price} X ${quantity}) :",
+                "${context.tr("totalPrice")} (${buffalo.price} X $quantity) :",
+
+               
                 style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               ),
               Text(
@@ -448,6 +457,7 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
               const SizedBox(height: 8),
 
               // CPF Breakdown Section
+              
               _cpfDetailRow(
                 context.tr("totalBuffaloes"),
                 "$totalBuffaloes ${totalBuffaloes == 1 ? context.tr("buffalo") : context.tr("buffaloes")}",

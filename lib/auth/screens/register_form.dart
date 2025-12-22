@@ -61,6 +61,8 @@ Future<void> _loadUserData() async {
 
   Map<String, String> aadhaarUrls = {};
   String? panCardUrl;
+final FocusNode emailFocus = FocusNode();
+final FocusNode firstNameFocus = FocusNode();
 
 
   String gender = "Male";
@@ -179,13 +181,46 @@ Future<void> _loadUserData() async {
                               ),
                               const SizedBox(height: 8),
 
-                              TextFormField(
-                                controller: emailCtrl,
-                                decoration: fieldDeco("Email ID"),
-                                validator: (v) => v!.contains("@")
-                                    ? null
-                                    : "Enter a valid email",
-                              ),
+TextFormField(
+  controller: emailCtrl,
+  focusNode: emailFocus,
+  keyboardType: TextInputType.emailAddress,
+  textInputAction: TextInputAction.next,
+
+  autovalidateMode: AutovalidateMode.onUserInteraction, // 🔥 LIVE
+
+  decoration: fieldDeco("Email ID"),
+
+  inputFormatters: [
+    FilteringTextInputFormatter.deny(RegExp(r'\s')),
+  ],
+
+  validator: (value) {
+    if (value == null || value.trim().isEmpty) {
+      return "Email is required";
+    }
+
+    final emailRegex = RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    );
+
+    if (!emailRegex.hasMatch(value.trim())) {
+      return "Enter a valid email";
+    }
+    return null;
+  },
+
+  onFieldSubmitted: (_) {
+    final isValid = _formKey.currentState!.validate();
+
+    if (isValid) {
+      FocusScope.of(context).requestFocus(firstNameFocus);
+    } else {
+      emailFocus.requestFocus(); 
+    }
+  },
+),
+
                             ],
                           ),
                         ),
@@ -220,6 +255,7 @@ Future<void> _loadUserData() async {
                               const SizedBox(height: 8),
                               TextFormField(
                                 controller: firstNameCtrl,
+                                
                                 decoration: fieldDeco("First Name"),
                                 validator: (v) =>
                                     v!.isEmpty ? "Required" : null,
