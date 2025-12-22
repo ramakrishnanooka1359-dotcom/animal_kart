@@ -12,7 +12,7 @@ class AppConstants {
   static String kAppName = 'ANIMAL\nKART';
   static String countryCode = "+91";
   static String khyphen = "--";
-  static String storageBucketName = 'gs://animalkart-559c3.firebasestorage.app';
+  static String storageBucketName = 'gs://markwave-481315.firebasestorage.app';
 
   //Api constants
   static const String apiUrl =

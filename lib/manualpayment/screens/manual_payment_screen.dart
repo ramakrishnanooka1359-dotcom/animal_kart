@@ -281,7 +281,7 @@ class _ManualPaymentScreenState extends ConsumerState<ManualPaymentScreen> {
     final dateFolder =
         '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
 
-    String pathPrefix = "manual_payment/$dateFolder";
+    String pathPrefix = "userpics/manual_payments/$dateFolder";
     String fileName = "${DateTime.now().millisecondsSinceEpoch}.jpg";
 
     if (isBankScreenshot) fileName = "bank_transfer_$fileName";
