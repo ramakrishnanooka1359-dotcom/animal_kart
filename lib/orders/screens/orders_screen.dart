@@ -25,9 +25,10 @@ class FilterState {
   FilterState copyWith({
     String? statusFilter,
     bool? sortByLatest,
+    bool clearStatusFilter = false,
   }) {
     return FilterState(
-      statusFilter: statusFilter ?? this.statusFilter,
+      statusFilter: clearStatusFilter ? null : (statusFilter ?? this.statusFilter),
       sortByLatest: sortByLatest ?? this.sortByLatest,
     );
   }
@@ -191,7 +192,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                         color: Colors.grey,
                         onTap: () {
                           setModalState(() {
-                            localFilterState = localFilterState.copyWith(statusFilter: null);
+                            localFilterState = localFilterState.copyWith(clearStatusFilter: true);
                           });
                         },
                       ),
@@ -320,205 +321,219 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        title: const Text(
-          'My Orders',
-          style: TextStyle(
-            color: Color(0xFF1A1A1A),
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        actions: [
-          // Filter button in app bar
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: Stack(
-              children: [
-                IconButton(
-                  icon: Icon(
-                    Icons.tune_rounded,
-                    color: hasActiveFilters ? kPrimaryGreen : Colors.grey[700],
-                    size: 26,
-                  ),
-                  onPressed: () => _showFilterBottomSheet(context),
-                ),
-                if (hasActiveFilters)
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 1.5,
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: _loadOrders,
+          color: kPrimaryGreen,
+          child: Column(
+            children: [
+              // Filter Icon at Top Right
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: hasActiveFilters 
+                              ? kPrimaryGreen.withOpacity(0.1) 
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: hasActiveFilters 
+                                ? kPrimaryGreen.withOpacity(0.3)
+                                : Colors.grey.shade200,
+                            width: 1,
+                          ),
+                        ),
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.tune_rounded,
+                            color: hasActiveFilters ? kPrimaryGreen : Colors.grey[700],
+                            size: 24,
+                          ),
+                          onPressed: () => _showFilterBottomSheet(context),
                         ),
                       ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: _loadOrders,
-        color: kPrimaryGreen,
-        child: isLoading
-            ? const Center(
-                child: CircularProgressIndicator(),
-              )
-            : filteredOrders.isEmpty
-                ? _buildEmptyState(orders.isEmpty, hasActiveFilters)
-                : Column(
-                    children: [
-                      // Active Filters Display
-                      if (filterState.statusFilter != null || !filterState.sortByLatest)
-                        Container(
-                          width: double.infinity,
-                          margin: const EdgeInsets.all(16),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Colors.grey.shade200,
-                              width: 1,
+                      if (hasActiveFilters)
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 1.5,
+                              ),
                             ),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              
+              Expanded(
+                child: isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : filteredOrders.isEmpty
+                        ? _buildEmptyState(orders.isEmpty, hasActiveFilters)
+                        : Column(
                             children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(6),
-                                    decoration: BoxDecoration(
-                                      color: kPrimaryGreen.withOpacity(0.1),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
-                                      Icons.filter_alt,
-                                      size: 16,
-                                      color: kPrimaryGreen,
+                              // Active Filters Display
+                              if (hasActiveFilters)
+                                Container(
+                                  width: double.infinity,
+                                  margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: Colors.grey.shade200,
+                                      width: 1,
                                     ),
                                   ),
-                                  const SizedBox(width: 10),
-                                  const Text(
-                                    'Active Filters',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF1A1A1A),
-                                    ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(6),
+                                            decoration: BoxDecoration(
+                                              color: kPrimaryGreen.withOpacity(0.1),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Icon(
+                                              Icons.filter_alt,
+                                              size: 16,
+                                              color: kPrimaryGreen,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          const Text(
+                                            'Active Filters',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: Color(0xFF1A1A1A),
+                                            ),
+                                          ),
+                                          const Spacer(),
+                                          GestureDetector(
+                                            onTap: () {
+                                              // Reset all filters
+                                              ref.read(filterStateProvider.notifier).state = FilterState();
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.all(4),
+                                              child: Icon(
+                                                Icons.close,
+                                                size: 18,
+                                                color: Colors.grey[600],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        children: [
+                                          if (filterState.statusFilter != null)
+                                            _ActiveFilterChip(
+                                              label: _getStatusLabel(filterState.statusFilter!),
+                                              onRemove: () {
+                                                // Clear only the status filter
+                                                ref.read(filterStateProvider.notifier).state =
+                                                    filterState.copyWith(clearStatusFilter: true);
+                                              },
+                                            ),
+                                          if (!filterState.sortByLatest)
+                                            _ActiveFilterChip(
+                                              label: 'Oldest First',
+                                              onRemove: () {
+                                                // Clear only the sort filter
+                                                ref.read(filterStateProvider.notifier).state =
+                                                    filterState.copyWith(sortByLatest: true);
+                                              },
+                                            ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
-                                  const Spacer(),
-                                  GestureDetector(
-                                    onTap: () {
-                                      // Reset all filters
-                                      ref.read(filterStateProvider.notifier).state = FilterState();
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.all(4),
-                                      child: Icon(
-                                        Icons.close,
-                                        size: 18,
+                                ),
+                              
+                              // Orders Count
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      '${filteredOrders.length} ${filteredOrders.length == 1 ? 'Order' : 'Orders'}',
+                                      style: TextStyle(
+                                        fontSize: 14,
                                         color: Colors.grey[600],
+                                        fontWeight: FontWeight.w500,
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                              const SizedBox(height: 10),
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: [
-                                  if (filterState.statusFilter != null)
-                                    _ActiveFilterChip(
-                                      label: _getStatusLabel(filterState.statusFilter!),
-                                      onRemove: () {
-                                        ref.read(filterStateProvider.notifier).state =
-                                            filterState.copyWith(statusFilter: null);
-                                      },
-                                    ),
-                                  if (!filterState.sortByLatest)
-                                    _ActiveFilterChip(
-                                      label: 'Oldest First',
-                                      onRemove: () {
-                                        ref.read(filterStateProvider.notifier).state =
-                                            filterState.copyWith(sortByLatest: true);
-                                      },
-                                    ),
-                                ],
+                              const SizedBox(height: 12),
+                              
+                              // Orders List
+                              Expanded(
+                                child: ListView.builder(
+                                  padding: const EdgeInsets.only(
+                                    left: 16,
+                                    right: 16,
+                                    bottom: 16,
+                                  ),
+                                  itemCount: filteredOrders.length,
+                                  itemBuilder: (context, index) {
+                                    final order = filteredOrders[index];
+                                    return Padding(
+                                      padding: const EdgeInsets.only(bottom: 12),
+                                      child: BuffaloOrderCard(
+                                        order: order,
+                                        onTapInvoice: () async {
+                                          final filePath = await InvoiceGenerator.generateInvoice(
+                                            order,
+                                          );
+                                          if (context.mounted) {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    PdfViewerScreen(filePath: filePath),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                      
-                      // Orders Count
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Row(
-                          children: [
-                            Text(
-                              '${filteredOrders.length} ${filteredOrders.length == 1 ? 'Order' : 'Orders'}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[600],
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      
-                      // Orders List
-                      Expanded(
-                        child: ListView.builder(
-                          padding: const EdgeInsets.only(
-                            left: 16,
-                            right: 16,
-                            bottom: 16,
-                          ),
-                          itemCount: filteredOrders.length,
-                          itemBuilder: (context, index) {
-                            final order = filteredOrders[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: BuffaloOrderCard(
-                                order: order,
-                                onTapInvoice: () async {
-                                  final filePath = await InvoiceGenerator.generateInvoice(
-                                    order,
-                                  );
-                                  if (context.mounted) {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            PdfViewerScreen(filePath: filePath),
-                                      ),
-                                    );
-                                  }
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
