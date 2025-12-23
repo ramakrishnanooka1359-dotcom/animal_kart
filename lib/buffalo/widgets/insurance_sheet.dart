@@ -83,7 +83,7 @@ class InsuranceSheet extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              /// INSURANCE TABLE
+             
               _buildInsuranceTable(
                 context,
                 price,

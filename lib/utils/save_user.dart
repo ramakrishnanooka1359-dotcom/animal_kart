@@ -58,6 +58,7 @@ Future<UserModel?> loadUserFromPrefs() async {
      coins: prefs.getDouble('coins'),
     referedByMobile: prefs.getString('refered_by_mobile') ?? '',
     referedByName: prefs.getString('refered_by_name') ?? '',
+    role: prefs.getString('role') ?? '',
     otp: '',
   );
 }

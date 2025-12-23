@@ -5,24 +5,20 @@ class UserModel {
   final String lastName;
   final String mobile;
   final String email;
-
   final bool verified;
   final bool otpVerified;
   final bool? isFormFilled;
-
   final String gender;
   final String occupation;
   final String address;
   final String city;
   final String state;
   final String pincode;
-
   final int aadharNumber;
   final double? coins;
-
   final String referedByMobile;
   final String referedByName;
-
+  final String role;
   final String otp;
 
   UserModel({
@@ -45,6 +41,7 @@ class UserModel {
     required this.coins,
     required this.referedByMobile,
     required this.referedByName,
+    required this.role,
     required this.otp,
   });
 
@@ -56,11 +53,9 @@ class UserModel {
       lastName: json['last_name'] ?? '',
       mobile: json['mobile'] ?? '',
       email: json['email'] ?? '',
-
       verified: json['verified'] ?? false,
       otpVerified: json['otp_verified'] ?? false,
       isFormFilled: json['isFormFilled'],
-
       gender: json['gender'] ?? '',
       occupation: json['occupation'] ?? '',
       address: json['address'] ?? '',
@@ -71,7 +66,7 @@ class UserModel {
      coins: (json['coins'] as num?)?.toDouble(),
       referedByMobile: json['refered_by_mobile'] ?? '',
       referedByName: json['refered_by_name'] ?? '',
-
+      role: json['role']?.toString() ?? 'Investor',
       otp: json['otp'] ?? '',
     );
   }

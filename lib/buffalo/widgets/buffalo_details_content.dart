@@ -80,8 +80,6 @@ class BuffaloDetailsContent extends StatelessWidget {
             isDragShowIcon: false,
           ),
           
-          const SizedBox(height: 14),
-           cpfExplanationCard(context,buffalo),
           const SizedBox(height: 18),
           CpfSelectionWidget(
             buffalo: buffalo,
@@ -97,6 +95,7 @@ class BuffaloDetailsContent extends StatelessWidget {
             onCpfSelectionChanged: onCpfSelectionChanged,
           ),
           const SizedBox(height: 18),
+            cpfExplanationCard(context,buffalo),
         ],
       ),
     );

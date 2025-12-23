@@ -5,8 +5,8 @@ import 'package:animal_kart_demo2/routes/routes.dart';
 import 'package:animal_kart_demo2/services/biometric_service.dart';
 import 'package:animal_kart_demo2/services/secure_storage_service.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
-import 'package:animal_kart_demo2/widgets/user_profile/info_card.dart';
-import 'package:animal_kart_demo2/widgets/user_profile/refer_bottomsheet_widget.dart';
+import 'package:animal_kart_demo2/profile/widgets/info_card.dart';
+import 'package:animal_kart_demo2/profile/widgets/refer_bottomsheet_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,7 +30,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
     super.initState();
 
     Future.microtask(() {
-      ref.read(profileProvider.notifier).loadProfile();
+      ref.read(profileProvider.notifier).fetchCurrentUser();
     });
 
     _loadBiometricStatus();
@@ -123,162 +123,182 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
     }
   }
 
+  void _showReferBottomSheet(BuildContext context, UserModel user) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
+      builder: (_) => ReferBottomSheet(
+        referralCode: user.mobile,
+        unitPrice: 363000,
+        userCoins: user.coins ?? 0,
+        currentUser: user,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final profileState = ref.watch(profileProvider);
     final currentLocale = ref.watch(localeProvider).locale;
 
-    if (_isLoading) {
+    if (_isLoading || profileState.isLoading) {
       return Scaffold(
         backgroundColor: Theme.of(context).mainThemeBgColor,
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
+    final user = profileState.currentUser;
+    
+    if (profileState.error != null) {
+      return Scaffold(
+        backgroundColor: Theme.of(context).mainThemeBgColor,
+        body: Center(child: Text("Failed to load profile: ${profileState.error}")),
+      );
+    }
+
+    if (user == null) {
+      return Scaffold(
+        backgroundColor: Theme.of(context).mainThemeBgColor,
+        body: const Center(child: Text("No profile data")),
+      );
+    }
+
     return Scaffold(
-      body: profileState.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) =>
-            const Center(child: Text("Failed to load profile")),
-        data: (user) {
-          if (user == null) {
-            return const Center(child: Text("No profile data"));
+      body: FutureBuilder<Map<String, String>>(
+        future: buildTranslatedData(user),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
           }
 
-          return FutureBuilder<Map<String, String>>(
-            future: buildTranslatedData(user),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return const Center(child: CircularProgressIndicator());
-              }
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
 
-              return SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-
-                    ListTile(
-                      title: Text(
-                        context.tr('selectLanguage'),
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w700),
-                      ),
-                      trailing: DropdownButton<Locale>(
-                        value: currentLocale,
-                        items: const [
-                          DropdownMenuItem(
-                              value: Locale('en'), child: Text('English')),
-                          DropdownMenuItem(
-                              value: Locale('hi'), child: Text('Hindi')),
-                          DropdownMenuItem(
-                              value: Locale('te'), child: Text('Telugu')),
-                        ],
-                        onChanged: (locale) {
-                          if (locale != null) {
-                            ref
-                                .read(localeProvider.notifier)
-                                .setLocale(locale);
-                          }
-                        },
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        context.tr('Personal Information'),
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w700),
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-                    InfoCardWidget(items: snapshot.data!),
-                    const SizedBox(height: 20),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).lightThemeCardColor,
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              context.tr('app_lock_fingerprint'),
-                              style: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w600),
-                            ),
-                            Switch(
-                              value: _isBiometricEnabled,
-                              onChanged: _toggleBiometric,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: GestureDetector(
-                        onTap: () => _showReferBottomSheet(context),
-                        child: Container(
-                          height: 55,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE8F0FF),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Center(
-                            child: Text(
-                              context.tr('refer_earn'),
-                              style: const TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: GestureDetector(
-                        onTap: () => _showLogoutConfirmation(context),
-                        child: Container(
-                          height: 55,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFFD6D6),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Center(
-                            child: Text(
-                              context.tr('logout'),
-                              style: TextStyle(
-                                  color: Colors.red.shade700,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 40),
-                  ],
+                ListTile(
+                  title: Text(
+                    context.tr('selectLanguage'),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w700),
+                  ),
+                  trailing: DropdownButton<Locale>(
+                    value: currentLocale,
+                    items: const [
+                      DropdownMenuItem(
+                          value: Locale('en'), child: Text('English')),
+                      DropdownMenuItem(
+                          value: Locale('hi'), child: Text('Hindi')),
+                      DropdownMenuItem(
+                          value: Locale('te'), child: Text('Telugu')),
+                    ],
+                    onChanged: (locale) {
+                      if (locale != null) {
+                        ref
+                            .read(localeProvider.notifier)
+                            .setLocale(locale);
+                      }
+                    },
+                  ),
                 ),
-              );
-            },
+
+                const SizedBox(height: 20),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    context.tr('Personal Information'),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w700),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+                InfoCardWidget(items: snapshot.data!),
+                const SizedBox(height: 20),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).lightThemeCardColor,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          context.tr('app_lock_fingerprint'),
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600),
+                        ),
+                        Switch(
+                          value: _isBiometricEnabled,
+                          onChanged: _toggleBiometric,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: GestureDetector(
+                    onTap: () => _showReferBottomSheet(context, user),
+                    child: Container(
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE8F0FF),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Center(
+                        child: Text(
+                          context.tr('refer_earn'),
+                          style: const TextStyle(
+                              color: Colors.blue,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: GestureDetector(
+                    onTap: () => _showLogoutConfirmation(context),
+                    child: Container(
+                      height: 55,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFD6D6),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Center(
+                        child: Text(
+                          context.tr('logout'),
+                          style: TextStyle(
+                              color: Colors.red.shade700,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 40),
+              ],
+            ),
           );
         },
       ),
@@ -313,16 +333,5 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
       Navigator.pushNamedAndRemoveUntil(
           context, AppRouter.login, (_) => false);
     }
-  }
-
-  void _showReferBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-      ),
-      builder: (_) =>
-          const ReferBottomSheet(referralCode: "TRALAGO"),
-    );
   }
 }

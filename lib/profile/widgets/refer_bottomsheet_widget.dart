@@ -1,21 +1,27 @@
+import 'package:animal_kart_demo2/auth/models/user_model.dart';
+import 'package:animal_kart_demo2/profile/widgets/add_referral_dialog.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ReferBottomSheet extends StatelessWidget {
+
+
+class ReferBottomSheet extends ConsumerWidget {
   final String referralCode;
   final double unitPrice;
   final double userCoins;
+  final UserModel? currentUser;
 
   const ReferBottomSheet({
     super.key,
     required this.referralCode,
     this.unitPrice = 363000,
     this.userCoins = 0,
+    this.currentUser,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final screenHeight = MediaQuery.of(context).size.height;
     final isSmallScreen = screenHeight < 700;
 
@@ -102,12 +108,12 @@ class ReferBottomSheet extends StatelessWidget {
 
           SizedBox(height: isSmallScreen ? 8 : 12),
 
-          /// Share Button
+          /// Add Referral Button (Changed from Share)
           SizedBox(
             width: double.infinity,
-            height: isSmallScreen ? 44 : 48,
+            height: isSmallScreen ? 40 : 50,
             child: ElevatedButton(
-              onPressed: _shareReferral,
+              onPressed: () => _showAddReferralDialog(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: kPrimaryDarkColor,
                 shape: RoundedRectangleBorder(
@@ -115,43 +121,13 @@ class ReferBottomSheet extends StatelessWidget {
                 ),
               ),
               child: const Text(
-                "Share Referral Code",
+                "Add Referral",
                 style: TextStyle(color: Colors.white, fontSize: 14),
               ),
             ),
           ),
 
-          /// Transfer Button (Conditional)
-          if (userCoins >= unitPrice) ...[
-            SizedBox(height: isSmallScreen ? 6 : 8),
-            SizedBox(
-              width: double.infinity,
-              height: isSmallScreen ? 44 : 48,
-              child: OutlinedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const TransferUnitScreen(),
-                    ),
-                  );
-                },
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: kPrimaryDarkColor),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: Text(
-                  "Transfer Unit",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: kPrimaryDarkColor,
-                  ),
-                ),
-              ),
-            ),
-          ],
+         
         ],
       ),
     );
@@ -212,22 +188,38 @@ class ReferBottomSheet extends StatelessWidget {
     );
   }
 
-  void _shareReferral() {
-    Share.share(
-      "Use my referral code $referralCode and earn coins towards a full unit 🐃🔥",
+  
+
+  void _showAddReferralDialog(BuildContext context) {
+    // Check if we have current user data
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Unable to get user information'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AddReferralDialog(
+        referedByMobile: currentUser!.mobile,
+        referedByName: "${currentUser!.firstName} ${currentUser!.lastName}",
+        onSuccess: () {
+        
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Referral added successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        },
+      ),
     );
   }
 }
 
-/// Dummy Transfer Screen
-class TransferUnitScreen extends StatelessWidget {
-  const TransferUnitScreen({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Transfer Unit")),
-      body: const Center(child: Text("Transfer Unit Form Goes Here")),
-    );
-  }
-}

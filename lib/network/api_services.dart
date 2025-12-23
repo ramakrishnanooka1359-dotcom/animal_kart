@@ -7,6 +7,8 @@ import 'package:animal_kart_demo2/auth/models/whatsapp_otp_response.dart';
 import 'package:animal_kart_demo2/buffalo/models/buffalo.dart';
 import 'package:animal_kart_demo2/buffalo/models/unit_selection.dart';
 import 'package:animal_kart_demo2/orders/models/order_model.dart';
+import 'package:animal_kart_demo2/profile/models/%20create_user_request.dart';
+import 'package:animal_kart_demo2/profile/models/create_user_response.dart';
 import 'package:animal_kart_demo2/utils/app_constants.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/rendering.dart';
@@ -127,8 +129,7 @@ static Future<UnitSelection?> createUnitSelection({
       body: jsonEncode(body),
     );
 
-    debugPrint("STATUS CODE: ${response.statusCode}");
-    debugPrint("RESPONSE BODY: ${response.body}");
+   
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -163,14 +164,14 @@ static Future<List<OrderUnit>> fetchOrders(String userId) async {
     );
 
     if (response.statusCode != 200) {
-      debugPrint("FETCH ORDERS FAILED: ${response.statusCode}");
+     
       return [];
     }
 
     final Map<String, dynamic> data = jsonDecode(response.body);
 
     if (data['status'] != 'success' || data['orders'] == null) {
-      debugPrint("FETCH ORDERS INVALID RESPONSE");
+     
       return [];
     }
 
@@ -200,8 +201,7 @@ static Future<Map<String, dynamic>?> confirmManualPayment({
       body: jsonEncode(body),
     );
 
-    debugPrint("CONFIRM PAYMENT STATUS: ${response.statusCode}");
-    debugPrint("CONFIRM PAYMENT RESPONSE: ${response.body}");
+   
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -211,8 +211,7 @@ static Future<Map<String, dynamic>?> confirmManualPayment({
       return {"status": "error", "message": data["message"] ?? "Payment submission failed"};
     }
   } catch (e, stack) {
-    debugPrint("CONFIRM MANUAL PAYMENT ERROR: $e");
-    debugPrint(stack.toString());
+    
     return {"status": "error", "message": "Network error. Please try again."};
   }
 }
@@ -238,15 +237,40 @@ static Future<UserModel?> fetchUserProfile(String mobile) async {
   } catch (e) {
     return null;
   }
+
+  
 }
 
+static Future<CreateUserResponse?> createUser({
+  required CreateUserRequest request,
+}) async {
+  try {
+    final url = '${AppConstants.apiUrl}/users';
+    
+    debugPrint("CREATE USER API URL: $url");
+    debugPrint("REQUEST BODY: ${jsonEncode(request.toJson())}");
 
-
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        HttpHeaders.contentTypeHeader: AppConstants.applicationJson,
+      },
+      body: jsonEncode(request.toJson()),
+    );
 
   
 
-  
-
-
-
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return CreateUserResponse.fromJson(data);
+    } else {
+      final errorData = jsonDecode(response.body);
+     
+      return null;
+    }
+  } catch (e, stack) {
+   
+    return null;
+  }
+}
 }
