@@ -91,7 +91,7 @@ class ReferBottomSheet extends ConsumerWidget {
             isSmallScreen,
             icon: Icons.currency_rupee,
             title: "Earn Coins",
-            description: "Every referral gives 2% unit value as coins.",
+            description: "Every referral gives 5% unit value as coins.",
           ),
           _stepCard(
             isSmallScreen,
@@ -209,13 +209,14 @@ class ReferBottomSheet extends ConsumerWidget {
         referedByMobile: currentUser!.mobile,
         referedByName: "${currentUser!.firstName} ${currentUser!.lastName}",
         onSuccess: () {
-        
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Referral added successfully!'),
-              backgroundColor: Colors.green,
-            ),
-          );
+         Navigator.of(context).pop();
+
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(
+          //     content: Text('Referral added successfully!'),
+          //     backgroundColor: Colors.green,
+          //   ),
+          // );
         },
       ),
     );
