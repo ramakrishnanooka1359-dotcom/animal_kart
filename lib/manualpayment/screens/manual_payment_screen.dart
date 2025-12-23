@@ -1,26 +1,23 @@
-// lib/manualpayment/manual_payment_screen.dart
 import 'dart:async';
 import 'dart:io';
 import 'package:animal_kart_demo2/manualpayment/provider/ifsc_provider.dart';
 import 'package:animal_kart_demo2/manualpayment/provider/manual_payment_provider.dart';
-import 'package:animal_kart_demo2/manualpayment/widgets/capital_convert_widget.dart';
+import 'package:animal_kart_demo2/manualpayment/widgets/bank_transfer_form.dart';
+import 'package:animal_kart_demo2/manualpayment/widgets/cheque_payment_form.dart';
+import 'package:animal_kart_demo2/manualpayment/widgets/common_widgets.dart';
 import 'package:animal_kart_demo2/orders/widgets/custom_widgets.dart';
+import 'package:animal_kart_demo2/utils/app_constants.dart';
+import 'package:animal_kart_demo2/l10n/app_localizations.dart';
+import 'package:animal_kart_demo2/manualpayment/widgets/payment_mode_selector.dart';
+import 'package:animal_kart_demo2/routes/routes.dart';
+import 'package:animal_kart_demo2/utils/app_colors.dart';
+import 'package:animal_kart_demo2/widgets/floating_toast.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:animal_kart_demo2/utils/app_constants.dart';
-import 'package:animal_kart_demo2/l10n/app_localizations.dart';
-import 'package:animal_kart_demo2/manualpayment/widgets/common_widgets.dart';
-import 'package:animal_kart_demo2/routes/routes.dart';
-import 'package:animal_kart_demo2/utils/app_colors.dart';
-import 'package:animal_kart_demo2/widgets/floating_toast.dart';
 
-import '../widgets/payment_mode_selector.dart';
-
-
-
-class ManualPaymentScreen  extends ConsumerStatefulWidget  {
+class ManualPaymentScreen extends ConsumerStatefulWidget {
   final double totalAmount;
   final String unitId;
   final String userId;
@@ -47,11 +44,9 @@ class _ManualPaymentScreenState extends ConsumerState<ManualPaymentScreen> {
 
   bool _isUploading = false;
   bool _isDeleting = false;
-
   Timer? _ifscDebounceTimer;
 
-  
-
+  // Bank Transfer Controllers
   final bankAmountCtrl = TextEditingController();
   final utrCtrl = TextEditingController();
   final bankNameCtrl = TextEditingController();
@@ -60,23 +55,20 @@ class _ManualPaymentScreenState extends ConsumerState<ManualPaymentScreen> {
   String transferMode = 'NEFT';
   final List<String> transferModes = ['NEFT', 'RTGS', 'IMPS'];
   String? ifscErrorBankTransfer;
-  String? ifscErrorCheque;
-
-  File? bankScreenshot;
   String? bankScreenshotError;
   String? bankScreenshotUrl;
   String? bankScreenshotPath;
   double? bankScreenshotProgress;
+  File? bankScreenshot;
 
+  // Cheque Payment Controllers
   final chequeNoCtrl = TextEditingController();
   final chequeDateCtrl = TextEditingController();
   final chequeAmountCtrl = TextEditingController();
   final chequeBankNameCtrl = TextEditingController();
   final chequeIfscCodeCtrl = TextEditingController();
   final chequeUtrRefCtrl = TextEditingController();
-
-  File? chequeFrontImage;
-  File? chequeBackImage;
+  String? ifscErrorCheque;
   String? chequeFrontImageError;
   String? chequeBackImageError;
   String? chequeFrontUrl;
@@ -85,6 +77,8 @@ class _ManualPaymentScreenState extends ConsumerState<ManualPaymentScreen> {
   String? chequeBackPath;
   double? chequeFrontProgress;
   double? chequeBackProgress;
+  File? chequeFrontImage;
+  File? chequeBackImage;
 
   @override
   void initState() {
@@ -110,21 +104,19 @@ class _ManualPaymentScreenState extends ConsumerState<ManualPaymentScreen> {
     super.dispose();
   }
 
-
   void _onIfscChanged(String value, {bool isBankTransfer = true}) {
-    // Cancel previous timer
     _ifscDebounceTimer?.cancel();
     
-     if (isBankTransfer) {
-    setState(() {
-      ifscErrorBankTransfer = null;
-    });
-  } else {
-    setState(() {
-      ifscErrorCheque = null;
-    });
-  }
-    // If IFSC is empty, clear bank name
+    if (isBankTransfer) {
+      setState(() {
+        ifscErrorBankTransfer = null;
+      });
+    } else {
+      setState(() {
+        ifscErrorCheque = null;
+      });
+    }
+
     if (value.isEmpty) {
       if (isBankTransfer) {
         bankNameCtrl.text = '';
@@ -133,13 +125,11 @@ class _ManualPaymentScreenState extends ConsumerState<ManualPaymentScreen> {
       }
       return;
     }
-    
-    // Start new timer for debounce (500ms)
+
     _ifscDebounceTimer = Timer(const Duration(milliseconds: 500), () {
       if (value.length == 11) {
         _fetchBankDetails(value, isBankTransfer: isBankTransfer);
       } else if (value.length > 11) {
-        // If more than 11 chars, show error
         final errorMessage = 'IFSC code must be exactly 11 characters';
         if (isBankTransfer) {
           bankNameCtrl.text = '';
@@ -147,18 +137,16 @@ class _ManualPaymentScreenState extends ConsumerState<ManualPaymentScreen> {
         } else {
           chequeBankNameCtrl.text = '';
           ifscErrorCheque = errorMessage;
-
         }
       }
     });
   }
-  
+
   Future<void> _fetchBankDetails(String ifscCode, {bool isBankTransfer = true}) async {
     try {
       final ifscData = await IfscService.fetchBankDetails(ifscCode);
       
       if (ifscData != null && mounted) {
-        // Format: "Bank Name - Branch Name"
         final bankInfo = '${ifscData.bank} - ${ifscData.branch}';
         
         if (isBankTransfer) {
@@ -173,9 +161,8 @@ class _ManualPaymentScreenState extends ConsumerState<ManualPaymentScreen> {
           });
         }
       } else {
-        // Clear if invalid IFSC
+        final errorMessage = 'IFSC code not found. Please enter a valid IFSC code.';
         if (mounted) {
-           final errorMessage = 'IFSC code not found. Please enter a valid IFSC code.';
           if (isBankTransfer) {
             setState(() {
               bankNameCtrl.text = '';
@@ -191,11 +178,8 @@ class _ManualPaymentScreenState extends ConsumerState<ManualPaymentScreen> {
       }
     } catch (e) {
       debugPrint('Error fetching bank details: $e');
-      // Don't clear existing text on error, just log it
     }
   }
-
-  
 
   Future<String?> _uploadFile(
     File file,
@@ -229,7 +213,6 @@ class _ManualPaymentScreenState extends ConsumerState<ManualPaymentScreen> {
   Future<void> _deleteFile(String path) async {
     try {
       setState(() => _isDeleting = true);
-
       final storage = FirebaseStorage.instanceFor(
         bucket: AppConstants.storageBucketName,
       );
@@ -278,9 +261,7 @@ class _ManualPaymentScreenState extends ConsumerState<ManualPaymentScreen> {
     }
 
     final now = DateTime.now();
-    final dateFolder =
-        '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
-
+    final dateFolder = '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
     String pathPrefix = "userpics/manual_payments/$dateFolder";
     String fileName = "${DateTime.now().millisecondsSinceEpoch}.jpg";
 
@@ -330,39 +311,29 @@ class _ManualPaymentScreenState extends ConsumerState<ManualPaymentScreen> {
     return picked != null ? File(picked.path) : null;
   }
 
-  
-
-
-
-Future<void> _handleBankTransferSubmit() async {
+  Future<void> _handleBankTransferSubmit() async {
     if (!_bankFormKey.currentState!.validate()) return;
 
-    final screenshotError =
-        BankTransferValidators.validatePaymentScreenshot(bankScreenshot);
+    final screenshotError = BankTransferValidators.validatePaymentScreenshot(bankScreenshot);
     if (screenshotError != null) {
       setState(() => bankScreenshotError = screenshotError);
       return;
     }
 
-     final dateError =
-        _validateTransactionDate(transactionDateCtrl.text, transferMode);
+    final dateError = _validateTransactionDate(transactionDateCtrl.text, transferMode);
     if (dateError != null) {
       FloatingToast.showSimpleToast(dateError);
       return;
     }
 
-
     if (bankScreenshotProgress != null) {
-      FloatingToast.showSimpleToast(
-          "Please wait for image upload to complete");
+      FloatingToast.showSimpleToast("Please wait for image upload to complete");
       return;
     }
 
     final transactionData = {
       "transferMode": transferMode,
-      "amount":
-          double.tryParse(bankAmountCtrl.text) ??
-              widget.totalAmount.toDouble(),
+      "amount": double.tryParse(bankAmountCtrl.text) ?? widget.totalAmount.toDouble(),
       "utrNumber": utrCtrl.text.trim(),
       "payerBankName": bankNameCtrl.text.trim(),
       "transactionDate": transactionDateCtrl.text,
@@ -378,17 +349,14 @@ Future<void> _handleBankTransferSubmit() async {
       "transaction": transactionData,
     };
 
-   
     final controller = ref.read(manualPaymentProvider.notifier);
-
     final success = await controller.submitManualPayment(payload);
 
     if (success) {
       FloatingToast.showSimpleToast(
         controller.successMessage ?? "Submitted successfully",
       );
-      Navigator.pushReplacementNamed(
-          context, AppRouter.PaymentPending);
+      Navigator.pushReplacementNamed(context, AppRouter.PaymentPending);
     } else {
       FloatingToast.showSimpleToast(
         controller.errorMessage ?? "Submission failed",
@@ -399,12 +367,8 @@ Future<void> _handleBankTransferSubmit() async {
   Future<void> _handleChequePaymentSubmit() async {
     if (!_chequeFormKey.currentState!.validate()) return;
 
-    final frontError = ChequePaymentValidators.validateChequeFrontImage(
-      chequeFrontImage,
-    );
-    final backError = ChequePaymentValidators.validateChequeBackImage(
-      chequeBackImage,
-    );
+    final frontError = ChequePaymentValidators.validateChequeFrontImage(chequeFrontImage);
+    final backError = ChequePaymentValidators.validateChequeBackImage(chequeBackImage);
 
     bool hasError = false;
     if (frontError != null) {
@@ -418,21 +382,16 @@ Future<void> _handleBankTransferSubmit() async {
     if (hasError) return;
 
     if (chequeFrontProgress != null || chequeBackProgress != null) {
-      FloatingToast.showSimpleToast(
-        "Please wait for image upload to complete",
-      );
+      FloatingToast.showSimpleToast("Please wait for image upload to complete");
       return;
     }
 
     if ((chequeFrontUrl == null && chequeFrontImage != null) ||
         (chequeBackUrl == null && chequeBackImage != null)) {
-      FloatingToast.showSimpleToast(
-        "Image upload failed, please try again",
-      );
+      FloatingToast.showSimpleToast("Image upload failed, please try again");
       return;
     }
 
-    // Build cheque transaction data
     final transactionData = {
       "chequeNumber": chequeNoCtrl.text.trim(),
       "chequeDate": chequeDateCtrl.text.trim(),
@@ -452,7 +411,6 @@ Future<void> _handleBankTransferSubmit() async {
       "transaction": transactionData,
     };
 
-    // Use the same provider for cheque payment
     final controller = ref.read(manualPaymentProvider.notifier);
     final success = await controller.submitManualPayment(payload);
 
@@ -468,72 +426,105 @@ Future<void> _handleBankTransferSubmit() async {
     }
   }
 
-   (DateTime, DateTime) _getDateConstraints(String mode) {
-  final now = DateTime.now();
-  final today = DateTime(now.year, now.month, now.day);
-  
-  // For all modes: 3 months before to 3 months after today
-  final minDate = DateTime(today.year, today.month - 3, today.day);
-  final maxDate = DateTime(today.year, today.month + 3, today.day);
-  
-  return (minDate, maxDate);
-}
-   (DateTime, DateTime) _getDatePickerConstraints(String mode) {
-  final (minDate, maxDate) = _getDateConstraints(mode);
-  // For date picker, we need DateTime objects with time component
-  return (
-    DateTime(minDate.year, minDate.month, minDate.day),
-    DateTime(maxDate.year, maxDate.month, maxDate.day, 23, 59, 59)
-  );
+  (DateTime, DateTime) _getDateConstraints(String mode) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final minDate = DateTime(today.year, today.month - 3, today.day);
+    final maxDate = DateTime(today.year, today.month + 3, today.day);
+    return (minDate, maxDate);
+  }
+
+  (DateTime, DateTime) _getDatePickerConstraints(String mode) {
+    final (minDate, maxDate) = _getDateConstraints(mode);
+    return (
+      DateTime(minDate.year, minDate.month, minDate.day),
+      DateTime(maxDate.year, maxDate.month, maxDate.day, 23, 59, 59)
+    );
   }
 
   String? _validateTransactionDate(String? value, String mode) {
-  if (value == null || value.trim().isEmpty) {
-    return "Transaction date is required";
-  }
+    if (value == null || value.trim().isEmpty) {
+      return "Transaction date is required";
+    }
 
-  try {
-    final parts = value.split('-');
-    if (parts.length != 3) {
+    try {
+      final parts = value.split('-');
+      if (parts.length != 3) {
+        return "Invalid date format. Use YYYY-MM-DD";
+      }
+
+      final year = int.parse(parts[0]);
+      final month = int.parse(parts[1]);
+      final day = int.parse(parts[2]);
+
+      final selectedDate = DateTime(year, month, day);
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      
+      final minDate = DateTime(today.year, today.month - 3, today.day);
+      final maxDate = DateTime(today.year, today.month + 3, today.day);
+
+      if (selectedDate.isBefore(minDate) || selectedDate.isAfter(maxDate)) {
+        final minDateStr = "${minDate.year}-${minDate.month.toString().padLeft(2, '0')}-${minDate.day.toString().padLeft(2, '0')}";
+        final maxDateStr = "${maxDate.year}-${maxDate.month.toString().padLeft(2, '0')}-${maxDate.day.toString().padLeft(2, '0')}";
+        return "Transaction date must be between $minDateStr and $maxDateStr";
+      }
+    } catch (e) {
       return "Invalid date format. Use YYYY-MM-DD";
     }
 
-    final year = int.parse(parts[0]);
-    final month = int.parse(parts[1]);
-    final day = int.parse(parts[2]);
-
-    final selectedDate = DateTime(year, month, day);
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    
-    // Calculate 3 months before and after today
-    final minDate = DateTime(today.year, today.month - 3, today.day);
-    final maxDate = DateTime(today.year, today.month + 3, today.day);
-
-    // Validate against the 3-month range for all modes
-    if (selectedDate.isBefore(minDate) || selectedDate.isAfter(maxDate)) {
-      final minDateStr = "${minDate.year}-${minDate.month.toString().padLeft(2, '0')}-${minDate.day.toString().padLeft(2, '0')}";
-      final maxDateStr = "${maxDate.year}-${maxDate.month.toString().padLeft(2, '0')}-${maxDate.day.toString().padLeft(2, '0')}";
-      return "Transaction date must be between $minDateStr and $maxDateStr";
-    }
-    
-  } catch (e) {
-    return "Invalid date format. Use YYYY-MM-DD";
+    return null;
   }
 
-  return null;
-}
+  Widget _buildSubmitButton({required bool isFormBank}) {
+    return Consumer(
+      builder: (context, ref, _) {
+        final controller = ref.watch(manualPaymentProvider);
+        final bool isUploadInProgress = isFormBank
+            ? bankScreenshotProgress != null
+            : (chequeFrontProgress != null || chequeBackProgress != null);
 
+        final bool shouldDisable = controller.isLoading || isUploadInProgress || _isDeleting;
 
-
-
+        return SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            onPressed: shouldDisable
+                ? null
+                : (isFormBank ? _handleBankTransferSubmit : _handleChequePaymentSubmit),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: shouldDisable ? Colors.grey : kPrimaryGreen,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+            ),
+            child: controller.isLoading
+                ? const SizedBox(
+                    height: 22,
+                    width: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text(
+                    context.tr("submit"),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kFieldBg,
       appBar: AppBar(
-        
         title: Text(context.tr("manualPayment")),
         centerTitle: true,
         leading: IconButton(
@@ -566,650 +557,121 @@ Future<void> _handleBankTransferSubmit() async {
             ),
             const SizedBox(height: 20),
 
-            if (showBankForm) _buildBankTransferForm(),
-            if (showChequeForm) _buildChequePaymentForm(),
+            if (showBankForm)
+              BankTransferForm(
+                formKey: _bankFormKey,
+                bankAmountCtrl: bankAmountCtrl,
+                utrCtrl: utrCtrl,
+                bankNameCtrl: bankNameCtrl,
+                ifscCodeCtrl: ifscCodeCtrl,
+                transactionDateCtrl: transactionDateCtrl,
+                transferMode: transferMode,
+                transferModes: transferModes,
+                ifscError: ifscErrorBankTransfer,
+                bankScreenshot: bankScreenshot,
+                bankScreenshotError: bankScreenshotError,
+                bankScreenshotProgress: bankScreenshotProgress,
+                onIfscChanged: (value) => _onIfscChanged(value, isBankTransfer: true),
+                onTransferModeChanged: (newValue) => setState(() => transferMode = newValue),
+                onCameraPressed: () => _handleImageUpload(
+                  isCamera: true,
+                  isBankScreenshot: true,
+                  isChequeFront: false,
+                  isChequeBack: false,
+                ),
+                onGalleryPressed: () => _handleImageUpload(
+                  isCamera: false,
+                  isBankScreenshot: true,
+                  isChequeFront: false,
+                  isChequeBack: false,
+                ),
+                onRemoveImage: () {
+                  if (bankScreenshotPath != null) {
+                    _deleteFile(bankScreenshotPath!);
+                  }
+                  setState(() {
+                    bankScreenshot = null;
+                    bankScreenshotError = null;
+                    bankScreenshotUrl = null;
+                    bankScreenshotPath = null;
+                    bankScreenshotProgress = null;
+                  });
+                },
+                validateTransactionDate: (value) => _validateTransactionDate(value, transferMode),
+                getDatePickerConstraints: _getDatePickerConstraints,
+                buildSubmitButton: () => _buildSubmitButton(isFormBank: true),
+              ),
+
+            if (showChequeForm)
+              ChequePaymentForm(
+                formKey: _chequeFormKey,
+                chequeNoCtrl: chequeNoCtrl,
+                chequeDateCtrl: chequeDateCtrl,
+                chequeAmountCtrl: chequeAmountCtrl,
+                chequeBankNameCtrl: chequeBankNameCtrl,
+                chequeIfscCodeCtrl: chequeIfscCodeCtrl,
+                chequeUtrRefCtrl: chequeUtrRefCtrl,
+                ifscError: ifscErrorCheque,
+                chequeFrontImage: chequeFrontImage,
+                chequeBackImage: chequeBackImage,
+                chequeFrontImageError: chequeFrontImageError,
+                chequeBackImageError: chequeBackImageError,
+                chequeFrontProgress: chequeFrontProgress,
+                chequeBackProgress: chequeBackProgress,
+                onIfscChanged: (value) => _onIfscChanged(value, isBankTransfer: false),
+                onCameraFrontPressed: () => _handleImageUpload(
+                  isCamera: true,
+                  isBankScreenshot: false,
+                  isChequeFront: true,
+                  isChequeBack: false,
+                ),
+                onGalleryFrontPressed: () => _handleImageUpload(
+                  isCamera: false,
+                  isBankScreenshot: false,
+                  isChequeFront: true,
+                  isChequeBack: false,
+                ),
+                onCameraBackPressed: () => _handleImageUpload(
+                  isCamera: true,
+                  isBankScreenshot: false,
+                  isChequeFront: false,
+                  isChequeBack: true,
+                ),
+                onGalleryBackPressed: () => _handleImageUpload(
+                  isCamera: false,
+                  isBankScreenshot: false,
+                  isChequeFront: false,
+                  isChequeBack: true,
+                ),
+                onRemoveFrontImage: () {
+                  if (chequeFrontPath != null) {
+                    _deleteFile(chequeFrontPath!);
+                  }
+                  setState(() {
+                    chequeFrontImage = null;
+                    chequeFrontImageError = null;
+                    chequeFrontUrl = null;
+                    chequeFrontPath = null;
+                    chequeFrontProgress = null;
+                  });
+                },
+                onRemoveBackImage: () {
+                  if (chequeBackPath != null) {
+                    _deleteFile(chequeBackPath!);
+                  }
+                  setState(() {
+                    chequeBackImage = null;
+                    chequeBackImageError = null;
+                    chequeBackUrl = null;
+                    chequeBackPath = null;
+                    chequeBackProgress = null;
+                  });
+                },
+                buildSubmitButton: () => _buildSubmitButton(isFormBank: false),
+              ),
           ],
         ),
       ),
     );
   }
-
-  Widget _buildBankTransferForm() {
-    return Card(
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Form(
-          key: _bankFormKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-
-              context.tr("bankTransferDetails"),
-
-
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              ValidatedTextField(
-                controller: bankAmountCtrl,
-                label: context.tr("amountPaid"),
-                readOnly: true,
-              ),
-              const SizedBox(height: 15),
-
-              ValidatedTextField(
-                controller: utrCtrl,
-                label: context.tr("utrNumber"),
-
-                validator: BankTransferValidators.validateUTR,
-                keyboardType: TextInputType.text,
-                maxLength: 22,
-                inputFormatters: [
-              UpperCaseTextFormatter(), 
-            ],
-
-              ),
-              const SizedBox(height: 8),
-
-             
-
-              ValidatedTextField(
-                controller: ifscCodeCtrl,
-                label: context.tr("ifscCode"),
-                validator: BankTransferValidators.validateIFSC,
-                keyboardType: TextInputType.text,
-                maxLength: 11,
-                inputFormatters: [
-                UpperCaseTextFormatter(), 
-                ],
-                onChanged: (value) => _onIfscChanged(value, isBankTransfer: true),
-              ),
-               if (ifscErrorBankTransfer != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 4, left: 8),
-                child: Text(
-                  ifscErrorBankTransfer!,
-                  style: const TextStyle(
-                    color: Colors.red,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 8),
-               ValidatedTextField(
-                controller: bankNameCtrl,
-                label: context.tr("bankName"),
-                keyboardType: TextInputType.text,
-                readOnly: true,
-              ),
-              const SizedBox(height: 8),
-
-              ValidatedTextField(
-                controller: transactionDateCtrl,
-                label: context.tr("transactionDate"),
-
-                readOnly: true,
-                validator: (value) =>
-                    _validateTransactionDate(value, transferMode),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.calendar_month),
-                  onPressed: () async {
-                    final (firstDate, lastDate) =
-                        _getDatePickerConstraints(transferMode);
-                    
-                    final picked = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: firstDate,
-                      lastDate: lastDate,
-                    );
-                    if (picked != null) {
-                      setState(() {
-                        transactionDateCtrl.text =
-                            "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
-                      });
-                    }
-                  },
-                ),
-              ),
-              const SizedBox(height: 8),
-
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  FieldTitle(context.tr("transferMode")),
-                  const SizedBox(height: 4),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: DropdownButton<String>(
-                      value: transferMode,
-                      isExpanded: true,
-                      underline: const SizedBox(),
-                      onChanged: (String? newValue) {
-                        setState(() => transferMode = newValue!);
-                      },
-                      items: transferModes.map<DropdownMenuItem<String>>((
-                        value,
-                      ) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 20),
-
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildAadhaarUploadWidget(
-                    title: context.tr("uploadPaymentScreenshot"),
-
-                    file: bankScreenshot,
-                    uploadProgress: bankScreenshotProgress,
-                    onCamera: () => _handleImageUpload(
-                      isCamera: true,
-                      isBankScreenshot: true,
-                      isChequeFront: false,
-                      isChequeBack: false,
-                    ),
-                    onGallery: () => _handleImageUpload(
-                      isCamera: false,
-                      isBankScreenshot: true,
-                      isChequeFront: false,
-                      isChequeBack: false,
-                    ),
-                    onRemove: () {
-                      if (bankScreenshotPath != null) {
-                        _deleteFile(bankScreenshotPath!);
-                      }
-                      setState(() {
-                        bankScreenshot = null;
-                        bankScreenshotError = null;
-                        bankScreenshotUrl = null;
-                        bankScreenshotPath = null;
-                        bankScreenshotProgress = null;
-                      });
-                    },
-                  ),
-                  if (bankScreenshotError != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4, left: 8),
-                      child: Text(
-                        bankScreenshotError!,
-                        style: const TextStyle(
-                          color: Colors.red,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-
-              const SizedBox(height: 20),
-
-              _buildSubmitButton(
-                isFormBank: true,
-              ),
-
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildChequePaymentForm() {
-    return Card(
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Form(
-          key: _chequeFormKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                context.tr("chequePaymentDetails"),
-
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              ValidatedTextField(
-                controller: chequeNoCtrl,
-                label: context.tr("chequeNumber"),
-                validator: ChequePaymentValidators.validateChequeNumber,
-                keyboardType: TextInputType.number,
-                maxLength: 10,
-              ),
-              const SizedBox(height: 8),
-
-              ValidatedTextField(
-                controller: chequeDateCtrl,
-                label: context.tr("chequeDate"),
-                readOnly: true,
-                validator: ChequePaymentValidators.validateChequeDate,
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.calendar_month),
-                  onPressed: () async {
-                    final now = DateTime.now();
-                  final today = DateTime(now.year, now.month, now.day);
-                 final minDate = DateTime(today.year, today.month - 3, today.day);
-                  final maxDate = DateTime(today.year, today.month + 3, today.day);
-                    final picked = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: minDate,
-                      lastDate: maxDate,
-
-                    );
-                    if (picked != null) {
-                      chequeDateCtrl.text =
-                          "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
-                    }
-                  },
-                ),
-              ),
-              const SizedBox(height: 8),
-
-              ValidatedTextField(
-                controller: chequeAmountCtrl,
-                label: context.tr("chequeAmount"),
-                readOnly: true,
-              ),
-              const SizedBox(height: 8),
-              ValidatedTextField(
-                controller: chequeIfscCodeCtrl,
-                label: context.tr("ifscCode"),
-                validator: ChequePaymentValidators.validateChequeIFSC,
-                keyboardType: TextInputType.text,
-                maxLength: 11,
-                inputFormatters: [
-                UpperCaseTextFormatter(),
-                 
-              ],
-              onChanged: (value) => _onIfscChanged(value, isBankTransfer: false),
-              ),
-              if (ifscErrorCheque != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 4, left: 8),
-                child: Text(
-                  ifscErrorCheque!,
-                  style: const TextStyle(
-                    color: Colors.red,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-               const SizedBox(height: 8),
-
-              ValidatedTextField(
-                controller: chequeBankNameCtrl,
-                label: context.tr("bankName"),
-                
-                keyboardType: TextInputType.text,
-                readOnly: true,
-              ),
-             
-
-              
-              const SizedBox(height: 8),
-
-              ValidatedTextField(
-                controller: chequeUtrRefCtrl,
-                label: context.tr("utrReferenceNumber"),
-                validator: ChequePaymentValidators.validateChequeUTRRef,
-                keyboardType: TextInputType.text,
-                maxLength: 30,
-                inputFormatters: [
-                UpperCaseTextFormatter(), 
-              ],
-
-              ),
-
-              const SizedBox(height: 20),
-
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildAadhaarUploadWidget(
-                    title: context.tr("uploadChequeFrontImage"),
-
-                    file: chequeFrontImage,
-                    uploadProgress: chequeFrontProgress,
-                    onCamera: () => _handleImageUpload(
-                      isCamera: true,
-                      isBankScreenshot: false,
-                      isChequeFront: true,
-                      isChequeBack: false,
-                    ),
-                    onGallery: () => _handleImageUpload(
-                      isCamera: false,
-                      isBankScreenshot: false,
-                      isChequeFront: true,
-                      isChequeBack: false,
-                    ),
-                    onRemove: () {
-                      if (chequeFrontPath != null) {
-                        _deleteFile(chequeFrontPath!);
-                      }
-                      setState(() {
-                        chequeFrontImage = null;
-                        chequeFrontImageError = null;
-                        chequeFrontUrl = null;
-                        chequeFrontPath = null;
-                        chequeFrontProgress = null;
-                      });
-                    },
-                  ),
-                  if (chequeFrontImageError != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4, left: 8),
-                      child: Text(
-                        chequeFrontImageError!,
-                        style: const TextStyle(
-                          color: Colors.red,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-
-              const SizedBox(height: 20),
-
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildAadhaarUploadWidget(
-title: context.tr("uploadChequeBackImage"),
-
-                    file: chequeBackImage,
-                    uploadProgress: chequeBackProgress,
-                    onCamera: () => _handleImageUpload(
-                      isCamera: true,
-                      isBankScreenshot: false,
-                      isChequeFront: false,
-                      isChequeBack: true,
-                    ),
-                    onGallery: () => _handleImageUpload(
-                      isCamera: false,
-                      isBankScreenshot: false,
-                      isChequeFront: false,
-                      isChequeBack: true,
-                    ),
-                    onRemove: () {
-                      if (chequeBackPath != null) {
-                        _deleteFile(chequeBackPath!);
-                      }
-                      setState(() {
-                        chequeBackImage = null;
-                        chequeBackImageError = null;
-                        chequeBackUrl = null;
-                        chequeBackPath = null;
-                        chequeBackProgress = null;
-                      });
-                    },
-                  ),
-                  if (chequeBackImageError != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4, left: 8),
-                      child: Text(
-                        chequeBackImageError!,
-                        style: const TextStyle(
-                          color: Colors.red,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-
-              const SizedBox(height: 20),
-
-             _buildSubmitButton(
-                isFormBank: false,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAadhaarUploadWidget({
-    required String title,
-    required File? file,
-    required double? uploadProgress,
-    required VoidCallback onCamera,
-    required VoidCallback onGallery,
-    required VoidCallback onRemove,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AbsorbPointer(
-          absorbing: uploadProgress != null || _isDeleting,
-          child: Opacity(
-            opacity: (uploadProgress != null || _isDeleting) ? 0.6 : 1.0,
-            child: Card(
-              elevation: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    )),
-                    const SizedBox(height: 12),
-
-                    if (file != null)
-                      _buildFilePreview(file, uploadProgress, onRemove)
-                    else
-                      _buildUploadButtons(onGallery, onCamera),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFilePreview(File file, double? uploadProgress, VoidCallback onRemove) {
-    return Stack(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Stack(
-            children: [
-              Image.file(
-                file,
-                height: 150,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-              if (uploadProgress != null)
-                Positioned.fill(
-                  child: Container(
-                    color: Colors.black26,
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircularProgressIndicator(
-                            value: uploadProgress,
-                            backgroundColor: Colors.grey[200],
-                            valueColor: AlwaysStoppedAnimation<Color>(kPrimaryGreen),
-                            strokeWidth: 4,
-                          ),
-                          const SizedBox(height: 8),
-                          if (uploadProgress != null)
-                            Text(
-                              '${(uploadProgress * 100).toStringAsFixed(0)}%',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-        Positioned(
-          top: 8,
-          right: 8,
-          child: GestureDetector(
-            onTap: onRemove,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.red.shade50,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.delete, color: Colors.red),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildUploadButtons(VoidCallback onGallery, VoidCallback onCamera) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey.shade300),
-      ),
-      child: Column(
-        children: [
-          const Icon(
-            Icons.cloud_upload_outlined,
-            size: 55,
-            color: Colors.grey,
-          ),
-          const SizedBox(height: 8),
-          TextButton(
-            onPressed: onGallery,
-            child:  Text(
-              context.tr("uploadImage"),
-
-              style: TextStyle(fontSize: 18),
-            ),
-          ),
-           Text(context.tr("uploadPhotosNote")),
-           Text(context.tr("or")),
-          const SizedBox(height: 6),
-          ElevatedButton(
-            onPressed: onCamera,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: kPrimaryGreen,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(6),
-              ),
-            ),
-            child: Text(context.tr("openCamera"),
-            style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),),
-          ),
-        ],
-      ),
-    );
-  }
-
-Widget _buildSubmitButton({
-  required bool isFormBank, // true = bank, false = cheque
-  bool isDisabled = false,
-}) {
-  return Consumer(
-    builder: (context, ref, _) {
-      final controller = ref.watch(manualPaymentProvider);
-
-      final bool isUploadInProgress = isFormBank
-          ? bankScreenshotProgress != null
-          : (chequeFrontProgress != null || chequeBackProgress != null);
-
-      final bool shouldDisable =
-          isDisabled ||
-          controller.isLoading ||
-          isUploadInProgress ||
-          _isDeleting;
-
-      return SizedBox(
-        width: double.infinity,
-        height: 50,
-        child: ElevatedButton(
-          onPressed: shouldDisable
-              ? null
-              : (isFormBank
-                  ? _handleBankTransferSubmit
-                  : _handleChequePaymentSubmit),
-          style: ElevatedButton.styleFrom(
-            backgroundColor:
-                shouldDisable ? Colors.grey : kPrimaryGreen,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25),
-            ),
-          ),
-          child: controller.isLoading
-              ? const SizedBox(
-                  height: 22,
-                  width: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    color: Colors.white,
-                  ),
-                )
-              :  Text(
-                  context.tr("submit"),
-
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-        ),
-      );
-    },
-  );
-}
 }
