@@ -81,8 +81,8 @@ Widget cpfExplanationCard(BuildContext context, buffalo) {
   final cpf = buffalo.insurance;
   final assetValue = 10775000;
 ;
-  final revenue10Years = 5852000;
-  final breakEvenMonths = 41;
+  final revenue10Years = 5538000;
+  final breakEvenMonths = 43;
 ;
 
   return Padding(
