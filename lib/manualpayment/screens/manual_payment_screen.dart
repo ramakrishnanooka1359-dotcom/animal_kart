@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:animal_kart_demo2/manualpayment/provider/ifsc_provider.dart';
 import 'package:animal_kart_demo2/manualpayment/provider/manual_payment_provider.dart';
@@ -392,6 +393,8 @@ class _ManualPaymentScreenState extends ConsumerState<ManualPaymentScreen> {
       "paymentScreenshotUrl": bankScreenshotUrl,
     };
 
+    
+
     final payload = {
       "orderId": widget.unitId,
       "paymentType": "BANK_TRANSFER",
@@ -399,6 +402,7 @@ class _ManualPaymentScreenState extends ConsumerState<ManualPaymentScreen> {
       "breedId": widget.buffaloId,
       "transaction": transactionData,
     };
+    debugPrint('Bank Transfer Payload: ${jsonEncode(payload)}');
 
     final controller = ref.read(manualPaymentProvider.notifier);
     final success = await controller.submitManualPayment(payload);
@@ -467,6 +471,7 @@ class _ManualPaymentScreenState extends ConsumerState<ManualPaymentScreen> {
       "transaction": transactionData,
     };
 
+    debugPrint('Cheque Payload: ${jsonEncode(payload)}');
     final controller = ref.read(manualPaymentProvider.notifier);
     final success = await controller.submitManualPayment(payload);
 

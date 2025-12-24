@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:animal_kart_demo2/auth/providers/auth_provider.dart';
 import 'package:animal_kart_demo2/auth/providers/user_provider.dart';
@@ -370,6 +371,7 @@ Future<void> pickAadhaarFrontFromCamera() async {
     }
 
     debugPrint("Extra fields: $extraFields");
+    debugPrint("Registration Payload: ${jsonEncode(extraFields)}");
     debugPrint("User ID: $userId");
 
     // API Call
