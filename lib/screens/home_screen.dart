@@ -202,44 +202,59 @@ List<Widget> _buildActions(BuildContext context) {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _navItem(index: 0, icon: Icons.home_rounded, label: "Home"),
-            _navItem(index: 1, icon: Icons.shopping_cart, label: "orders"),
-            _navItem(index: 2, icon: Icons.person_outline, label: "Profile"),
+            _navItem(
+            index: 0,
+            activeIcon: Icons.home_rounded,
+            inactiveIcon: Icons.home_outlined,
+            label: "Home",
+          ),
+          _navItem(
+            index: 1,
+            activeIcon: Icons.shopping_cart,
+            inactiveIcon: Icons.shopping_cart_outlined,
+            label: "orders",
+          ),
+          _navItem(
+            index: 2,
+            activeIcon: Icons.person,
+            inactiveIcon: Icons.person_outline,
+            label: "Profile",
+          ),
           ],
         ),
       ),
     );
   }
 
-  Widget _navItem({
-    required int index,
-    required IconData icon,
-    required String label,
-  }) {
-    final isSelected = _selectedIndex == index;
+Widget _navItem({
+  required int index,
+  required IconData activeIcon,
+  required IconData inactiveIcon,
+  required String label,
+}) {
+  final bool isSelected = _selectedIndex == index;
 
-    return GestureDetector(
-      onTap: () => _onItemTapped(index),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 26,
+  return GestureDetector(
+    onTap: () => _onItemTapped(index),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          isSelected ? activeIcon : inactiveIcon,
+          size: 26,
+          color: isSelected ? kPrimaryGreen : Colors.grey.shade600,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          context.tr(label),
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
             color: isSelected ? kPrimaryGreen : Colors.grey.shade600,
           ),
-          const SizedBox(height: 4),
-          Text(
-            context.tr(label),
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: isSelected ? kPrimaryGreen : Colors.grey.shade600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 }
-
+}

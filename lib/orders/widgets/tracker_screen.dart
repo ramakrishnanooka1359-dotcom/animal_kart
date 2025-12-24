@@ -27,7 +27,7 @@ class TrackerScreen extends StatefulWidget {
 }
 
 class _TrackerScreenState extends State<TrackerScreen> {
-  final int _currentStep = 2; // Index for "Received at Quarantine"
+  final int _currentStep = 2; 
   final List<TrackerStep> _steps = [];
 
   @override
