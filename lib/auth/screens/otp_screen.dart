@@ -29,7 +29,7 @@ class OtpScreen extends ConsumerStatefulWidget {
 
 class _OtpScreenState extends ConsumerState<OtpScreen> {
   final otpController = TextEditingController();
-
+final FocusNode otpFocusNode = FocusNode();
   String deviceId = "";
   String deviceModel = "";
 
@@ -45,6 +45,10 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     super.initState();
     getDeviceInfo();
     _startResendTimer();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+    otpFocusNode.requestFocus();
+  });
+
   }
 
   @override
@@ -52,6 +56,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     _resendTimer?.cancel();
     otpController.dispose();
     super.dispose();
+      otpFocusNode.dispose(); 
   }
 
   void _startResendTimer() {
@@ -128,7 +133,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               Center(
                 child: Pinput(
                   controller: otpController,
+                  focusNode: otpFocusNode, 
                   length: 6,
+                  autofocus: true,
                   defaultPinTheme: defaultPinTheme,
                   onChanged: (value) {
                     setState(() {

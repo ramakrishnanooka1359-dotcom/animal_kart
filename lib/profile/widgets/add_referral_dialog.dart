@@ -95,7 +95,7 @@ class _AddReferralDialogState extends ConsumerState<AddReferralDialog> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.createUserResponse!.message),
-              backgroundColor: Colors.green,
+              backgroundColor: kPrimaryGreen,
             ),
           );
           

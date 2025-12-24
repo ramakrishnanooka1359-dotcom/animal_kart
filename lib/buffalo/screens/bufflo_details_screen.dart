@@ -252,60 +252,97 @@ class _BuffaloDetailsScreenState extends ConsumerState<BuffaloDetailsScreen> {
   }
 
   Future<void> _handleManualPayment(buffalo) async {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => const Center(child: CircularProgressIndicator()),
-    );
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (_) => const Center(child: CircularProgressIndicator()),
+  );
 
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final userMobile = prefs.getString('userMobile');
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final userMobile = prefs.getString('userMobile');
 
-      if (userMobile == null) {
-        Navigator.pop(context);
-        showToast(context.tr("userMobileNotFound"));
-        return;
-      }
-
-      final baseUnitCost = buffalo.price * quantity;
-      final cpfUnitCost = isCpfSelected ? (cpfUnitsToPay * buffalo.insurance) : 0;
-
-      final payload = {
-        "userId": userMobile,
-        "breedId": buffalo.id,
-        "numUnits": units,
-        "paymentMode": "MANUAL_PAYMENT",
-        "baseUnitCost": baseUnitCost,
-        "cpfUnitCost": cpfUnitCost,
-      };
-      
-      debugPrint("Manual Payment Request Payload: $payload");
-
-      final response = await ref
-          .read(unitProvider)
-          .createUnit(payload: payload);
-
-      if (!mounted) return;
+    if (userMobile == null) {
       Navigator.pop(context);
 
-      if (response != null) {
-        showToast(
-          "${context.tr("orderPlaced")} ${context.tr("orderId")}: ${response.id}",
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(context.tr("userMobileNotFound")),
+            backgroundColor: Colors.red,
+          ),
+        );
+      return;
+    }
+
+    final baseUnitCost = buffalo.price * quantity;
+    final cpfUnitCost =
+        isCpfSelected ? (cpfUnitsToPay * buffalo.insurance) : 0;
+
+    final payload = {
+      "userId": userMobile,
+      "breedId": buffalo.id,
+      "numUnits": units,
+      "paymentMode": "MANUAL_PAYMENT",
+      "baseUnitCost": baseUnitCost,
+      "cpfUnitCost": cpfUnitCost,
+    };
+
+    debugPrint("Manual Payment Request Payload: $payload");
+
+    final response =
+        await ref.read(unitProvider).createUnit(payload: payload);
+
+    if (!mounted) return;
+    Navigator.pop(context);
+
+    if (response != null) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(
+              "${context.tr("orderPlaced")}",
+            ),
+            backgroundColor: kPrimaryDarkColor,
+            duration: const Duration(seconds: 3),
+          ),
         );
 
-        Navigator.pushReplacementNamed(context, AppRouter.home, arguments: 1);
-      } else {
-        showToast(context.tr("orderFailed"));
-      }
-    } catch (e) {
-      if (mounted) {
-        Navigator.pop(context);
-        showToast("${context.tr("errorOccurred")}: $e");
-        debugPrint("Manual payment error: $e");
-      }
+      Navigator.pushReplacementNamed(
+        context,
+        AppRouter.home,
+        arguments: 1,
+      );
+    } else {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(context.tr("orderFailed")),
+            backgroundColor: Colors.red,
+          ),
+        );
+    }
+  } catch (e) {
+    if (mounted) {
+      Navigator.pop(context);
+
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(context.tr("errorOccurred")),
+            backgroundColor: Colors.red,
+          ),
+        );
+
+      debugPrint("Manual payment error: $e");
     }
   }
+}
+
 
   void _showCpfConfirmationDialog(BuildContext context, VoidCallback onConfirm) {
     showDialog(
