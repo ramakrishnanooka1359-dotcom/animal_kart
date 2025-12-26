@@ -54,33 +54,33 @@ class FormatUtils {
   }
   
   // Alternative: Using regex for Indian numbering
-  static String _formatIndianNumberRegex(String numberStr) {
-    // Remove any existing commas
-    String cleanStr = numberStr.replaceAll(',', '');
+  // static String _formatIndianNumberRegex(String numberStr) {
+  //   // Remove any existing commas
+  //   String cleanStr = numberStr.replaceAll(',', '');
     
-    // Handle negative numbers
-    bool isNegative = false;
-    if (cleanStr.startsWith('-')) {
-      isNegative = true;
-      cleanStr = cleanStr.substring(1);
-    }
+  //   // Handle negative numbers
+  //   bool isNegative = false;
+  //   if (cleanStr.startsWith('-')) {
+  //     isNegative = true;
+  //     cleanStr = cleanStr.substring(1);
+  //   }
     
-    // Regex for Indian numbering:
-    // 1. First 3 digits from right: (\d{3})
-    // 2. Then every 2 digits: (\d{2})*
-    String formatted = cleanStr.replaceAllMapped(
-      RegExp(r'(\d{2})(\d{3})$'),
-      (Match m) => '${m[1]},${m[2]}',
-    );
+  //   // Regex for Indian numbering:
+  //   // 1. First 3 digits from right: (\d{3})
+  //   // 2. Then every 2 digits: (\d{2})*
+  //   String formatted = cleanStr.replaceAllMapped(
+  //     RegExp(r'(\d{2})(\d{3})$'),
+  //     (Match m) => '${m[1]},${m[2]}',
+  //   );
     
-    // If there are more digits, add more commas
-    formatted = formatted.replaceAllMapped(
-      RegExp(r'(\d+)(\d{2},\d{3})$'),
-      (Match m) => '${m[1]},${m[2]}',
-    );
+  //   // If there are more digits, add more commas
+  //   formatted = formatted.replaceAllMapped(
+  //     RegExp(r'(\d+)(\d{2},\d{3})$'),
+  //     (Match m) => '${m[1]},${m[2]}',
+  //   );
     
-    return isNegative ? '-$formatted' : formatted;
-  }
+  //   return isNegative ? '-$formatted' : formatted;
+  // }
   
   // Simple Indian formatter using a different approach
   static String formatIndianNumber(num number) {

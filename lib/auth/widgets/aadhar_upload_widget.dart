@@ -108,11 +108,16 @@ class AadhaarUploadWidget extends ConsumerWidget {
               ),
               child: SvgPicture.string(
                 SvgUtils().deleteIcon,
-                color: akRedColor,
+                colorFilter: ColorFilter.mode(
+    akRedColor,
+    BlendMode.srcIn,
+
+               // color: akRedColor,
               ),
             ),
           ),
         ),
+        )
       ],
     );
   }

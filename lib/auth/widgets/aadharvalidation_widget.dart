@@ -24,7 +24,6 @@ class AadharValidator {
     [7,0,4,6,9,1,3,2,5,8]
   ];
 
-  static final List<int> _inv = [0,4,3,2,1,5,6,7,8,9];
 
   static bool validateAadhar(String aadhar) {
     if (aadhar.length != 12) return false;

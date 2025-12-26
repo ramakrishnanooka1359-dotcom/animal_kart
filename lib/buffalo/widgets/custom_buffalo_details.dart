@@ -78,7 +78,7 @@ Widget priceExplanation({
 
 Widget cpfExplanationCard(BuildContext context, buffalo) {
   final price = buffalo.price * 2;
-  final cpf = buffalo.insurance;
+  //final cpf = buffalo.insurance;
   final assetValue = 10775000;
 ;
   final revenue10Years = 5538000;

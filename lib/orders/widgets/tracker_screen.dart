@@ -117,7 +117,7 @@ class _TrackerScreenState extends State<TrackerScreen> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha:0.06),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -189,7 +189,7 @@ class _TrackerScreenState extends State<TrackerScreen> {
             Container(
               height: 70,
               width: 1,
-              color: Colors.grey.withOpacity(0.5),
+              color: Colors.grey.withValues(alpha:0.5),
               margin: const EdgeInsets.symmetric(horizontal: 10),
             ),
             Column(
@@ -227,7 +227,7 @@ class _TrackerScreenState extends State<TrackerScreen> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha:0.06),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),

@@ -247,37 +247,38 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
 
                       // InfoCardWidget(items: snapshot.data!),
                       const SizedBox(height: 20),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12),
-                        child: CoinBadge(),
-                      ),
-                      if (!Platform.isIOS)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).lightThemeCardColor,
-                              borderRadius: BorderRadius.circular(18),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  context.tr('app_lock_fingerprint'),
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                Switch(
-                                  value: _isBiometricEnabled,
-                                  onChanged: _toggleBiometric,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 12),
+          child: CoinBadge(),
+        ),
+if (!Platform.isIOS)
+  Padding( 
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    child: Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).lightThemeCardColor,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            context.tr('app_lock_fingerprint'),
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Switch(
+            value: _isBiometricEnabled,
+            onChanged: _toggleBiometric,
+          ),
+        ],
+      ),
+    ),
+  ),
+
 
                       const SizedBox(height: 20),
 

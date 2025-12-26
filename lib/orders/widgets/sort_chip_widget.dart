@@ -22,7 +22,7 @@ class SortChip extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
         decoration: BoxDecoration(
-          color: selected ? kPrimaryGreen.withOpacity(0.1) : Colors.grey[100],
+          color: selected ? kPrimaryGreen.withValues(alpha:.1) : Colors.grey[100],
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: selected ? kPrimaryGreen : Colors.grey.shade300,

@@ -76,12 +76,12 @@ extension CustomThemeExt on ThemeData {
   Color get kAkGreen => isLightTheme ? akGreenColor : akGreenColor;
 
   Color get tileRedColor =>
-      isLightTheme ? tileRedLightColor.withOpacity(0.36) : tileRedLightColor;
+      isLightTheme ? tileRedLightColor.withValues(alpha:0.36) : tileRedLightColor;
   Color get tileGreenColor => isLightTheme
-      ? tileGreenLightColor.withOpacity(0.36)
+      ? tileGreenLightColor.withValues(alpha:0.36)
       : tileGreenLightColor;
   Color get tileOrangeColor => isLightTheme
-      ? akOrangeColorAccent.withOpacity(0.36)
+      ? akOrangeColorAccent.withValues(alpha:0.36)
       : akOrangeColorAccent;
 
   Color get lightThemeCardColor => isLightTheme ? kCardBg : akTableRowDarkColor;
@@ -92,8 +92,8 @@ extension CustomThemeExt on ThemeData {
   Color get tileGreyishBlueColor =>
       isLightTheme ? akTileGreyishBlueLightColor : akTileGreyishBlueLightColor;
   Color get tileLightOrangeColor => isLightTheme
-      ? akTileOrangeLightColor.withOpacity(0.16)
-      : akTileOrangeLightColor.withOpacity(0.46);
+      ? akTileOrangeLightColor.withValues(alpha:0.16)
+      : akTileOrangeLightColor.withValues(alpha:0.46);
   Color get akColor12 => isLightTheme ? akBlackColor12 : akWhiteColor24;
 }
 
@@ -218,7 +218,7 @@ ThemeData lightTheme = ThemeData(
     primary: akForestWhisper,
     secondary: akSunsetBurst,
     surface: Colors.white,
-    background: akPureCanvas,
+   // background: akPureCanvas,
   ),
   appBarTheme: const AppBarTheme(
     backgroundColor: akForestWhisper,
@@ -240,7 +240,7 @@ ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     primary: akMintBreeze,
     secondary: akElectricLime,
-    background: akCharcoalShadow,
+    //background: akCharcoalShadow,
     surface: akSageStone,
     onSurface: Colors.white,
   ),

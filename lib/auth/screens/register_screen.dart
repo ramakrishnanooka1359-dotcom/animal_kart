@@ -189,36 +189,38 @@ Future<void> pickAadhaarFrontFromCamera() async {
       await _uploadPanCard();
     }
   }
- 
-  Future<void> selectDOB() async {
-    final now = DateTime.now();
-    final maxAllowedDOB = DateTime(now.year - 21, now.month, now.day);
+ Future<void> selectDOB() async {
+  final now = DateTime.now();
+  final maxAllowedDOB = DateTime(now.year - 21, now.month, now.day);
 
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: maxAllowedDOB,
-      firstDate: DateTime(1960),
-      lastDate: maxAllowedDOB,
-      builder: (context, child) {
-        return Theme(
-          data: ThemeData(
-            colorScheme: ColorScheme.light(
-              primary: kPrimaryGreen,
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
-            ),
-            dialogBackgroundColor: Colors.white,
+  final picked = await showDatePicker(
+    context: context,
+    initialDate: maxAllowedDOB,
+    firstDate: DateTime(1960),
+    lastDate: maxAllowedDOB,
+    builder: (context, child) {
+      return Theme(
+        data: ThemeData(
+          colorScheme: ColorScheme.light(
+            primary: kPrimaryGreen,
+            onPrimary: Colors.white,
+            onSurface: Colors.black,
           ),
-          child: child!,
-        );
-      },
-    );
+          // Use DialogThemeData instead of DialogTheme
+          dialogTheme: DialogThemeData(
+            backgroundColor: Colors.white,
+          ),
+        ),
+        child: child!,
+      );
+    },
+  );
 
-    if (picked != null) {
-      selectedDOB = picked;
-      dobCtrl.text = "${picked.day}-${picked.month}-${picked.year}";
-    }
+  if (picked != null) {
+    selectedDOB = picked;
+    dobCtrl.text = "${picked.day}-${picked.month}-${picked.year}";
   }
+}
 
  
   Future<void> _uploadAadhaarFront() async {
@@ -483,7 +485,7 @@ Future<void> pickAadhaarFrontFromCamera() async {
                 color: kFieldBg,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha:0.1),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),

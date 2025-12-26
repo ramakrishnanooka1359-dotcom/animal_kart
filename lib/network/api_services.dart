@@ -211,7 +211,7 @@ static Future<Map<String, dynamic>?> confirmManualPayment({
       final data = jsonDecode(response.body);
       return {"status": "error", "message": data["message"] ?? "Payment submission failed"};
     }
-  } catch (e, stack) {
+  } catch (e) {
     
     return {"status": "error", "message": "Network error. Please try again."};
   }
@@ -265,11 +265,11 @@ static Future<CreateUserResponse?> createUser({
       final data = jsonDecode(response.body);
       return CreateUserResponse.fromJson(data);
     } else {
-      final errorData = jsonDecode(response.body);
+      jsonDecode(response.body);
      
       return null;
     }
-  } catch (e, stack) {
+  } catch (e) {
    
     return null;
   }
@@ -290,9 +290,11 @@ static Future<CoinTransactionResponse?> fetchCoinTransactions(String mobile) asy
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+      
       return CoinTransactionResponse.fromJson(data);
     } else {
       debugPrint("Failed to load coin transactions: ${response.statusCode}");
+      
       return null;
     }
   } catch (e, stack) {

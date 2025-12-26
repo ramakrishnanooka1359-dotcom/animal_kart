@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:animal_kart_demo2/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -31,23 +30,36 @@ InputDecoration fieldDeco(String hint) {
   }
 /// ------------------ GENDER BUTTON ------------------
 /// Now accepts a callback because setState cannot be used inside this file
+// Widget genderButton({
+//   required String label,
+//   required String selectedGender,
+//   required Function(String) onChanged,
+// }) {
+//   return Row(
+//     children: [
+//       Radio(
+//         value: label,
+//         groupValue: selectedGender,
+//         activeColor: kPrimaryGreen,
+//         onChanged: (value) => onChanged(value as String),
+//       ),
+//       Text(label),
+//     ],
+//   );
+// }
+
+
 Widget genderButton({
   required String label,
-  required String selectedGender,
-  required Function(String) onChanged,
 }) {
   return Row(
+    mainAxisSize: MainAxisSize.min,
     children: [
-      Radio(
+      Radio<String>(
         value: label,
-        groupValue: selectedGender,
         activeColor: kPrimaryGreen,
-        onChanged: (value) => onChanged(value as String),
       ),
       Text(label),
     ],
   );
 }
-
-
-const _headerStyle = TextStyle(fontSize: 14, fontWeight: FontWeight.w600);

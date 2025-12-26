@@ -122,7 +122,7 @@ class CartScreen extends ConsumerWidget {
                       boxShadow: [
                         BoxShadow(
                           blurRadius: 10,
-                          color: Colors.black.withOpacity(0.06),
+                          color: Colors.black.withValues(alpha:0.06),
                           offset: const Offset(0, 3),
                         ),
                       ],
@@ -154,7 +154,7 @@ class CartScreen extends ConsumerWidget {
                           boxShadow: [
                             BoxShadow(
                               blurRadius: 10,
-                              color: Colors.black.withOpacity(0.06),
+                              color: Colors.black.withValues(alpha:0.06),
                               offset: const Offset(0, 6),
                             ),
                           ],
@@ -164,11 +164,16 @@ class CartScreen extends ConsumerWidget {
                         ),
                         child: SvgPicture.string(
                           SvgUtils().deleteIcon,
-                          color: akRedColor,
+                          colorFilter: ColorFilter.mode(
+    akRedColor,
+    BlendMode.srcIn,
+
+                        //  color: akRedColor,
                         ) /* Icon(Icons.delete, color: Colors.red, size: 20) */,
                       ),
                     ),
                   ),
+                  )
                 ],
               );
             }).toList(),
@@ -628,7 +633,7 @@ Widget _priceExplanation(Buffalo buff, int units, int insuranceUnits) {
       border: Border.all(color: const Color(0xFFB2E3A8)),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.05),
+          color: Colors.black.withValues(alpha:0.05),
           blurRadius: 8,
           offset: const Offset(0, 3),
         ),

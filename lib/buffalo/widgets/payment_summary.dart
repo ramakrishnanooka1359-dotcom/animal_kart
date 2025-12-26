@@ -34,10 +34,10 @@ class PaymentSummary extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: kPrimaryGreen.withOpacity(0.5), width: 2),
+        border: Border.all(color: kPrimaryGreen.withValues(alpha:0.5), width: 2),
         boxShadow: [
           BoxShadow(
-            color: kPrimaryGreen.withOpacity(0.1),
+            color: kPrimaryGreen.withValues(alpha:0.1),
             spreadRadius: 2,
             blurRadius: 8,
             offset: const Offset(0, 3),

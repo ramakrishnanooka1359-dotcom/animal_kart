@@ -45,7 +45,7 @@ class _ManualPaymentScreenState extends ConsumerState<ManualPaymentScreen> {
   final GlobalKey<FormState> _bankFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _chequeFormKey = GlobalKey<FormState>();
 
-  bool _isUploading = false;
+  //bool _isUploading = false;
   bool _isDeleting = false;
   Timer? _ifscDebounceTimer;
   bool _isCompressing = false;
@@ -262,8 +262,6 @@ class _ManualPaymentScreenState extends ConsumerState<ManualPaymentScreen> {
         isDocument: true,
       );
       
-      final compressedSize = await compressedFile.length() / 1024;
-      final reduction = ((originalSize - compressedSize) / originalSize * 100);
       
     
       return compressedFile;

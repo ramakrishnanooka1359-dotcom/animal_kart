@@ -36,9 +36,9 @@ void main() async {
       child: OKToast(
         child: MyApp(isDarkMode: isDarkMode, isLoggedIn: isLoggedIn),
       ),
-    ));
-  //   )
-  // );
+    ),
+   // )
+  );
 }
 
 class MyApp extends ConsumerStatefulWidget {

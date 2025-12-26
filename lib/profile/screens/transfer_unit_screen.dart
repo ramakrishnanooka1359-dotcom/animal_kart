@@ -234,7 +234,7 @@ String _buildLabel(CoinTransaction txn) {
   if (txn.giverName != null) {
     return 'Coins received from ${txn.giverName}';
   }
-  return 'Coins credited';
+  return 'Referred ${txn.name} purchased ${txn.noOfUnitsBuy} unit';
 }
 
 String _formatAmount(double value) {

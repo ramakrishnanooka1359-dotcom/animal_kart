@@ -52,7 +52,7 @@ class BuffaloImageSlider extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: currentIndex == index 
                         ? Colors.white 
-                        : Colors.white.withOpacity(0.5),
+                        : Colors.white.withValues(alpha:0.5),
                   ),
                 ),
               ),

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:animal_kart_demo2/auth/models/user_model.dart';
 import 'package:animal_kart_demo2/utils/app_constants.dart';
 import 'package:animal_kart_demo2/widgets/floating_toast.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -25,6 +26,14 @@ class UserProfileNotifier extends ChangeNotifier {
   bool get isBackUploading => _isBackUploading;
    bool get isPanUploading => _isPanUploading; 
   bool get isUploading => _isFrontUploading || _isBackUploading || _isPanUploading;
+UserModel? _user;
+UserModel? get user => _user;
+
+double get coins => _user?.coins ?? 0;
+void setUser(UserModel userModel) {
+  _user = userModel;
+  notifyListeners();
+}
 
 
     Future<String?> uploadPanCard({
@@ -165,14 +174,14 @@ Future<bool> deletePanCard({required String userId}) async {
 
     try {
       // Upload front image
-      if (aadhaarFront != null) {
+      //if (aadhaarFront != null) {
         final frontUrl = await uploadAadhaarFront(
           file: aadhaarFront,
           userId: userId,
         );
         if (frontUrl != null) {
           urls["aadhaar_front_url"] = frontUrl;
-        }
+       // }
       }
 
       // Upload back image if exists

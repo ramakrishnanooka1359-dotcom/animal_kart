@@ -127,12 +127,12 @@ void openFilterBottomSheet(BuildContext context) {
                       Container(
                         decoration: BoxDecoration(
                           color: hasActiveFilters 
-                              ? kPrimaryGreen.withOpacity(0.1) 
+                              ? kPrimaryGreen.withValues(alpha:0.1) 
                               : Colors.white,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: hasActiveFilters 
-                                ? kPrimaryGreen.withOpacity(0.3)
+                                ? kPrimaryGreen.withValues(alpha:0.3)
                                 : Colors.grey.shade200,
                             width: 1,
                           ),
@@ -205,7 +205,7 @@ void openFilterBottomSheet(BuildContext context) {
                                           Container(
                                             padding: const EdgeInsets.all(6),
                                             decoration: BoxDecoration(
-                                              color: kPrimaryGreen.withOpacity(0.1),
+                                              color: kPrimaryGreen.withValues(alpha:0.1),
                                               shape: BoxShape.circle,
                                             ),
                                             child: Icon(

@@ -112,7 +112,7 @@ class ImageCompressionHelper {
       }
       
       // Return the best we could do
-      final finalSize = await compressedFile!.length() / 1024;
+      //final finalSize = await compressedFile!.length() / 1024;
 
 
       return compressedFile!;
@@ -226,8 +226,8 @@ class ImageCompressionHelper {
   /// Verify image is still readable (for documents)
   static Future<void> _verifyImageReadability(File compressedFile) async {
     try {
-      final size = await compressedFile.length() / 1024;
-      final fileExtension = path.extension(compressedFile.path).toLowerCase();
+      // final size = await compressedFile.length() / 1024;
+      // final fileExtension = path.extension(compressedFile.path).toLowerCase();
       
 
       
@@ -294,9 +294,9 @@ class ImageCompressionHelper {
   /// Get compression statistics
   static Future<void> printCompressionStats(File original, File compressed) async {
     try {
-      final originalSize = await original.length() / 1024;
-      final compressedSize = await compressed.length() / 1024;
-      final reduction = ((originalSize - compressedSize) / originalSize * 100);
+      // final originalSize = await original.length() / 1024;
+      // final compressedSize = await compressed.length() / 1024;
+      // final reduction = ((originalSize - compressedSize) / originalSize * 100);
       
 
     } catch (e) {

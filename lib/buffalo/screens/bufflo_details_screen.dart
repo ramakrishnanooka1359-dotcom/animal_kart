@@ -9,7 +9,6 @@ import 'package:animal_kart_demo2/utils/app_colors.dart';
 import 'package:animal_kart_demo2/widgets/payment_widgets/successful_screen.dart';
 import 'package:animal_kart_demo2/buffalo/providers/unit_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

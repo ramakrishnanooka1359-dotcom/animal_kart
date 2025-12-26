@@ -59,9 +59,7 @@ class CoinTransaction {
       coins: (json['coins'] ?? 0).toDouble(),
       createdAt: json['created_at'] ?? '',
       name: json['name'] ?? '',
-      noOfUnitsBuy: json['no_of_units_buy'] != null
-          ? (json['no_of_units_buy'] as num).toDouble()
-          : null,
+      noOfUnitsBuy: (json['no_of_units_buy'] as num?)?.toDouble() ?? 0.0,
       giverName: json['giverName'],
     );
   }

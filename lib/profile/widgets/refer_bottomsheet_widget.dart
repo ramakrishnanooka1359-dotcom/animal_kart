@@ -160,7 +160,7 @@ class ReferBottomSheet extends ConsumerWidget {
         children: [
           CircleAvatar(
             radius: compact ? 14 : 18,
-            backgroundColor: kPrimaryDarkColor.withOpacity(0.12),
+            backgroundColor: kPrimaryDarkColor.withValues(alpha:0.12),
             child: Icon(
               icon,
               size: compact ? 14 : 18,

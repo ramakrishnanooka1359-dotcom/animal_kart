@@ -74,7 +74,7 @@ String localizedPaymentType(BuildContext context, String paymentType) {
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha:.06),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -212,7 +212,7 @@ String localizedPaymentType(BuildContext context, String paymentType) {
               Container(
                 height: 70, // match image or content height
                 width: 1,
-                color: Colors.grey.withOpacity(0.5),
+                color: Colors.grey.withValues(alpha:0.5),
                 margin: const EdgeInsets.symmetric(horizontal: 10),
               ),
 
@@ -439,7 +439,7 @@ String localizedPaymentType(BuildContext context, String paymentType) {
     return Container(
       height: 1,
       width: double.infinity,
-      color: Colors.grey.withOpacity(0.4),
+      color: Colors.grey.withValues(alpha:0.4),
     );
   }
 

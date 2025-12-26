@@ -3,7 +3,6 @@ import 'package:animal_kart_demo2/buffalo/widgets/custom_buffalo_details.dart';
 import 'package:animal_kart_demo2/buffalo/widgets/quantity_selector.dart';
 import 'package:animal_kart_demo2/buffalo/widgets/cpf_selection_widget.dart';
 import 'package:animal_kart_demo2/buffalo/widgets/insurance_sheet.dart';
-import 'package:animal_kart_demo2/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class BuffaloDetailsContent extends StatelessWidget {
