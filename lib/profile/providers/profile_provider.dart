@@ -74,6 +74,9 @@ class UserManagementNotifier extends StateNotifier<UserManagementState> {
       final user = await ApiServices.fetchUserProfile(userId);
 
       if (user != null) {
+        // Persist newly fetched user data
+        await saveUserToPrefs(user);
+
         state = state.copyWith(
           isLoading: false,
           currentUser: user,

@@ -17,12 +17,14 @@ Future<void> saveUserToPrefs(UserModel user) async {
   // ✅ Add first and last name separately
   await prefs.setString('firstName', user.firstName);
   await prefs.setString('lastName', user.lastName);
-  
+  await prefs.setDouble('coins', user.coins ?? 0.0);
+  await prefs.setString('role', user.role);
+
   // Store verification status
   await prefs.setBool('isFormFilled', user.isFormFilled ?? false);
   await prefs.setBool('verified', user.verified);
   await prefs.setBool('otp_verified', user.otpVerified);
-  
+
   // Store other user details if available
   if (user.address.isNotEmpty) {
     await prefs.setString('address', user.address);
@@ -55,10 +57,14 @@ Future<UserModel?> loadUserFromPrefs() async {
     state: '',
     pincode: '',
     aadharNumber: int.parse(prefs.getString('aadharNumber') ?? '0'),
-     coins: prefs.getDouble('coins'),
-    referedByMobile: prefs.getString('refered_by_mobile') ?? '',
-    referedByName: prefs.getString('refered_by_name') ?? '',
-    role: prefs.getString('role') ?? '',
+    coins: prefs.getDouble('coins') ?? 0.0,
+    referedByMobile: prefs.getString('refered_by_mobile') == 'null'
+        ? ''
+        : (prefs.getString('refered_by_mobile') ?? ''),
+    referedByName: prefs.getString('refered_by_name') == 'null'
+        ? ''
+        : (prefs.getString('refered_by_name') ?? ''),
+    role: prefs.getString('role') ?? 'Investor',
     otp: '',
   );
 }
