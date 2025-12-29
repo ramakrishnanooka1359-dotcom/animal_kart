@@ -22,13 +22,19 @@ class TransferUnitScreen extends ConsumerWidget {
                 const Center(child: CircularProgressIndicator()),
             error: (e, _) => Center(child: Text(e.toString())),
             data: (response) {
-              final transactions = response?.transactions;
+            //  final transactions = response?.transactions;
+final transactions = response?.transactions ?? [];
+double totalCoins = 0;
 
-              double totalCoins = 0;
+for (var item in transactions) {
+  totalCoins += item.transaction.coins;
+}
 
-              for (var item in transactions!) {
-                totalCoins += item.transaction.coins;
-              }
+              // double totalCoins = 0;
+
+              // for (var item in transactions!) {
+              //   totalCoins += item.transaction.coins;
+              // }
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,20 +109,57 @@ class TransferUnitScreen extends ConsumerWidget {
                   const SizedBox(height: 16),
 
                   /// LEDGER LIST
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: transactions.length,
-                      itemBuilder: (context, index) {
-                        final txn = transactions[index].transaction;
+                 Expanded(
+  child: transactions.isEmpty || totalCoins == 0
+      ? Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              Icon(
+                Icons.account_balance_wallet_outlined,
+                size: 48,
+                color: Colors.black26,
+              ),
+              SizedBox(height: 12),
+              Text(
+                "No coins are available yet",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black45,
+                ),
+              ),
+            ],
+          ),
+        )
+      : ListView.builder(
+          itemCount: transactions.length,
+          itemBuilder: (context, index) {
+            final txn = transactions[index].transaction;
 
-                        return CoinLedgerItem(
-                          amount: _formatAmount(txn.coins),
-                          label: _buildLabel(txn),
-                          date: _formatDate(txn.createdAt),
-                        );
-                      },
-                    ),
-                  ),
+            return CoinLedgerItem(
+              amount: _formatAmount(txn.coins),
+              label: _buildLabel(txn),
+              date: _formatDate(txn.createdAt),
+            );
+          },
+        ),
+),
+
+                  // Expanded(
+                  //   child: ListView.builder(
+                  //     itemCount: transactions.length,
+                  //     itemBuilder: (context, index) {
+                  //       final txn = transactions[index].transaction;
+
+                  //       return CoinLedgerItem(
+                  //         amount: _formatAmount(txn.coins),
+                  //         label: _buildLabel(txn),
+                  //         date: _formatDate(txn.createdAt),
+                  //       );
+                  //     },
+                  //   ),
+                  // ),
                 ],
               );
             },
