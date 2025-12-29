@@ -5,12 +5,12 @@ import 'package:animal_kart_demo2/l10n/app_localizations.dart';
 import 'package:animal_kart_demo2/orders/providers/orders_providers.dart';
 import 'package:animal_kart_demo2/orders/screens/orders_screen.dart';
 import 'package:animal_kart_demo2/profile/screens/user_profile_screen.dart';
+import 'package:animal_kart_demo2/profile/providers/profile_provider.dart';
 import 'package:animal_kart_demo2/routes/routes.dart';
 import 'package:animal_kart_demo2/theme/app_theme.dart';
 import 'package:animal_kart_demo2/utils/app_colors.dart';
 import 'package:animal_kart_demo2/utils/save_user.dart';
 import 'package:animal_kart_demo2/widgets/internet_check_wrapper.dart';
-
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,15 +39,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.initState();
     _selectedIndex = widget.selectedIndex;
     _pages = const [
-      InternetCheckWrapper(
-        showFullPage: true,
-        child: BuffaloListScreen()),
-      InternetCheckWrapper(
-        showFullPage: true,
-        child: OrdersScreen()),
-      InternetCheckWrapper(
-        showFullPage: true,
-        child: UserProfileScreen()),
+      InternetCheckWrapper(showFullPage: true, child: BuffaloListScreen()),
+      InternetCheckWrapper(showFullPage: true, child: OrdersScreen()),
+      InternetCheckWrapper(showFullPage: true, child: UserProfileScreen()),
     ];
     _loadLocalUser();
   }
@@ -59,8 +53,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _onItemTapped(int index) {
     if (index == 1) {
-     
       ref.read(ordersProvider.notifier).loadOrders();
+    } else if (index == 2) {
+      ref.read(profileProvider.notifier).fetchCurrentUser();
     }
     setState(() => _selectedIndex = index);
   }
@@ -71,20 +66,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return InternetCheckWrapper(
-      showSnackbar: true, 
+      showSnackbar: true,
       child: WillPopScope(
-       onWillPop: () async {
-        if (_selectedIndex != 0) {
-      
-      _goToHomeTab();
-      return false; 
-        } else {
-      
-      SystemNavigator.pop();
-      return false; 
-        }
-      },
-      
+        onWillPop: () async {
+          if (_selectedIndex != 0) {
+            _goToHomeTab();
+            return false;
+          } else {
+            SystemNavigator.pop();
+            return false;
+          }
+        },
+
         child: Scaffold(
           backgroundColor: Theme.of(context).mainThemeBgColor,
           appBar: AppBar(
@@ -98,8 +91,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
             ),
             centerTitle: _selectedIndex != 0,
-          title: _buildTitle(context),
-          actions: _buildActions(context),
+            title: _buildTitle(context),
+            actions: _buildActions(context),
           ),
           body: IndexedStack(index: _selectedIndex, children: _pages),
           bottomNavigationBar: _buildBottomNav(),
@@ -107,7 +100,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
     );
   }
-
 
   Widget _buildTitle(BuildContext context) {
     if (_selectedIndex == 2) {
@@ -117,17 +109,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         children: [
           Text(
             localUser?.name ?? 'User Profile',
-              style: TextStyle(
-                  color: Theme.of(context).primaryTextColor,
-                  fontSize: 24,
+            style: TextStyle(
+              color: Theme.of(context).primaryTextColor,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
           Text(
             '+91 ${localUser?.mobile ?? ''}',
-              style: TextStyle(
-                  color: Theme.of(context).secondaryTextColor,
-                  fontSize: 18,
+            style: TextStyle(
+              color: Theme.of(context).secondaryTextColor,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -145,50 +137,44 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       );
     } else {
       // Home
-      return Image.asset(
-        'assets/images/onboard_logo.png',
-        height: 50,
-      );
+      return Image.asset('assets/images/onboard_logo.png', height: 50);
     }
   }
 
-
-
-List<Widget> _buildActions(BuildContext context) {
-  switch (_selectedIndex) {
-    case 0: 
-      return [
-        // const Padding(
-        //   padding: EdgeInsets.symmetric(horizontal: 12),
-        //   child: CoinBadge(),
-        // ),
-        Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white24,
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.notifications_none, color: Colors.white),
-              onPressed: () {
-                Navigator.pushNamed(context, AppRouter.notification);
-              },
+  List<Widget> _buildActions(BuildContext context) {
+    switch (_selectedIndex) {
+      case 0:
+        return [
+          // const Padding(
+          //   padding: EdgeInsets.symmetric(horizontal: 12),
+          //   child: CoinBadge(),
+          // ),
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white24,
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.notifications_none, color: Colors.white),
+                onPressed: () {
+                  Navigator.pushNamed(context, AppRouter.notification);
+                },
+              ),
             ),
           ),
-        ),
-      ];
-    case 1: 
-      return const [];
-    case 2: 
-      return const [];
-    default:
-      return const [];
+        ];
+      case 1:
+        return const [];
+      case 2:
+        return const [];
+      default:
+        return const [];
+    }
   }
-}
-
 
   // ---------- Bottom Navigation ----------
   Widget _buildBottomNav() {
@@ -213,58 +199,58 @@ List<Widget> _buildActions(BuildContext context) {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _navItem(
-            index: 0,
-            activeIcon: Icons.home_rounded,
-            inactiveIcon: Icons.home_outlined,
-            label: "Home",
-          ),
-          _navItem(
-            index: 1,
-            activeIcon: Icons.shopping_cart,
-            inactiveIcon: Icons.shopping_cart_outlined,
-            label: "orders",
-          ),
-          _navItem(
-            index: 2,
-            activeIcon: Icons.person,
-            inactiveIcon: Icons.person_outline,
-            label: "Profile",
-          ),
+              index: 0,
+              activeIcon: Icons.home_rounded,
+              inactiveIcon: Icons.home_outlined,
+              label: "Home",
+            ),
+            _navItem(
+              index: 1,
+              activeIcon: Icons.shopping_cart,
+              inactiveIcon: Icons.shopping_cart_outlined,
+              label: "orders",
+            ),
+            _navItem(
+              index: 2,
+              activeIcon: Icons.person,
+              inactiveIcon: Icons.person_outline,
+              label: "Profile",
+            ),
           ],
         ),
       ),
     );
   }
 
-Widget _navItem({
-  required int index,
-  required IconData activeIcon,
-  required IconData inactiveIcon,
-  required String label,
-}) {
-  final bool isSelected = _selectedIndex == index;
+  Widget _navItem({
+    required int index,
+    required IconData activeIcon,
+    required IconData inactiveIcon,
+    required String label,
+  }) {
+    final bool isSelected = _selectedIndex == index;
 
-  return GestureDetector(
-    onTap: () => _onItemTapped(index),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          isSelected ? activeIcon : inactiveIcon,
-          size: 26,
-          color: isSelected ? kPrimaryGreen : Colors.grey.shade600,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          context.tr(label),
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
+    return GestureDetector(
+      onTap: () => _onItemTapped(index),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isSelected ? activeIcon : inactiveIcon,
+            size: 26,
             color: isSelected ? kPrimaryGreen : Colors.grey.shade600,
           ),
-        ),
-      ],
-    ),
-  );
-}
+          const SizedBox(height: 4),
+          Text(
+            context.tr(label),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: isSelected ? kPrimaryGreen : Colors.grey.shade600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
