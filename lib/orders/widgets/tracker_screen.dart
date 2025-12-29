@@ -151,29 +151,31 @@ class _TrackerScreenState extends State<TrackerScreen> {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      _valueRow(
-                        context,
-                        widget.buffaloCount % 1 == 0
-                            ? widget.buffaloCount.toInt().toString()
-                            : widget.buffaloCount.toString(),
-                        widget.buffaloCount == 1
-                            ? context.tr("buffalo")
-                            : context.tr("buffaloes")
-                      ),
-                      const SizedBox(width: 2),
-                      _valueRow(
-                        context,
-                        widget.calfCount % 1 == 0
-                            ? widget.calfCount.toInt().toString()
-                            : widget.calfCount.toString(),
-                        widget.calfCount == 1
-                            ? context.tr("calf")
-                            : context.tr("calves")
-                      ),
-                    ],
+              Wrap(
+                spacing: 6,
+                runSpacing: 4,
+                children: [
+                  _valueRow(
+                    context,
+                    widget.buffaloCount % 1 == 0
+                        ? widget.buffaloCount.toInt().toString()
+                        : widget.buffaloCount.toString(),
+                    widget.buffaloCount == 1
+                        ? context.tr("buffalo")
+                        : context.tr("buffaloes"),
                   ),
+                  _valueRow(
+                    context,
+                    widget.calfCount % 1 == 0
+                        ? widget.calfCount.toInt().toString()
+                        : widget.calfCount.toString(),
+                    widget.calfCount == 1
+                        ? context.tr("calf")
+                        : context.tr("calves"),
+                  ),
+                ],
+              ),
+
                   const SizedBox(height: 4),
                   Text(
                     "${widget.unitCount % 1 == 0 ? widget.unitCount.toInt().toString() : widget.unitCount.toString()} "
