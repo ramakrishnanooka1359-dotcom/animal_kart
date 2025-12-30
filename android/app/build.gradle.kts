@@ -61,5 +61,4 @@ implementation("androidx.credentials:credentials:1.2.2")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
   // Add the dependencies for any other desired Firebase products
   // https://firebase.google.com/docs/android/setup#available-libraries
-apply plugin: 'com.google.gms.google-services'
 }
