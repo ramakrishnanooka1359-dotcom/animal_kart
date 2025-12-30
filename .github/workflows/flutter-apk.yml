@@ -20,10 +20,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: 'stable'
+     - name: Set up Flutter
+       uses: subosito/flutter-action@v2
+       with:
+         channel: stable
+
 
       - name: Flutter Doctor
         run: flutter doctor
