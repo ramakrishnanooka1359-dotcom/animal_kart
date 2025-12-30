@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "612299373064",
-    "project_id": "markwave-481315",
-    "storage_bucket": "markwave-481315.firebasestorage.app"
+    "project_number": "49472827090",
+    "project_id": "animal-kart-c48a4",
+    "storage_bucket": "animal-kart-c48a4.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:612299373064:android:5985b830becec8cd0eefbd",
+        "mobilesdk_app_id": "1:49472827090:android:3d2950a7346daa29c7070b",
         "android_client_info": {
-          "package_name": "com.markwave.animalcart"
+          "package_name": "com.animalkart.app"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC88x_wjf5oBRmTxyXUwXV_UY2N73kl82c"
+          "current_key": "AIzaSyCS-4Mf5235BrEPEHR61S0fF0rDgzHdGjc"
         }
       ],
       "services": {
