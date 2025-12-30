@@ -1,13 +1,13 @@
-name: Flutter APK Build
+name: Android CI/CD (Build + Firebase Deploy)
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
-  build-apk:
+  build:
+    name: Build APK
     runs-on: ubuntu-latest
 
     steps:
@@ -18,25 +18,43 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: 17
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
 
-      - name: Flutter Doctor
-        run: flutter doctor -v
-
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build APK (Release)
-        run: flutter build apk --release
+      - name: Build debug APK
+        run: flutter build apk --debug
 
-      - name: Upload APK Artifact
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: animal-kart-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: android-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+
+  deploy:
+    name: Deploy to Firebase App Distribution
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: android-apk
+
+      - name: Upload APK to Firebase
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId:1:516952026810:android:501c122ac437bdc8bedc83 
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          groups: testers
+          file: app-debug.apk
+
+
 
